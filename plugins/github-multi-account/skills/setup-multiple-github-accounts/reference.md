@@ -158,9 +158,11 @@ worktrees.
 ```
 
 Each account gets its own file. `insteadOf` rewrites the URL prefix at connect
-time, so stored remotes stay untouched: `git remote -v` still shows the original
-URL, and cloning with a plain `https://github.com/...` URL inside any account
-tree works. List both prefixes because remotes may use either.
+time, so the stored remote stays untouched: `git config --get remote.origin.url`
+still returns the original URL, while `git remote -v` and `git ls-remote
+--get-url` apply the rewrite and show the alias. Cloning with a plain
+`https://github.com/...` URL inside any account tree works. List both prefixes
+because remotes may use either.
 
 ### 4. Upload each public key
 

@@ -1,5 +1,5 @@
 ---
-name: setup-multiple-github-accounts
+name: setup
 description: Set up and troubleshoot multiple GitHub accounts on one machine — SSH key per account, git includeIf routing by repo path, and gh CLI config-directory switching. Use when the user wants to add another GitHub account, hits wrong-account git or gh behavior, or asks about SSH aliases, includeIf, or GH_CONFIG_DIR.
 ---
 

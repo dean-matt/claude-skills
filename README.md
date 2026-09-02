@@ -9,9 +9,9 @@ makes them installable in one command.
 
 ## Skills
 
-| Plugin                 | Skill                             | What it does                                                       |
-| ---------------------- | --------------------------------- | ------------------------------------------------------------------ |
-| `github-multi-account` | `setup-multiple-github-accounts`  | Run any number of GitHub accounts on one machine. An SSH key per account, git `includeIf` routing by repo path, and gh CLI config-directory switching, so the repo path decides the account and no command ever switches identities. |
+| Plugin                 | Skill   | What it does |
+| ---------------------- | ------- | ------------ |
+| `github-multi-account` | `setup` | Run any number of GitHub accounts on one machine. An SSH key per account, git `includeIf` routing by repo path, and gh CLI config-directory switching, so the repo path decides the account and no command ever switches identities. |
 
 ## Installing
 
@@ -37,9 +37,14 @@ that reads the Agent Skills format will find it:
 
 ```bash
 git clone https://github.com/dean-matt/claude-skills.git
-ln -s "$PWD/claude-skills/plugins/github-multi-account/skills/setup-multiple-github-accounts" \
-      ~/.claude/skills/setup-multiple-github-accounts
+ln -s "$PWD/claude-skills/plugins/github-multi-account/skills/setup" \
+      ~/.claude/skills/github-multi-account
 ```
+
+Skill names are namespaced by their plugin, so a short name like `setup` reads as
+`/github-multi-account:setup` once installed. Outside a plugin there is no
+namespace, so give the symlink a fuller name and match the `name:` field in
+`SKILL.md` to it.
 
 ## License
 

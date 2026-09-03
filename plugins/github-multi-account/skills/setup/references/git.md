@@ -11,9 +11,9 @@ ssh-keygen -t ed25519 -C "<email1> (mac)" -f ~/.ssh/id_ed25519_account1 -N ""
 ssh-keygen -t ed25519 -C "<email2> (mac)" -f ~/.ssh/id_ed25519_account2 -N ""
 ```
 
-`-f` names the file; the default name would collide across accounts. `-N ""`
-skips the passphrase. Add one later with
-`ssh-keygen -p -f ~/.ssh/id_ed25519_account1`.
+`-f` names the file; the default `id_ed25519` would collide across accounts.
+`-N ""` leaves the key without a passphrase, so scripts and coding agents can use
+it without prompting.
 
 ## 2. Add one SSH host alias per account
 

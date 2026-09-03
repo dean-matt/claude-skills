@@ -97,7 +97,6 @@ Browse [`plugins/`](plugins/) for the current set of skills, or run
 | File | What it covers |
 |---|---|
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Adding a skill, authoring conventions, versioning, branching and pull requests |
-| [`plugins/github-multi-account/skills/setup/reference.md`](plugins/github-multi-account/skills/setup/reference.md) | The multi-account config in full — file shapes, verification, failure modes |
 | [Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) | The `SKILL.md` format, frontmatter fields, progressive disclosure |
 | [Plugins](https://docs.claude.com/en/docs/claude-code/plugins) | Installing and managing plugins |
 | [Plugin marketplaces](https://docs.claude.com/en/docs/claude-code/plugin-marketplaces) | The `marketplace.json` schema and hosting |

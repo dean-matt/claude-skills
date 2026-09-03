@@ -12,8 +12,9 @@ Conventions for working in `claude-skills`. What the repo is and how to install 
    [`github-multi-account`](plugins/github-multi-account/.claude-plugin/plugin.json).
 3. Create `plugins/<plugin>/skills/<skill>/SKILL.md`. Anything else the skill needs — reference
    documents, scripts, templates — sits beside it and is reached by relative path from `SKILL.md`.
-   Nothing dictates those filenames; `setup` uses a single `reference.md` because that is all it
-   needed.
+   The prevailing convention puts supporting documents in a `references/` directory, one file per
+   concern, named for its topic: `setup` uses `references/git.md`, `references/gh.md`,
+   `references/layout.md` and `references/audit.md`.
 4. For a new plugin, add an entry to [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)
    with `name`, `source` and `description`. Claude Code shows that description and the one in
    `plugin.json` in different places, so keep the two saying the same thing.

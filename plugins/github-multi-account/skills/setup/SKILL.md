@@ -13,6 +13,22 @@ Use when the user:
 - reports git or gh authenticating as the wrong account
 - asks about SSH host aliases, `includeIf`, `GH_CONFIG_DIR`, or per-repo git identity
 
-## How to Use
+## Gather Inputs First
 
-Read [`reference.md`](./reference.md) in this skill directory for the full setup: account tree layout, SSH keys, `~/.ssh/config` aliases, `~/.gitconfig` `includeIf` rules, `gh` config directories, the `_gh_ctx` shell hook, and troubleshooting tables. Follow it step by step. Before generating any config, ask the user for their account labels, repo root, usernames, and emails.
+Before generating any config, ask the user for their account labels, repo root,
+usernames, and emails. The references use two accounts named `account1` and
+`account2`, a repo root of `~/Repos`, and `<username1>` / `<email1>` placeholders.
+Substitute real values throughout.
+
+## Then Read What the Task Needs
+
+| Task | Read |
+| --- | --- |
+| Understand the design before changing anything | [`references/layout.md`](./references/layout.md) |
+| Set up or fix git — SSH keys, host aliases, `includeIf` rules | [`references/git.md`](./references/git.md) |
+| Set up or fix gh — config directories, `GH_CONFIG_DIR`, the `_gh_ctx` hook | [`references/gh.md`](./references/gh.md) |
+| Diagnose a machine already set up, or answering as the wrong account | [`references/audit.md`](./references/audit.md) |
+
+git and gh authenticate differently and are configured independently; either works
+without the other. A full setup reads `layout.md`, then `git.md`, then `gh.md`,
+following the numbered steps in order.

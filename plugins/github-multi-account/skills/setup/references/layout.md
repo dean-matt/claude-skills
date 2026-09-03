@@ -22,9 +22,6 @@ folders inside the account tree.
         └── example2-admin/       repo
 ```
 
-Paths are written in POSIX form throughout these references. On Windows, read `~`
-as `$HOME` — `C:\Users\<you>`.
-
 ## How a path resolves
 
 The path is the only input. git and gh read it separately, because they

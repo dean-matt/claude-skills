@@ -47,5 +47,10 @@ following the numbered steps in order.
 
 Steps whose commands differ by platform carry `macOS / Linux` and `Windows`
 subheadings, macOS first, with the shared explanation below both. Steps without
-them are the same everywhere. Paths appear in POSIX form throughout; on Windows
-read `~` as `$HOME`.
+them are the same everywhere.
+
+Paths appear in POSIX form throughout, so a Windows reader takes `~/Repos` as
+`C:\Users\<you>\Repos`. Inside the ssh and git config files themselves `~` stays
+literal on every platform — ssh and git expand it, not the shell — so it is typed
+as written. Only the PowerShell command blocks spell paths out, because native
+commands on Windows get no expansion from either side.

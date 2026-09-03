@@ -3,19 +3,6 @@
 Work any number of GitHub accounts at once. Both git and gh read the account from
 the repo's path, so no command ever switches identities.
 
-Each account needs:
-
-- an account tree holding its repos
-- an SSH key
-- a `Host` alias in `~/.ssh/config`
-- a git config file
-- an `includeIf` rule pointing at its account tree
-- a gh config directory
-
-The examples use two accounts, `account1` and `account2`. Rename the labels to
-suit, adjust `~/Repos` to your repo root, and replace `<username1>` and
-`<email1>` with real values.
-
 ## Account trees
 
 Give every account an account tree: one folder under your repo root holding every

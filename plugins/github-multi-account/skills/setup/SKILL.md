@@ -13,6 +13,18 @@ Use when the user:
 - reports git or gh authenticating as the wrong account
 - asks about SSH host aliases, `includeIf`, `GH_CONFIG_DIR`, or per-repo git identity
 
+## What Each Account Needs
+
+- an account tree holding its repos
+- an SSH key
+- a `Host` alias in `~/.ssh/config`
+- a git config file
+- an `includeIf` rule pointing at its account tree
+- a gh config directory
+
+The account tree is the shared input both tools read a path against; the next four
+belong to git and the last to gh.
+
 ## Gather Inputs First
 
 Before generating any config, ask the user for their account labels, repo root,

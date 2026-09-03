@@ -67,10 +67,8 @@ one account tree and moves to another follows along. The trailing slash in
 
 ## Verification
 
-Open a new shell first: the current one has not sourced `~/.zshenv`, so it still
-holds the old environment.
-
 ```bash
+exec zsh                                          # load the new ~/.zshenv
 cd ~/Repos/account1 && gh api user --jq .login    # -> <username1>
 cd ~/Repos/account2 && gh api user --jq .login    # -> <username2>
 ```

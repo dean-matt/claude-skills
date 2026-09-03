@@ -84,15 +84,20 @@ because remotes may use either.
 
 ## 4. Upload each public key
 
-The `.pub` half goes to GitHub; the private half stays on the machine.
+The `.pub` half goes to GitHub; the private half stays on the machine. Sign in as
+that account, open `github.com/settings/keys`, choose **New SSH key**, leave the
+type as **Authentication key**, and paste the output of:
 
 ```bash
-cat ~/.ssh/id_ed25519_account1.pub   # upload to <username1>
-cat ~/.ssh/id_ed25519_account2.pub   # upload to <username2>
+cat ~/.ssh/id_ed25519_account1.pub
 ```
 
-For each key: sign in as that account, open `github.com/settings/keys`, choose
-**New SSH key**, set the type to **Authentication key**, and paste the line.
+If that account's `gh` is already set up per [`gh.md`](./gh.md), skip the web UI:
+
+```bash
+GH_CONFIG_DIR=~/.config/gh-account1 \
+  gh ssh-key add ~/.ssh/id_ed25519_account1.pub --title "$(hostname -s)"
+```
 
 ## 5. Authorize SSO where an org enforces it
 

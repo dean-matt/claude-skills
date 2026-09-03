@@ -75,8 +75,9 @@ $env:GH_CONFIG_DIR               # -> that account's config directory
 
 An unchanged value means the hook never ran. On macOS and Linux, confirm `_gh_ctx`
 sits in `~/.zshenv` rather than `~/.zshrc` and that the `chpwd` hook is
-registered. On Windows, confirm the `prompt` wrapper is in `$PROFILE` and that
-this is an interactive session — `$PROFILE` is skipped for scripts.
+registered. On Windows, confirm the `prompt` wrapper sits in `$PROFILE`, and that
+you are typing at a prompt rather than running a script — PowerShell calls
+`prompt` from the REPL alone.
 
 ### Effective account
 

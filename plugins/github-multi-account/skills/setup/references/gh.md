@@ -1,8 +1,10 @@
 # GitHub CLI
 
-The SSH split covers git alone. `gh` never uses SSH: it calls the API over HTTPS
-with an OAuth token, and reads one active account from a single config file. Give
-each account its own config directory, then select the directory by path.
+The SSH split in [`git.md`](./git.md) covers git alone. `gh` never uses SSH: it
+calls the API over HTTPS with an OAuth token, and reads one active account from a
+single config file. Give each account its own config directory, then select the
+directory by path — the account trees those paths refer to are described in
+[`layout.md`](./layout.md).
 
 ## 1. Log in once per account
 

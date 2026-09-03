@@ -1,5 +1,9 @@
 # Git setup
 
+Keys, host aliases and `includeIf` rules — the git half, which works without the
+gh half in [`gh.md`](./gh.md). Assumes the account trees described in
+[`layout.md`](./layout.md).
+
 ## 1. Generate one key per account
 
 ```bash

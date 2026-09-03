@@ -1,5 +1,6 @@
 {
   "name": "dean-matt",
+  "description": "Matt Dean's Claude Code skills, packaged as installable plugins.",
   "owner": {
     "name": "Matt Dean",
     "url": "https://github.com/dean-matt"
@@ -8,7 +9,7 @@
     {
       "name": "github-multi-account",
       "source": "./plugins/github-multi-account",
-      "description": "Set up and troubleshoot multiple GitHub accounts on one machine: an SSH key per account, git includeIf routing by repo path, and gh CLI config-directory switching."
+      "description": "Run any number of GitHub accounts on one machine, with the repo path deciding the account for both git and gh."
     }
   ]
 }

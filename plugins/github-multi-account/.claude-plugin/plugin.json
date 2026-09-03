@@ -1,5 +1,12 @@
 {
   "name": "github-multi-account",
   "description": "Run any number of GitHub accounts on one machine, with the repo path deciding the account for both git and gh.",
-  "version": "1.1.0"
+  "version": "1.1.0",
+  "author": {
+    "name": "Matt Dean",
+    "url": "https://github.com/dean-matt"
+  },
+  "homepage": "https://github.com/dean-matt/claude-skills",
+  "license": "MIT",
+  "keywords": ["github", "git", "ssh", "gh-cli", "multi-account"]
 }

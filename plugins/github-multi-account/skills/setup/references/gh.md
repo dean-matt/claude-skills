@@ -4,27 +4,10 @@ Config directories, `GH_CONFIG_DIR`, and the shell hook that picks one. Read
 [`layout.md`](./layout.md) first: it defines the account trees these paths refer
 to.
 
-`gh` reaches the API over HTTPS with an OAuth token, never over SSH, and reads
-one active account from a single config file. That is why each account needs a
-config directory rather than a key: the SSH setup in [`git.md`](./git.md) has no
-bearing on how `gh` authenticates. Give each account its own config directory,
-then select the directory by path.
-
-One setting does cross over. `git_protocol` decides the URL `gh` hands to git for
-clone and push operations, and defaults to `https`:
-
-```bash
-gh config get git_protocol
-```
-
-Set it to `ssh` and `gh repo clone` writes a `git@github.com:` remote, which git
-then connects with — so that traffic does use the keys from `git.md`. Either
-setting resolves correctly here, because the `insteadOf` rules list both the HTTPS
-and the SSH prefix. The value lives in each config directory's `config.yml`, so
-every account carries its own.
-
-`gh ssh-key add` and `gh ssh-key list` also touch SSH, but only as API calls that
-register a key on the account. They authenticate over HTTPS like everything else.
+`gh` reaches the API over HTTPS with an OAuth token and reads one active account
+from a single config file, so an account needs a config directory here rather
+than a key — the keys in [`git.md`](./git.md) serve git alone. Give each account
+its own config directory, then select the directory by path.
 
 ## 1. Log in once per account
 
@@ -32,6 +15,11 @@ register a key on the account. They authenticate over HTTPS like everything else
 GH_CONFIG_DIR=~/.config/gh-account1 gh auth login
 GH_CONFIG_DIR=~/.config/gh-account2 gh auth login
 ```
+
+Answer `HTTPS` at the git protocol prompt. Either answer works, because the
+`insteadOf` rules in [`git.md`](./git.md) rewrite both prefixes, but choosing
+`SSH` makes gh offer to generate and upload a key, which this setup already
+handles per account.
 
 Each token goes to the system credential store, filed under its account username,
 which keeps the config directories independent. `gh auth status` names the store

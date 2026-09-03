@@ -6,14 +6,32 @@ a separate job that works without this one — see [`gh.md`](./gh.md).
 
 ## 1. Generate one key per account
 
+### macOS / Linux
+
 ```bash
 ssh-keygen -t ed25519 -C "<email1> (mac)" -f ~/.ssh/id_ed25519_account1 -N ""
 ssh-keygen -t ed25519 -C "<email2> (mac)" -f ~/.ssh/id_ed25519_account2 -N ""
 ```
 
+### Windows
+
+```powershell
+ssh-keygen -t ed25519 -C "<email1> (windows)" -f "$HOME\.ssh\id_ed25519_account1"
+ssh-keygen -t ed25519 -C "<email2> (windows)" -f "$HOME\.ssh\id_ed25519_account2"
+```
+
+Press Enter twice at each passphrase prompt. `-N ""` is left off deliberately:
+Windows PowerShell 5.1 drops an empty-string argument before the command sees it,
+while PowerShell 7.3 and later preserve it, so the prompt is the one route that
+works on both. The paths are spelled `$HOME\.ssh\...` rather than `~/.ssh/...`
+because PowerShell does not expand `~` for native commands, and ssh-keygen does
+not expand it either. Confirm the result with
+`ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"` — it prints the public key
+straight away if there is no passphrase, and prompts if there is.
+
 `-f` names the file; the default `id_ed25519` would collide across accounts.
-`-N ""` leaves the key without a passphrase, so scripts and coding agents can use
-it without prompting.
+Leaving the key without a passphrase lets scripts and coding agents use it
+without prompting.
 
 ## 2. Add one SSH host alias per account
 
@@ -62,6 +80,10 @@ the order they will be tried.
 The trailing slash matches the directory and everything beneath it, which covers
 worktrees.
 
+On Windows, write `gitdir/i:` in place of `gitdir:`. The filesystem is
+case-insensitive but the match is not, so a rule written `c:/repos/account1/`
+never matches a path git resolves as `C:/Repos/account1/`.
+
 `~/.gitconfig-account1`:
 
 ```ini
@@ -101,9 +123,18 @@ cat ~/.ssh/id_ed25519_account1.pub
 
 If that account's gh is already set up per [`gh.md`](./gh.md), skip the web UI:
 
+### macOS / Linux
+
 ```bash
 GH_CONFIG_DIR=~/.config/gh-account1 \
   gh ssh-key add ~/.ssh/id_ed25519_account1.pub --title "$(hostname -s)"
+```
+
+### Windows
+
+```powershell
+$env:GH_CONFIG_DIR = "$env:AppData\gh-account1"
+gh ssh-key add "$HOME\.ssh\id_ed25519_account1.pub" --title $env:COMPUTERNAME
 ```
 
 ## 5. Authorize SSO where an org enforces it
@@ -151,5 +182,6 @@ account, which is the only rule to remember day to day.
 | `ssh -T` greets the wrong account                                  | `IdentitiesOnly yes` missing, wrong `IdentityFile`, or another key offered first — check `ssh -G github-account1` |
 | `ERROR: The '<org>' organization has enabled or enforced SAML SSO` | Key needs SSO authorization — step 5                                                |
 | `git ls-remote --get-url` returns the raw HTTPS URL                | Repo sits outside every account tree; check the path and the trailing slash         |
+| `git ls-remote --get-url` returns the raw HTTPS URL on Windows only | The `includeIf` rule uses `gitdir:` where the path case differs; use `gitdir/i:` |
 | `Permission denied (publickey)` in one account tree only            | That account lacks that key                                                         |
 | Commits land under the wrong email                                 | Repo sits outside every account tree, or a local `user.email` overrides the include |

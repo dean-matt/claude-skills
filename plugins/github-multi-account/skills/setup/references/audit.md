@@ -17,7 +17,9 @@ git config --global --get-regexp 'includeif.*path'
 ```
 
 Expect one rule per account tree, each `gitdir` path ending in a slash. Drop the
-slash and the rule matches the account tree itself, but nothing inside it.
+slash and the rule matches the account tree itself, but nothing inside it. On
+Windows, expect `gitdir/i:` — the case-sensitive `gitdir:` misses a path whose
+case differs from the rule.
 
 ### Account tree layout
 
@@ -59,12 +61,22 @@ The greeting names the account. A wrong name means the `Host` block lacks
 
 From inside each account tree:
 
+#### macOS / Linux
+
 ```bash
 echo $GH_CONFIG_DIR              # -> that account's config directory
 ```
 
-An unchanged value means `_gh_ctx` never ran. Confirm it sits in `~/.zshenv`
-rather than `~/.zshrc`, and that the `chpwd` hook is registered.
+#### Windows
+
+```powershell
+$env:GH_CONFIG_DIR               # -> that account's config directory
+```
+
+An unchanged value means the hook never ran. On macOS and Linux, confirm `_gh_ctx`
+sits in `~/.zshenv` rather than `~/.zshrc` and that the `chpwd` hook is
+registered. On Windows, confirm the `prompt` wrapper is in `$PROFILE` and that
+this is an interactive session — `$PROFILE` is skipped for scripts.
 
 ### Effective account
 

@@ -3,7 +3,7 @@
 Work any number of GitHub accounts at once. Both git and gh read the account from
 the repo's path, so no command ever switches identities.
 
-Each account needs six things:
+Each account needs:
 
 - an account tree holding its repos
 - an SSH key
@@ -12,9 +12,9 @@ Each account needs six things:
 - an `includeIf` rule pointing at its account tree
 - a gh config directory
 
-The examples use two accounts, `account1` and `account2`; a third repeats the same
-pattern once more. Rename the labels to suit, adjust `~/Repos` to your repo root,
-and replace `<username1>` and `<email1>` with real values.
+The examples use two accounts, `account1` and `account2`. Rename the labels to
+suit, adjust `~/Repos` to your repo root, and replace `<username1>` and
+`<email1>` with real values.
 
 ## Account trees
 

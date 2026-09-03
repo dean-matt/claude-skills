@@ -52,11 +52,11 @@ autoload -U add-zsh-hook 2>/dev/null && add-zsh-hook chpwd _gh_ctx
 _gh_ctx
 ```
 
-Three details carry this. `.zshenv` loads for non-interactive shells, so scripts
-and coding agents get the variable; `.zshrc` would reach interactive shells alone.
-The `chpwd` hook re-evaluates on every directory change, so a shell that starts in
-one account tree and moves to another follows along. The trailing slash in
-`"$PWD/"` matches the account tree root itself, not just the paths beneath it.
+`.zshenv` loads for non-interactive shells, so scripts and coding agents get the
+variable; `.zshrc` would reach interactive shells alone. The `chpwd` hook
+re-evaluates on every directory change, so a shell that starts in one account
+tree and moves to another follows along. The trailing slash in `"$PWD/"` matches
+the account tree root itself, not just the paths beneath it.
 
 > Export a path, never a token. `GH_TOKEN=$(gh auth token -u <user>)` fails twice
 > over: gh hands back the active account's token whatever `-u` says, and an

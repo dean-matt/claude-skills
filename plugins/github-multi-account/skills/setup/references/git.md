@@ -17,7 +17,8 @@ it without prompting.
 
 ## 2. Add one SSH host alias per account
 
-Append to `~/.ssh/config`, below any `Include` line:
+Put these near the top of `~/.ssh/config`, above any `Include` line and above any
+`Host *` block:
 
 ```
 Host github-account1
@@ -40,6 +41,12 @@ authenticates as `git`, so identity comes from the key.
 key the agent holds, GitHub accepts the first valid one, and you authenticate
 silently as the wrong account. The more accounts on the machine, the likelier
 that misfire.
+
+Placement matters for the same reason. ssh accumulates every matching
+`IdentityFile` in the order it reads them, so a `Host *` default pulled in by an
+earlier `Include` is offered ahead of the account key — and GitHub accepts the
+first valid key it is offered. `ssh -G github-account1` lists the identities in
+the order they will be tried.
 
 ## 3. Map each account tree to its account
 
@@ -78,9 +85,8 @@ worktrees.
 Each account gets its own file. `insteadOf` rewrites the URL prefix at connect
 time, so the stored remote stays untouched: `git config --get remote.origin.url`
 still returns the original URL, while `git remote -v` and `git ls-remote
---get-url` apply the rewrite and show the alias. Cloning with a plain
-`https://github.com/...` URL inside any account tree works. List both prefixes
-because remotes may use either.
+--get-url` apply the rewrite and show the alias. List both prefixes because
+remotes may use either.
 
 ## 4. Upload each public key
 
@@ -140,8 +146,8 @@ account, which is the only rule to remember day to day.
 
 | Symptom                                                            | Cause                                                                               |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
-| `ssh -T` greets the wrong account                                  | `IdentitiesOnly yes` missing, or wrong `IdentityFile`                               |
+| `ssh -T` greets the wrong account                                  | `IdentitiesOnly yes` missing, wrong `IdentityFile`, or another key offered first — check `ssh -G github-account1` |
 | `ERROR: The '<org>' organization has enabled or enforced SAML SSO` | Key needs SSO authorization — step 5                                                |
 | `git ls-remote --get-url` returns the raw HTTPS URL                | Repo sits outside every account tree; check the path and the trailing slash         |
-| `Permission denied (publickey)` in one account tree only                   | That account lacks that key                                                         |
+| `Permission denied (publickey)` in one account tree only            | That account lacks that key                                                         |
 | Commits land under the wrong email                                 | Repo sits outside every account tree, or a local `user.email` overrides the include |

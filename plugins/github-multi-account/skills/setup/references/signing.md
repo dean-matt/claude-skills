@@ -1,20 +1,17 @@
 # Commit signing
 
-Sign each commit as the account that owns the repo. The key, the git config and
-the GitHub registration all follow the account tree the rest of this skill uses,
-so no command asks which identity you are in.
+Sign each commit as the account that owns the repo, the account tree deciding
+which key as it does everywhere else here.
 
 Read [`layout.md`](./layout.md) first: it defines the account trees. Signing
-reuses the keys from [`git.md`](./git.md), and registering them uses the config
-directories from [`gh.md`](./gh.md).
-
-An SSH key signs as well as authenticates, so no new keypair is needed. GitHub
-keeps authentication keys and signing keys in separate lists, which is the step
-that catches people out: the same key is uploaded twice, once per type.
+reuses the keys from [`git.md`](./git.md) and the config directories from
+[`gh.md`](./gh.md). No new keypair is needed — an SSH key signs as well as it
+authenticates — but GitHub keeps signing keys in a list of their own, so the same
+key is registered twice.
 
 ## Turn on SSH signing
 
-The signing format is one machine-wide choice. In `~/.gitconfig`:
+The format is machine-wide. In `~/.gitconfig`:
 
 ```ini
 [gpg]
@@ -23,7 +20,8 @@ The signing format is one machine-wide choice. In `~/.gitconfig`:
 	allowedSignersFile = ~/.config/git/allowed_signers
 ```
 
-`allowedSignersFile` is what lets git verify a signature locally. Step 3 fills it in.
+`allowedSignersFile` lets git verify signatures locally; the next section fills
+it in.
 
 ## Give each account its signing key
 
@@ -38,7 +36,7 @@ In `~/.gitconfig-account1`, beside the email and URL rewrite it already holds:
 	gpgsign = true
 ```
 
-`signingkey` names the **public** half; git finds the private key beside it.
+`signingkey` points at the `.pub`; git finds the private key beside it.
 
 **`gpgsign` belongs in the account file, not in `~/.gitconfig`.** Set globally, a
 repo outside every account tree inherits signing with no `signingkey` to sign
@@ -66,9 +64,9 @@ Signed in as that account, open
 type** to **Signing Key**, and paste the same `.pub` you uploaded for
 authentication.
 
-The dropdown defaults to **Authentication Key**. Leaving it there adds a second
-authentication key and no signing key. Nothing reports the mistake: commits keep
-signing, and stay Unverified on GitHub with no error anywhere.
+The dropdown defaults to **Authentication Key**. Left there it adds a second
+authentication key and no signing key: commits still sign, GitHub still reads
+Unverified, and nothing reports the mistake.
 
 Through gh instead, which needs a scope the default token lacks:
 
@@ -91,10 +89,9 @@ gh ssh-key add "$HOME\.ssh\id_ed25519_account1.pub" --type signing --title "$env
 `-s` adds to the scopes a token already carries rather than replacing them, so
 each account holds only the scopes its work needs.
 
-**`gh auth refresh` needs a terminal.** It prints a one-time code and waits for
-you, so run it in a real shell. Given no TTY it exits silently having done
-nothing, and the only symptom is that the scope never appears in
-`gh auth status`.
+**`gh auth refresh` needs a terminal.** It prints a one-time code and waits.
+Without a TTY it exits silently having done nothing, and the only symptom is a
+scope that never appears in `gh auth status`.
 
 **The browser authorizes whichever account it is signed into**, not the account
 gh believes it is — the one step the repo path cannot decide. GitHub allows one
@@ -133,7 +130,6 @@ with its own key.
 
 | Symptom | Cause |
 | --- | --- |
-| `error: Load key ... invalid format` on commit | `signingkey` names the private key; point it at the `.pub` |
 | `No principal matched` from `git log --show-signature` | The committer address is missing from `allowed_signers`, or `allowedSignersFile` is unset |
 | Commits verify locally, GitHub says Unverified | The key is registered for authentication alone — register it again with the type set to Signing Key |
 | Unverified in org repos only | The signing key needs its own SSO authorization, separate from the authentication key's |

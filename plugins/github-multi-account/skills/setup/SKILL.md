@@ -23,9 +23,9 @@ Use when the user:
 - a gh config directory
 
 The account tree is the shared input — both tools decide from the path inside it.
-The next four belong to git, the last to gh. Signing commits adds one more per
-account, covered in [`references/signing.md`](./references/signing.md); the SSH
-key above serves for it, but GitHub needs it registered a second time.
+The next four belong to git, the last to gh. Signing commits adds a second GitHub
+registration of that same SSH key — see
+[`references/signing.md`](./references/signing.md).
 
 ## Gather Inputs First
 

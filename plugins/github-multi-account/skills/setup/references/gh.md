@@ -28,9 +28,9 @@ $env:GH_CONFIG_DIR = "$env:AppData\gh-account2"
 gh auth login --git-protocol https
 ```
 
-Each token carries its own scopes, so they can differ by account: grant a scope
-only to the accounts whose work needs it. `gh auth refresh -h github.com -s
-<scope>` adds one to a token without disturbing the scopes already on it.
+Scopes live on the token, so they differ freely by account: grant one only where
+the work needs it. `gh auth refresh -h github.com -s <scope>` adds a scope
+without disturbing those already there.
 
 Each token goes to the system credential store, filed under its account username,
 which keeps the config directories independent, and `gh auth status` names the
@@ -39,8 +39,8 @@ result: an account with no entry of its own falls back to a shared one, and gh
 then calls the API as whichever account logged in last.
 
 PowerShell has no `VAR=value command` prefix, so the variable is set on its own
-line and stays set for the rest of the session. Step 3 sets it per directory
-once configured.
+line and stays set for the rest of the session. The shell hook below takes that
+over once configured.
 
 ## Point the default at your fallback account
 

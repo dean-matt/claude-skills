@@ -9,19 +9,21 @@ a separate job that works without this one — see [`gh.md`](./gh.md).
 ### macOS / Linux
 
 ```bash
-ssh-keygen -t ed25519 -C "<email1> (<machine>)" -f ~/.ssh/id_ed25519_account1 -N ""
-ssh-keygen -t ed25519 -C "<email2> (<machine>)" -f ~/.ssh/id_ed25519_account2 -N ""
+ssh-keygen -t ed25519 -C "<email1> $(hostname -s)" -f ~/.ssh/id_ed25519_account1 -N ""
+ssh-keygen -t ed25519 -C "<email2> $(hostname -s)" -f ~/.ssh/id_ed25519_account2 -N ""
 ```
 
 ### Windows
 
 ```powershell
-ssh-keygen -t ed25519 -C "<email1> (<machine>)" -f "$HOME\.ssh\id_ed25519_account1"
-ssh-keygen -t ed25519 -C "<email2> (<machine>)" -f "$HOME\.ssh\id_ed25519_account2"
+ssh-keygen -t ed25519 -C "<email1> $env:COMPUTERNAME" -f "$HOME\.ssh\id_ed25519_account1"
+ssh-keygen -t ed25519 -C "<email2> $env:COMPUTERNAME" -f "$HOME\.ssh\id_ed25519_account2"
 ```
 
-`-f` names the file; the default `id_ed25519` would collide across accounts.
-Leaving the key without a passphrase lets scripts and coding agents use it
+`-f` names the file; the default `id_ed25519` would collide across accounts. `-C`
+sets the comment GitHub shows beside the key, so it names the machine — that is
+what you revoke when one is lost, and step 4 gives the uploaded key the same
+title. Leaving the key without a passphrase lets scripts and coding agents use it
 without prompting.
 
 **On Windows**, press Enter twice at each passphrase prompt. That block omits

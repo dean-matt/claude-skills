@@ -5,8 +5,8 @@ wrong account — these checks show what it actually does. Work through them in
 order and stop at the first answer that surprises you: that check names what to
 fix.
 
-They assume the design in [`layout.md`](./layout.md). The fixes themselves are in
-[`git.md`](./git.md) and [`gh.md`](./gh.md).
+If the terms below are unfamiliar, start with [`layout.md`](./layout.md). Every
+fix a failing check points to is in [`git.md`](./git.md) or [`gh.md`](./gh.md).
 
 ## Git
 

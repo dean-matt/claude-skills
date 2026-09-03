@@ -57,6 +57,6 @@ Every SSH alias points at `github.com` but presents a different key, and a URL
 rewrite sends each account tree to its own alias. Each gh config directory holds one
 account, and a shell function exports the matching one.
 
-Configure the halves separately — [`git.md`](./git.md) and [`gh.md`](./gh.md).
-Either works without the other. To check what a machine already does, start from
-[`audit.md`](./audit.md).
+Configure the halves separately: [`git.md`](./git.md) for git, [`gh.md`](./gh.md)
+for gh. Either works without the other. To find out what a machine already does,
+start with [`audit.md`](./audit.md).

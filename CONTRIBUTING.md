@@ -10,8 +10,10 @@ Conventions for working in `claude-skills`. What the repo is and how to install 
 2. For a new plugin, create `plugins/<plugin>/.claude-plugin/plugin.json` with `name`,
    `description`, `version`, `author`, `homepage`, `license` and `keywords` — copy the shape from
    [`github-multi-account`](plugins/github-multi-account/.claude-plugin/plugin.json).
-3. Create `plugins/<plugin>/skills/<skill>/SKILL.md`, and put the depth beside it in
-   `reference.md`.
+3. Create `plugins/<plugin>/skills/<skill>/SKILL.md`. Anything else the skill needs — reference
+   documents, scripts, templates — sits beside it and is reached by relative path from `SKILL.md`.
+   Nothing dictates those filenames; `setup` uses a single `reference.md` because that is all it
+   needed.
 4. For a new plugin, add an entry to [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)
    with `name`, `source` and `description`. Claude Code shows that description and the one in
    `plugin.json` in different places, so keep the two saying the same thing.
@@ -30,9 +32,10 @@ Conventions for working in `claude-skills`. What the repo is and how to install 
   its frontmatter `description` alone. Write it in the third person, state what the skill does,
   then state when to use it, in the words a user would actually say. A description that only
   describes leaves the skill unloaded at the moment it is needed.
-- **`SKILL.md` short, `reference.md` deep.** Claude loads `SKILL.md` whenever the skill triggers,
-  so every line costs tokens on every use. Keep it to when-to-use, the shape of the work, and
-  pointers; detail needed only sometimes belongs in `reference.md`.
+- **`SKILL.md` short, supporting files deep.** Claude loads `SKILL.md` whenever the skill
+  triggers, so every line costs tokens on every use. Keep it to when-to-use, the shape of the
+  work, and pointers; detail needed only sometimes belongs in a file alongside, read when the work
+  calls for it.
 - **`name:` matches the directory**, for the plugin and the skill alike. A mismatch is the most
   common reason a skill silently fails to load, and nothing in the tooling flags it.
 - **Name skills for the action, not the domain.** The plugin already supplies the namespace, so
@@ -88,7 +91,7 @@ entry it resolved through the `source` path. Treat it as a convenience, not a ga
 - **The section order is the contract.** Title, Prerequisites, Getting started, Common commands,
   Project structure, Troubleshooting, Further reading, Contributing, License — no additions.
   Nothing enforces it, so check by eye.
-- **Content that tells you how to do something goes to a skill's `reference.md`, or here, and gets
+- **Content that tells you how to do something goes to the skill that needs it, or here, and gets
   a Further reading row.** The README links to depth rather than holding it.
 - **Content that tells you what used to be true gets deleted.** Git is the record of what changed.
 - **The README lists no skills.** Adding one should touch no file outside its own plugin, so the

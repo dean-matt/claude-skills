@@ -72,7 +72,7 @@ Outside a plugin nothing supplies that namespace, so give the symlink a fuller n
 plugins/<plugin>/
   .claude-plugin/plugin.json        name, description, version
   skills/<skill>/SKILL.md           frontmatter plus the instructions Claude loads
-  skills/<skill>/reference.md       the depth, loaded only when the skill needs it
+  skills/<skill>/...                whatever else that skill needs, read on demand
 ```
 
 Claude Code looks for those paths exactly as they sit above; the layout is not a choice. Two files

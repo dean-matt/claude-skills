@@ -1,7 +1,7 @@
 # Layout and Resolution
 
-Work any number of GitHub accounts at once. Both git and gh read the account from
-the repo's path, so no command ever switches identities.
+How a repo's path decides its account: the directory convention both tools read,
+and the separate mechanisms each uses to turn that path into an identity.
 
 ## Account trees
 

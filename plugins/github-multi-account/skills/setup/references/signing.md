@@ -40,7 +40,7 @@ In `~/.gitconfig-account1`, beside the email and URL rewrite it already holds:
 
 **`gpgsign` belongs in the account file, not in `~/.gitconfig`.** Set globally, a
 repo outside every account tree inherits signing with no `signingkey` to sign
-with, and every commit there fails. Set per account, such a repo simply commits
+with, and every commit there fails. Set per account, such a repo commits
 unsigned.
 
 ## Let git verify signatures locally
@@ -102,11 +102,11 @@ after the first, then confirm:
 gh api user --jq .login
 ```
 
-## Authorize SSO where an org enforces it
+## Authorize the signing key for SSO
 
-On [`github.com/settings/keys`](https://github.com/settings/keys), click
-**Configure SSO** beside the new signing key, then **Authorize**. The
-authorization you gave the authentication key does not carry over.
+A signing key needs its own SSO authorization; the one you gave the
+authentication key does not carry over. Same place as in
+[`git.md`](./git.md) — **Configure SSO** beside the key, then **Authorize**.
 
 ## Verification
 

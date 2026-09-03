@@ -9,7 +9,7 @@ from a single config file, so an account is identified here by a config director
 rather than a key — the keys in [`git.md`](./git.md) serve git alone. Give each
 account its own config directory, then select the directory by path.
 
-## 1. Log in once per account
+## Log in once per account
 
 ### macOS / Linux
 
@@ -42,7 +42,7 @@ PowerShell has no `VAR=value command` prefix, so the variable is set on its own
 line and stays set for the rest of the session. Step 3 sets it per directory
 once configured.
 
-## 2. Point the default at your fallback account
+## Point the default at your fallback account
 
 gh reads its default config directory whenever `GH_CONFIG_DIR` is unset:
 `$XDG_CONFIG_HOME/gh` if that variable is set, and otherwise
@@ -73,7 +73,7 @@ New-Item -ItemType SymbolicLink -Path "$env:AppData\GitHub CLI" `
 
 Creating a symbolic link needs Developer Mode enabled or an elevated shell.
 
-## 3. Select the directory by path
+## Select the directory by path
 
 ### macOS / Linux
 
@@ -136,7 +136,7 @@ the value it started with; call `Set-GhContext` after any such `cd`.
 
 A profile skipped altogether — `pwsh -NoProfile`, a remote session, or a
 `Restricted` execution policy — leaves `GH_CONFIG_DIR` unset and falls through to
-the default directory from step 2, so make that default the account whose work is
+the default directory, so make that default the account whose work is
 most often automated.
 
 > Export a path, never a token. `GH_TOKEN=$(gh auth token -u <user>)` fails twice

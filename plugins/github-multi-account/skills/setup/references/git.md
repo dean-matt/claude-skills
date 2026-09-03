@@ -4,7 +4,7 @@ SSH keys, host aliases and `includeIf` rules. Read [`layout.md`](./layout.md)
 first: it defines the account trees every step below refers to. Configuring gh is
 a separate job that works without this one — see [`gh.md`](./gh.md).
 
-## 1. Generate one key per account
+## Generate one key per account
 
 ### macOS / Linux
 
@@ -22,7 +22,7 @@ ssh-keygen -t ed25519 -C "<email2> $env:COMPUTERNAME" -f "$HOME\.ssh\id_ed25519_
 
 `-f` names the file; the default `id_ed25519` would collide across accounts. `-C`
 sets the comment GitHub shows beside the key, so it names the machine — that is
-what you revoke when one is lost, and step 4 gives the uploaded key the same
+what you revoke when one is lost, and the upload below gives the key the same
 title. Leaving the key without a passphrase lets scripts and coding agents use it
 without prompting.
 
@@ -38,7 +38,7 @@ Confirm the result with `ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"`. It
 prints the public key straight away if there is no passphrase, and prompts if
 there is.
 
-## 2. Add one SSH host alias per account
+## Add one SSH host alias per account
 
 Put these near the top of `~/.ssh/config`, above any `Include` line and above any
 `Host *` block:
@@ -71,7 +71,7 @@ earlier `Include` is offered ahead of the account key — and GitHub accepts the
 first valid key it is offered. `ssh -G github-account1` lists the identities in
 the order they will be tried.
 
-## 3. Map each account tree to its account
+## Map each account tree to its account
 
 `~/.gitconfig`:
 
@@ -115,7 +115,7 @@ still returns the original URL, while `git remote -v` and `git ls-remote
 --get-url` apply the rewrite and show the alias. List both prefixes because
 remotes may use either.
 
-## 4. Upload each public key
+## Upload each public key
 
 The `.pub` half goes to GitHub; the private half stays on the machine. Sign in as
 that account, open [`github.com/settings/keys`](https://github.com/settings/keys),
@@ -142,7 +142,7 @@ $env:GH_CONFIG_DIR = "$env:AppData\gh-account1"
 gh ssh-key add "$HOME\.ssh\id_ed25519_account1.pub" --title "$env:COMPUTERNAME"
 ```
 
-## 5. Authorize SSO where an org enforces it
+## Authorize SSO where an org enforces it
 
 On [`github.com/settings/keys`](https://github.com/settings/keys), click
 **Configure SSO**, then **Authorize** beside the key. Org repos reject an
@@ -185,7 +185,7 @@ account, which is the only rule to remember day to day.
 | Symptom                                                            | Cause                                                                               |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
 | `ssh -T` greets the wrong account                                  | `IdentitiesOnly yes` missing, wrong `IdentityFile`, or another key offered first — check `ssh -G github-account1` |
-| `ERROR: The '<org>' organization has enabled or enforced SAML SSO` | Key needs SSO authorization — step 5                                                |
+| `ERROR: The '<org>' organization has enabled or enforced SAML SSO` | Key needs SSO authorization — see Authorize SSO where an org enforces it            |
 | `git ls-remote --get-url` returns the raw HTTPS URL                | Repo sits outside every account tree; check the path and the trailing slash. On Windows, check that the rule uses `gitdir/i:` |
 | `Permission denied (publickey)` in one account tree only            | That account lacks that key                                                         |
 | Commits land under the wrong email                                 | Repo sits outside every account tree, or a local `user.email` overrides the include |

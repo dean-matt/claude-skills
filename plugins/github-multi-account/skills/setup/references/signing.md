@@ -12,7 +12,7 @@ An SSH key signs as well as authenticates, so no new keypair is needed. GitHub
 keeps authentication keys and signing keys in separate lists, which is the step
 that catches people out: the same key is uploaded twice, once per type.
 
-## 1. Turn on SSH signing
+## Turn on SSH signing
 
 The signing format is one machine-wide choice. In `~/.gitconfig`:
 
@@ -25,7 +25,7 @@ The signing format is one machine-wide choice. In `~/.gitconfig`:
 
 `allowedSignersFile` is what lets git verify a signature locally. Step 3 fills it in.
 
-## 2. Give each account its signing key
+## Give each account its signing key
 
 In `~/.gitconfig-account1`, beside the email and URL rewrite it already holds:
 
@@ -45,7 +45,7 @@ repo outside every account tree inherits signing with no `signingkey` to sign
 with, and every commit there fails. Set per account, such a repo simply commits
 unsigned.
 
-## 3. Let git verify signatures locally
+## Let git verify signatures locally
 
 Create `~/.config/git/allowed_signers`, one line per account:
 
@@ -59,7 +59,7 @@ material copied from its `.pub` file. Leave off the trailing comment. Without
 this file `git log --show-signature` reports that no principal matched, even
 though the signature itself is good.
 
-## 4. Register each key as a signing key
+## Register each key as a signing key
 
 Signed in as that account, open
 [`github.com/settings/ssh/new`](https://github.com/settings/ssh/new), set **Key
@@ -105,7 +105,7 @@ after the first, then confirm:
 gh api user --jq .login
 ```
 
-## 5. Authorize SSO where an org enforces it
+## Authorize SSO where an org enforces it
 
 On [`github.com/settings/keys`](https://github.com/settings/keys), click
 **Configure SSO** beside the new signing key, then **Authorize**. The
@@ -121,9 +121,9 @@ git commit --allow-empty -m "signing test"
 git log --show-signature -1      # -> Good "git" signature for <email1>
 ```
 
-A good signature naming that account's address proves steps 1 to 3. Push, and a
-**Verified** badge on GitHub proves step 4. Only commits made after the key was
-registered carry it.
+A good signature naming that account's address proves the local configuration.
+Push, and a **Verified** badge on GitHub proves the key is registered. Only
+commits made after that registration carry it.
 
 Judge the setup by your own commits alone. A merge commit created through the
 GitHub web UI shows Verified whatever you configured, because GitHub signs it
@@ -135,8 +135,8 @@ with its own key.
 | --- | --- |
 | `error: Load key ... invalid format` on commit | `signingkey` names the private key; point it at the `.pub` |
 | `No principal matched` from `git log --show-signature` | The committer address is missing from `allowed_signers`, or `allowedSignersFile` is unset |
-| Commits verify locally, GitHub says Unverified | The key is registered for authentication alone — step 4, with the type set to Signing Key |
-| Unverified in org repos only | The signing key needs its own SSO authorization — step 5 |
+| Commits verify locally, GitHub says Unverified | The key is registered for authentication alone — register it again with the type set to Signing Key |
+| Unverified in org repos only | The signing key needs its own SSO authorization, separate from the authentication key's |
 | Commits sign as the wrong account | `signingkey` sits in `~/.gitconfig` rather than the account file |
 | Signing fails in a repo outside every account tree | `commit.gpgsign` is global; move it into each account file |
-| `gh ssh-key add` returns HTTP 404 | The token lacks `admin:ssh_signing_key` — step 4 |
+| `gh ssh-key add` returns HTTP 404 | The token lacks `admin:ssh_signing_key`; add it with `gh auth refresh` |

@@ -46,7 +46,7 @@ accounts named `account1` and `account2`, a repo root of `~/Repos`, and
 
 git and gh authenticate differently and are configured independently; either works
 without the other. A full setup reads `layout.md`, then `git.md`, then `gh.md`,
-following the numbered steps in order.
+working through each section in order.
 
 Steps whose commands differ by platform carry `macOS / Linux` and `Windows`
 subheadings, macOS first, with the shared explanation below both. Steps without

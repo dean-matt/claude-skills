@@ -16,7 +16,7 @@ The examples use two accounts, `account1` and `account2`; a third repeats the sa
 pattern once more. Rename the labels to suit, adjust `~/Repos` to your repo root,
 and replace `<username1>` and `<email1>` with real values.
 
-## Layout
+## Account trees
 
 Give every account an account tree: one folder under your repo root holding every
 repo for that account. Group repos by account, not by client, and nest client
@@ -35,7 +35,7 @@ folders inside the account tree.
         └── example2-admin/       repo
 ```
 
-## How it resolves
+## How a path resolves
 
 The path is the only input. Git and gh read it separately, because they
 authenticate differently: git over SSH with a key, gh over HTTPS with a token.

@@ -13,7 +13,7 @@ GH_CONFIG_DIR=~/.config/gh-account2 gh auth login
 
 Each token goes to the system credential store, filed under its account username,
 which keeps the config directories independent. `gh auth status` names the store
-holding each one. Check the accounts with [Verify gh](#verify-gh) before trusting
+holding each one. Check the accounts with [Verification](#verification) before trusting
 them: an account with no entry of its own falls back to a shared one, and gh then
 calls the API as whichever account logged in last.
 
@@ -60,7 +60,7 @@ one account tree and moves to another follows along. The trailing slash in
 > reads the environment first, the config file second, and the credential store
 > last.
 
-## Verify gh
+## Verification
 
 Open a new shell first: the current one has not sourced `~/.zshenv`, so it still
 holds the old environment.
@@ -73,7 +73,7 @@ cd ~/Repos/account2 && gh api user --jq .login    # -> <username2>
 Then confirm isolation with a private repo each account owns. The other account's
 `gh repo view` must fail — shared access proves nothing.
 
-## gh troubleshooting
+## Troubleshooting
 
 | Symptom                                                           | Cause                                                                                             |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |

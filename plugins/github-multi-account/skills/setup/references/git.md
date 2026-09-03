@@ -95,7 +95,7 @@ For each key: sign in as that account, open `github.com/settings/keys`, choose
 On `github.com/settings/keys`, click **Configure SSO**, then **Authorize** beside
 the key. Org repos reject an unauthorized key.
 
-## Verify git
+## Verification
 
 Test every alias:
 
@@ -127,7 +127,7 @@ git clone https://github.com/<org>/<repo>.git
 new repo inherits that account's email. The account tree you stand in decides the
 account, which is the only rule to remember day to day.
 
-## Git troubleshooting
+## Troubleshooting
 
 | Symptom                                                            | Cause                                                                               |
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |

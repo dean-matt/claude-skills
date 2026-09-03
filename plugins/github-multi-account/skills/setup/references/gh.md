@@ -12,14 +12,9 @@ its own config directory, then select the directory by path.
 ## 1. Log in once per account
 
 ```bash
-GH_CONFIG_DIR=~/.config/gh-account1 gh auth login
-GH_CONFIG_DIR=~/.config/gh-account2 gh auth login
+GH_CONFIG_DIR=~/.config/gh-account1 gh auth login --git-protocol https
+GH_CONFIG_DIR=~/.config/gh-account2 gh auth login --git-protocol https
 ```
-
-Answer `HTTPS` at the git protocol prompt. Either answer works, because the
-`insteadOf` rules in [`git.md`](./git.md) rewrite both prefixes, but choosing
-`SSH` makes gh offer to generate and upload a key, which this setup already
-handles per account.
 
 Each token goes to the system credential store, filed under its account username,
 which keeps the config directories independent. `gh auth status` names the store

@@ -23,7 +23,9 @@ Use when the user:
 - a gh config directory
 
 The account tree is the shared input — both tools decide from the path inside it.
-The next four belong to git, the last to gh.
+The next four belong to git, the last to gh. Signing commits adds one more per
+account, covered in [`references/signing.md`](./references/signing.md); the SSH
+key above serves for it, but GitHub needs it registered a second time.
 
 ## Gather Inputs First
 
@@ -39,6 +41,7 @@ accounts named `account1` and `account2`, a repo root of `~/Repos`, and
 | Understand the design before changing anything | [`references/layout.md`](./references/layout.md) |
 | Set up or fix git — SSH keys, host aliases, `includeIf` rules | [`references/git.md`](./references/git.md) |
 | Set up or fix gh — config directories, `GH_CONFIG_DIR`, the shell hook that selects one | [`references/gh.md`](./references/gh.md) |
+| Sign commits as the right account — signing keys, `allowed_signers`, GitHub registration | [`references/signing.md`](./references/signing.md) |
 | Diagnose a machine already set up, or answering as the wrong account | [`references/audit.md`](./references/audit.md) |
 
 git and gh authenticate differently and are configured independently; either works

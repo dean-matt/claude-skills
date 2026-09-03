@@ -37,9 +37,9 @@ git config user.email            # -> that account's address
 git ls-remote --get-url origin   # -> git@github-<account>:...
 ```
 
-A raw `https://github.com/` URL means no rule matched this path. The wrong address
-means the same, unless the repo overrides it locally. `git config --local
-user.email` answers that, and an answer there beats the include.
+A raw `https://github.com/` URL means no rule matched this path, and so does the
+wrong address — unless the repo overrides it locally, which `git config --local
+user.email` reveals. A value there beats the include.
 
 ### SSH key per alias
 
@@ -50,7 +50,8 @@ ssh -T git@github-account1
 ```
 
 The greeting names the account. A wrong name means the `Host` block lacks
-`IdentitiesOnly yes`, or points at the wrong `IdentityFile`.
+`IdentitiesOnly yes`, points at the wrong `IdentityFile`, or sits below an
+`Include` that offers another key first.
 
 ## GitHub CLI
 
@@ -72,6 +73,6 @@ gh auth status                   # -> the account gh believes it is
 gh api user --jq .login          # -> the account GitHub answers as
 ```
 
-Both should name the same account, and it should be the one owning the current
-account tree. Two different names point at the credential store instead — see
-[gh troubleshooting](./gh.md#troubleshooting).
+Both should name the same account, and it should own the current account tree.
+Two different names point at the credential store rather than the config
+directory — see [gh troubleshooting](./gh.md#troubleshooting).

@@ -13,13 +13,12 @@ Conventions for working in `claude-skills`. What the repo is and how to install 
 3. Create `plugins/<plugin>/skills/<skill>/SKILL.md`. Anything else the skill needs — reference
    documents, scripts, templates — sits beside it and is reached by relative path from `SKILL.md`.
    The prevailing convention puts supporting documents in a `references/` directory, one file per
-   concern, named for its topic: `setup` uses `references/git.md`, `references/gh.md`,
-   `references/layout.md` and `references/audit.md`.
+   concern, named for its topic — see `setup` for the shape.
 4. For a new plugin, add an entry to [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)
    with `name`, `source` and `description`. Claude Code shows that description and the one in
    `plugin.json` in different places, so keep the two saying the same thing.
-5. Validate, install from a local marketplace, and invoke the skill before opening a pull request.
-   Invoking it is the part that matters:
+5. Before opening a pull request, validate, install from a local marketplace, and invoke the
+   skill. Installing proves the manifests; only invoking proves the skill:
 
    ```bash
    claude plugin validate .
@@ -35,8 +34,8 @@ Conventions for working in `claude-skills`. What the repo is and how to install 
   describes leaves the skill unloaded at the moment it is needed.
 - **`SKILL.md` short, supporting files deep.** Claude loads `SKILL.md` whenever the skill
   triggers, so every line costs tokens on every use. Keep it to when-to-use, the shape of the
-  work, and pointers; detail needed only sometimes belongs in a file alongside, read when the work
-  calls for it.
+  work, and pointers; detail needed only sometimes belongs in a supporting file, read only when
+  the work calls for it.
 - **`name:` matches the directory**, for the plugin and the skill alike. A mismatch is the most
   common reason a skill silently fails to load, and nothing in the tooling flags it.
 - **Name skills for the action, not the domain.** The plugin already supplies the namespace, so
@@ -65,8 +64,8 @@ Run both. Neither catches the following, each confirmed by breaking it deliberat
 | `SKILL.md` frontmatter `name` differs from its directory | passes |
 | A `description` present but too vague to trigger on | passes |
 
-Whether the skill loads, or fires, a green run does not say. That is what step 5 of **Adding a
-skill** is for.
+A green run says nothing about whether the skill loads, or fires once loaded. That is what step 5
+of **Adding a skill** is for.
 
 ## Versioning and releases
 
@@ -82,8 +81,8 @@ claude plugin tag plugins/github-multi-account --push
 ```
 
 The tag is `{name}--v{version}`, taken from `plugin.json`, and the dry run prints the marketplace
-entry it resolved through the `source` path. Treat it as a convenience, not a gate: with
-`plugin.json` naming a different plugin than the marketplace entry, it still tagged cleanly.
+entry it resolved through the `source` path. Treat it as a convenience, not a gate: pointing
+`plugin.json` at a different plugin than the marketplace entry did not stop it.
 
 ## Maintaining the README
 
@@ -101,8 +100,8 @@ entry it resolved through the `source` path. Treat it as a convenience, not a ga
 
 ## Git branching
 
-**Branch from `main`.** There are no `release/*` branches, nothing deploys from here, and branches
-are merged as soon as review clears.
+**Branch from `main`.** Nothing deploys from here, so there are no `release/*` branches. Merge as
+soon as review clears.
 
 Branch names are lowercase and hyphenated, describing the change:
 
@@ -119,7 +118,7 @@ what the commit does to the repo.
 
 - `claude plugin validate .` passes
 - Skill installed from a local marketplace and invoked, not only read
-- `plugin.json` version bumped, if a skill's behavior changed
+- `plugin.json` version bumped if a skill's behavior changed
 - Change scoped to one concern, with no unrelated work bundled in
 - Diff self-reviewed before review was requested
 

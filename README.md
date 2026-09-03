@@ -1,9 +1,9 @@
 # claude-skills
 
-Skills for Claude Code, packaged as installable plugins. Each skill is a directory in the
-[Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) format, holding a `SKILL.md`
-and whatever reference material it needs — a format that carries to claude.ai, Claude Desktop and
-the Agent SDK, so the directories work there too.
+Skills for Claude Code, packaged as installable plugins. Each skill is a directory holding a
+`SKILL.md` and whatever reference material it needs, in the
+[Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) format. claude.ai, Claude
+Desktop and the Agent SDK read that format too, so a skill directory works in all of them.
 
 ## Prerequisites
 
@@ -21,13 +21,13 @@ claude plugin marketplace add .
 claude plugin install github-multi-account@dean-matt
 ```
 
-Every command here also runs inside Claude Code as `/plugin ...`.
+`validate` checks JSON syntax and manifest schema, and nothing else — see
+[`CONTRIBUTING.md`](CONTRIBUTING.md) for what it leaves uncovered.
 
 A local marketplace holds a snapshot rather than a live view of your clone, so after editing a
 manifest run `claude plugin marketplace update dean-matt` and reinstall.
 
-`validate` checks JSON syntax and manifest schema, and nothing else — see
-[`CONTRIBUTING.md`](CONTRIBUTING.md) for what it leaves uncovered.
+Every `claude plugin` command also runs inside Claude Code as `/plugin ...`.
 
 ## Common commands
 
@@ -62,8 +62,8 @@ ln -s "$PWD/plugins/github-multi-account/skills/setup" \
 ```
 
 A plugin namespaces its skills, so `setup` reads as `/github-multi-account:setup` once installed.
-Outside a plugin nothing supplies that namespace, so give the symlink a fuller name and match the
-`name:` field in `SKILL.md` to it.
+Outside a plugin nothing supplies that namespace, so give the symlink a fuller name and set
+`name:` in `SKILL.md` to match.
 
 ## Project structure
 

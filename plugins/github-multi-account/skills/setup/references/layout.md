@@ -14,7 +14,7 @@ folders inside the account tree.
 ├── account1/                     -> GitHub account <username1>
 │   ├── example1-api/             repo
 │   ├── example1-web/             repo
-│   └── wt/                       worktrees of the repos above, covered automatically
+│   └── wt/                       worktrees of the repos above, covered by the same rule
 │       └── example1-web-1042/
 └── account2/                     -> GitHub account <username2>
     └── example2/                 grouping folder, not a repo
@@ -24,7 +24,7 @@ folders inside the account tree.
 
 ## How a path resolves
 
-The path is the only input. Git and gh read it separately, because they
+The path is the only input. git and gh read it separately, because they
 authenticate differently: git over SSH with a key, gh over HTTPS with a token.
 
 ```

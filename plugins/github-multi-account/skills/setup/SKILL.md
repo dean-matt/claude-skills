@@ -11,7 +11,7 @@ Use when the user:
 
 - wants to configure a new or additional GitHub account on this machine
 - reports git or gh authenticating as the wrong account
-- asks about SSH host aliases, `includeIf`, `GH_CONFIG_DIR`, or per-repo git identity
+- asks about SSH host aliases, `includeIf`, `GH_CONFIG_DIR`, or per-repo identity
 
 ## What Each Account Needs
 
@@ -22,8 +22,8 @@ Use when the user:
 - an `includeIf` rule pointing at its account tree
 - a gh config directory
 
-The account tree is the shared input both tools read a path against; the next four
-belong to git and the last to gh.
+The account tree is the shared input — both tools decide from the path inside it.
+The next four belong to git, the last to gh.
 
 ## Gather Inputs First
 

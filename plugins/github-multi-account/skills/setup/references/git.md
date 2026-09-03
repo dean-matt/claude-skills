@@ -1,8 +1,8 @@
 # Git setup
 
 SSH keys, host aliases and `includeIf` rules. Read [`layout.md`](./layout.md)
-first: it defines the account trees every step below refers to. Configuring `gh`
-is a separate job, and works without this one — see [`gh.md`](./gh.md).
+first: it defines the account trees every step below refers to. Configuring gh is
+a separate job that works without this one — see [`gh.md`](./gh.md).
 
 ## 1. Generate one key per account
 
@@ -34,8 +34,8 @@ Host github-account2
 	IdentitiesOnly yes
 ```
 
-`Host` is an invented alias; `HostName` is the real destination. GitHub always
-authenticates as `git`, so identity comes from the key.
+`Host` is an invented alias; `HostName` is the real destination. The SSH user is
+always `git`, for every account, so the key alone decides which one you are.
 
 **`IdentitiesOnly yes` carries the whole design.** Omit it and SSH offers every
 key the agent holds, GitHub accepts the first valid one, and you authenticate
@@ -99,7 +99,7 @@ output of:
 cat ~/.ssh/id_ed25519_account1.pub
 ```
 
-If that account's `gh` is already set up per [`gh.md`](./gh.md), skip the web UI:
+If that account's gh is already set up per [`gh.md`](./gh.md), skip the web UI:
 
 ```bash
 GH_CONFIG_DIR=~/.config/gh-account1 \
@@ -121,8 +121,8 @@ ssh -T git@github-account1    # -> Hi <username1>! You've successfully authentic
 ssh -T git@github-account2    # -> Hi <username2>!
 ```
 
-The greeting names the account, proving the right key mapped to the right
-identity. Then confirm the rewrite and fetch for real:
+The greeting names the account, proving the right key maps to the right identity.
+Then confirm the rewrite and fetch for real:
 
 ```bash
 cd ~/Repos/account1/example1-api

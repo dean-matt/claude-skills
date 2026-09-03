@@ -11,10 +11,26 @@ account its own config directory, then select the directory by path.
 
 ## 1. Log in once per account
 
+### macOS / Linux
+
 ```bash
 GH_CONFIG_DIR=~/.config/gh-account1 gh auth login --git-protocol https
 GH_CONFIG_DIR=~/.config/gh-account2 gh auth login --git-protocol https
 ```
+
+### Windows
+
+```powershell
+$env:GH_CONFIG_DIR = "$env:AppData\gh-account1"
+gh auth login --git-protocol https
+
+$env:GH_CONFIG_DIR = "$env:AppData\gh-account2"
+gh auth login --git-protocol https
+```
+
+PowerShell has no `VAR=value command` prefix, so the variable is set on its own
+line and stays set for the rest of the session. Step 3 takes the setting over
+once configured.
 
 Each token goes to the system credential store, filed under its account username,
 which keeps the config directories independent, and `gh auth status` names the
@@ -24,20 +40,38 @@ then calls the API as whichever account logged in last.
 
 ## 2. Point the default at your fallback account
 
-gh reads `~/.config/gh` whenever `GH_CONFIG_DIR` is unset. Symlinking it to one
+gh reads its default config directory whenever `GH_CONFIG_DIR` is unset:
+`$XDG_CONFIG_HOME/gh` if that variable is set, and otherwise
+`%AppData%\GitHub CLI` on Windows or `~/.config/gh` elsewhere. Linking it to one
 account gives that account the fallback role and keeps a single token on disk
 rather than a copy.
 
-If you have used gh before, that directory already exists and `ln -s` refuses to
-overwrite it. Move it aside first — it also makes a ready-made config directory
-for whichever account it currently holds:
+If you have used gh before, that directory already exists and the link command
+refuses to overwrite it. Move it aside first — it also makes a ready-made config
+directory for whichever account it currently holds:
+
+### macOS / Linux
 
 ```bash
 mv ~/.config/gh ~/.config/gh-account1      # keeps its existing login
 ln -s ~/.config/gh-account2 ~/.config/gh
 ```
 
+### Windows
+
+```powershell
+# keeps its existing login
+Move-Item "$env:AppData\GitHub CLI" "$env:AppData\gh-account1"
+
+New-Item -ItemType SymbolicLink -Path "$env:AppData\GitHub CLI" `
+         -Target "$env:AppData\gh-account2"
+```
+
+Creating a symbolic link needs Developer Mode enabled or an elevated shell.
+
 ## 3. Select the directory by path
+
+### macOS / Linux
 
 In `~/.zshenv`:
 
@@ -58,6 +92,46 @@ re-evaluates on every directory change, so a shell that starts in one account
 tree and moves to another follows along. The trailing slash in `"$PWD/"` matches
 the account tree root itself, not just the paths beneath it.
 
+Under bash, put the same function in `~/.bash_profile` and set
+`PROMPT_COMMAND=_gh_ctx` in place of the `chpwd` hook.
+
+### Windows
+
+In `$PROFILE`:
+
+```powershell
+function Set-GhContext {
+  $dir = if (($PWD.Path + '\') -like "$HOME\Repos\account1\*") {
+    'gh-account1'
+  } else {
+    'gh-account2'
+  }
+  $env:GH_CONFIG_DIR = "$env:AppData\$dir"
+}
+
+if (-not $__basePrompt) { $__basePrompt = $function:prompt }
+function prompt { Set-GhContext; & $__basePrompt }
+Set-GhContext
+```
+
+PowerShell re-renders the prompt after every command, so wrapping `prompt` is the
+closest analog to the `chpwd` hook and the variable follows a directory change.
+The bare `Set-GhContext` on the last line mirrors the `_gh_ctx` call at the foot
+of `.zshenv`, setting the variable once as the profile loads. Appending `'\'` to
+`$PWD.Path` matches the account tree root itself, not just the paths beneath it,
+and the `$__basePrompt` guard keeps a re-sourced profile from wrapping the
+wrapper.
+
+**The `prompt` hook is interactive-only.** `$PROFILE` does run for a script
+launched with `pwsh -File`, so that script starts with the right directory — but
+PowerShell calls `prompt` from the REPL alone, so a script that changes directory
+mid-run keeps the value it started with. Call `Set-GhContext` after any such `cd`.
+
+A profile skipped altogether — `pwsh -NoProfile`, a remote session, or a
+`Restricted` execution policy — leaves `GH_CONFIG_DIR` unset and falls through to
+the default directory from step 2, so make that default the account whose work is
+most often automated.
+
 > Export a path, never a token. `GH_TOKEN=$(gh auth token -u <user>)` fails twice
 > over: gh hands back the active account's token whatever `-u` says, and an
 > exported token then outranks every config directory, pinning one account across
@@ -67,10 +141,24 @@ the account tree root itself, not just the paths beneath it.
 
 ## Verification
 
+### macOS / Linux
+
 ```bash
 exec zsh                                          # load the new ~/.zshenv
 cd ~/Repos/account1 && gh api user --jq .login    # -> <username1>
 cd ~/Repos/account2 && gh api user --jq .login    # -> <username2>
+```
+
+### Windows
+
+Open a new PowerShell session first, so `$PROFILE` loads.
+
+```powershell
+cd "$HOME\Repos\account1"
+gh api user --jq .login          # -> <username1>
+
+cd "$HOME\Repos\account2"
+gh api user --jq .login          # -> <username2>
 ```
 
 Then confirm isolation with a private repo each account owns. The other account's
@@ -81,7 +169,7 @@ Then confirm isolation with a private repo each account owns. The other account'
 | Symptom                                                           | Cause                                                                                             |
 | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | `gh auth status` names one account, `gh api user` returns another | That account has no credential store entry of its own, so gh reads the shared slot; log in again for that account |
-| Identity stops following directories                              | `_gh_ctx` sits in `.zshrc` rather than `.zshenv`, or the `chpwd` hook went unregistered           |
+| Identity stops following directories                              | `_gh_ctx` sits in `.zshrc` rather than `.zshenv`, or the `chpwd` hook went unregistered; on Windows, the `prompt` hook is interactive-only, so a script that changes directory mid-run keeps the value it started with |
 | Every account tree answers as the same account                    | `GH_TOKEN` or `GITHUB_TOKEN` is set in the environment, or a plaintext `oauth_token` sits in that directory's `hosts.yml`; both outrank the config directory |
 | `Could not resolve to a Repository`                               | Right repo, wrong account for the current path                                                    |
 | A scope disappears after `gh auth refresh`                        | Refresh replaces the token; pass `-s <scope>` for every scope you need |

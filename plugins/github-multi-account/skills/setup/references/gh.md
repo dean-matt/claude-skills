@@ -28,6 +28,10 @@ $env:GH_CONFIG_DIR = "$env:AppData\gh-account2"
 gh auth login --git-protocol https
 ```
 
+Each token carries its own scopes, so they can differ by account: grant a scope
+only to the accounts whose work needs it. `gh auth refresh -h github.com -s
+<scope>` adds one to a token without disturbing the scopes already on it.
+
 Each token goes to the system credential store, filed under its account username,
 which keeps the config directories independent, and `gh auth status` names the
 store holding each one. Run [Verification](#verification) before trusting the
@@ -175,4 +179,5 @@ Then confirm isolation with a private repo each account owns. The other account'
 | Identity stops following directories                              | `_gh_ctx` sits in `.zshrc` rather than `.zshenv`, or the `chpwd` hook went unregistered; on Windows, the `prompt` hook is interactive-only, so a script that changes directory mid-run keeps the value it started with |
 | Every account tree answers as the same account                    | `GH_TOKEN` or `GITHUB_TOKEN` is set in the environment, or a plaintext `oauth_token` sits in that directory's `hosts.yml`; both outrank the config directory |
 | `Could not resolve to a Repository`                               | Right repo, wrong account for the current path                                                    |
-| A scope disappears after `gh auth refresh`                        | Refresh replaces the token; pass `-s <scope>` for every scope you need |
+| A scope disappears after `gh auth refresh`                        | `--reset-scopes` returns the token to the default minimum and `--remove-scopes` drops the ones you name; plain `-s` only adds. `repo`, `read:org` and `gist` cannot be removed |
+| `gh auth refresh` prints nothing and changes nothing               | It waits on a one-time code prompt, so it needs a terminal; run it in a real shell, not through an editor or agent |

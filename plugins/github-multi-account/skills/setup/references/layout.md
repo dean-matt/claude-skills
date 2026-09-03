@@ -35,9 +35,9 @@ repo path ──────────┤                                     
                     │                                              |
                     │                                        SSH alias -> that account's key
                     │
-                    └─ gh:  _gh_ctx in ~/.zshenv -> GH_CONFIG_DIR -> ~/.config/gh-account1
-                                                                          |
-                                                                     that account's token
+                    └─ gh:  shell hook -> GH_CONFIG_DIR -> ~/.config/gh-account1
+                                                                 |
+                                                            that account's token
 ```
 
 Every SSH alias points at `github.com` but presents a different key, and a URL

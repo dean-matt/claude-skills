@@ -17,7 +17,9 @@ git config --global --get-regexp 'includeif.*path'
 ```
 
 Expect one rule per account tree, each `gitdir` path ending in a slash. Drop the
-slash and the rule matches the account tree itself, but nothing inside it.
+slash and the rule matches the account tree itself, but nothing inside it. On
+Windows, expect `gitdir/i:` — the case-sensitive `gitdir:` misses a path whose
+case differs from the rule.
 
 ### Account tree layout
 
@@ -59,12 +61,23 @@ The greeting names the account. A wrong name means the `Host` block lacks
 
 From inside each account tree:
 
+#### macOS / Linux
+
 ```bash
 echo $GH_CONFIG_DIR              # -> that account's config directory
 ```
 
-An unchanged value means `_gh_ctx` never ran. Confirm it sits in `~/.zshenv`
-rather than `~/.zshrc`, and that the `chpwd` hook is registered.
+#### Windows
+
+```powershell
+$env:GH_CONFIG_DIR               # -> that account's config directory
+```
+
+An unchanged value means the hook never ran. On macOS and Linux, confirm `_gh_ctx`
+sits in `~/.zshenv` rather than `~/.zshrc` and that the `chpwd` hook is
+registered. On Windows, confirm the `prompt` wrapper sits in `$PROFILE`, and that
+you are typing at a prompt rather than running a script — PowerShell calls
+`prompt` from the REPL alone.
 
 ### Effective account
 
@@ -76,3 +89,20 @@ gh api user --jq .login          # -> the account GitHub answers as
 Both should name the same account, and it should own the current account tree.
 Two different names point at the credential store rather than the config
 directory — see [gh troubleshooting](./gh.md#troubleshooting).
+
+## Commit signing
+
+Skip this section if the machine does not sign commits. From inside each account
+tree:
+
+```bash
+git config user.signingkey       # -> that account's .pub
+git config commit.gpgsign        # -> true
+git log --show-signature -1      # -> Good "git" signature for that address
+```
+
+A signing key belonging to another account means `user.signingkey` sits in
+`~/.gitconfig` rather than the account file. `No principal matched` means the
+committer address is missing from `allowed_signers`. Commits that verify here but
+read Unverified on GitHub were registered as an authentication key alone — see
+[`signing.md`](./signing.md).

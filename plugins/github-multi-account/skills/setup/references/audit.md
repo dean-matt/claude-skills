@@ -89,3 +89,20 @@ gh api user --jq .login          # -> the account GitHub answers as
 Both should name the same account, and it should own the current account tree.
 Two different names point at the credential store rather than the config
 directory — see [gh troubleshooting](./gh.md#troubleshooting).
+
+## Commit signing
+
+Skip this section if the machine does not sign commits. From inside each account
+tree:
+
+```bash
+git config user.signingkey       # -> that account's .pub
+git config commit.gpgsign        # -> true
+git log --show-signature -1      # -> Good "git" signature for that address
+```
+
+A signing key belonging to another account means `user.signingkey` sits in
+`~/.gitconfig` rather than the account file. `No principal matched` means the
+committer address is missing from `allowed_signers`. Commits that verify here but
+read Unverified on GitHub were registered as an authentication key alone — see
+[`signing.md`](./signing.md).

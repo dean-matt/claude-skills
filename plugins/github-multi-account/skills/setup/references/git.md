@@ -9,21 +9,25 @@ a separate job that works without this one — see [`gh.md`](./gh.md).
 ### macOS / Linux
 
 ```bash
-ssh-keygen -t ed25519 -C "<email1> (mac)" -f ~/.ssh/id_ed25519_account1 -N ""
-ssh-keygen -t ed25519 -C "<email2> (mac)" -f ~/.ssh/id_ed25519_account2 -N ""
+ssh-keygen -t ed25519 -C "<email1> (<machine>)" -f ~/.ssh/id_ed25519_account1 -N ""
+ssh-keygen -t ed25519 -C "<email2> (<machine>)" -f ~/.ssh/id_ed25519_account2 -N ""
 ```
 
 ### Windows
 
 ```powershell
-ssh-keygen -t ed25519 -C "<email1> (windows)" -f "$HOME\.ssh\id_ed25519_account1"
-ssh-keygen -t ed25519 -C "<email2> (windows)" -f "$HOME\.ssh\id_ed25519_account2"
+ssh-keygen -t ed25519 -C "<email1> (<machine>)" -f "$HOME\.ssh\id_ed25519_account1"
+ssh-keygen -t ed25519 -C "<email2> (<machine>)" -f "$HOME\.ssh\id_ed25519_account2"
 ```
 
-Press Enter twice at each passphrase prompt. The block omits `-N ""` on purpose:
-Windows PowerShell 5.1 drops an empty-string argument before the command sees it,
-while PowerShell 7.3 and later preserve it, so the prompt is the one route that
-works on both.
+`-f` names the file; the default `id_ed25519` would collide across accounts.
+Leaving the key without a passphrase lets scripts and coding agents use it
+without prompting.
+
+**On Windows**, press Enter twice at each passphrase prompt. That block omits
+`-N ""` on purpose: Windows PowerShell 5.1 drops an empty-string argument before
+the command sees it, while PowerShell 7.3 and later preserve it, so the prompt is
+the one route that works on both.
 
 These paths use `$HOME\.ssh\...` rather than `~/.ssh/...` because neither
 PowerShell nor ssh-keygen expands `~` for a native command.
@@ -31,10 +35,6 @@ PowerShell nor ssh-keygen expands `~` for a native command.
 Confirm the result with `ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"`. It
 prints the public key straight away if there is no passphrase, and prompts if
 there is.
-
-`-f` names the file; the default `id_ed25519` would collide across accounts.
-Leaving the key without a passphrase lets scripts and coding agents use it
-without prompting.
 
 ## 2. Add one SSH host alias per account
 

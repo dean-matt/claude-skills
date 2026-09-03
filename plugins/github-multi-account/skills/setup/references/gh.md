@@ -28,15 +28,15 @@ $env:GH_CONFIG_DIR = "$env:AppData\gh-account2"
 gh auth login --git-protocol https
 ```
 
-PowerShell has no `VAR=value command` prefix, so the variable is set on its own
-line and stays set for the rest of the session. Step 3 sets it per directory
-once configured.
-
 Each token goes to the system credential store, filed under its account username,
 which keeps the config directories independent, and `gh auth status` names the
 store holding each one. Run [Verification](#verification) before trusting the
 result: an account with no entry of its own falls back to a shared one, and gh
 then calls the API as whichever account logged in last.
+
+PowerShell has no `VAR=value command` prefix, so the variable is set on its own
+line and stays set for the rest of the session. Step 3 sets it per directory
+once configured.
 
 ## 2. Point the default at your fallback account
 
@@ -92,8 +92,10 @@ re-evaluates on every directory change, so a shell that starts in one account
 tree and moves to another follows along. The trailing slash in `"$PWD/"` matches
 the account tree root itself, not just the paths beneath it.
 
-Under bash, put the same function in `~/.bash_profile` and set
-`PROMPT_COMMAND=_gh_ctx` in place of the `chpwd` hook.
+Under bash, put the same function in `~/.bashrc` and set
+`PROMPT_COMMAND=_gh_ctx` in place of the `chpwd` hook. bash has no `.zshenv`
+equivalent, so that reaches interactive shells alone — the same limit the Windows
+profile carries below.
 
 ### Windows
 

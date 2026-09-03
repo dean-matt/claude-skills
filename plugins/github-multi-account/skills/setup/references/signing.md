@@ -36,7 +36,8 @@ In `~/.gitconfig-account1`, beside the email and URL rewrite it already holds:
 	gpgsign = true
 ```
 
-`signingkey` points at the `.pub`; git finds the private key beside it.
+`signingkey` points at the `.pub`; git finds the private key beside it. Each
+account file names that account's own key.
 
 **`gpgsign` belongs in the account file, not in `~/.gitconfig`.** Set globally, a
 repo outside every account tree inherits signing with no `signingkey` to sign
@@ -45,17 +46,18 @@ unsigned.
 
 ## Let git verify signatures locally
 
-Create `~/.config/git/allowed_signers`, one line per account:
+Create `~/.config/git/allowed_signers` — the directory will not exist yet — with
+one line per account:
 
 ```
 <email1> namespaces="git" ssh-ed25519 AAAAC3NzaC1...
 <email2> namespaces="git" ssh-ed25519 AAAAC3NzaC1...
 ```
 
-Each line is the address that account commits under, then the key type and
-material copied from its `.pub` file. Leave off the trailing comment. Without
-this file `git log --show-signature` reports that no principal matched, even
-though the signature itself is good.
+Each line is the address that account commits under, then the first two
+space-separated fields of its `.pub` file — the trailing comment is left off.
+Without this file `git log --show-signature` reports that no principal matched,
+even though the signature itself is good.
 
 ## Register each key as a signing key
 
@@ -113,10 +115,15 @@ authentication key does not carry over. Same place as in
 The local half and the GitHub half fail independently, so check both.
 
 ```bash
-cd ~/Repos/account1/example1-api
+mkdir ~/Repos/account1/signing-test && cd ~/Repos/account1/signing-test
+git init -q
 git commit --allow-empty -m "signing test"
 git log --show-signature -1      # -> Good "git" signature for <email1>
+cd ~ && rm -rf ~/Repos/account1/signing-test
 ```
+
+The throwaway repo goes inside the account tree so the `includeIf` rule reaches
+it. One created anywhere else inherits no signing key and proves nothing.
 
 A good signature naming that account's address proves the local configuration.
 Push, and a **Verified** badge on GitHub proves the key is registered. Only

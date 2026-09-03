@@ -29,7 +29,7 @@ gh auth login --git-protocol https
 ```
 
 PowerShell has no `VAR=value command` prefix, so the variable is set on its own
-line and stays set for the rest of the session. Step 3 takes the setting over
+line and stays set for the rest of the session. Step 3 sets it per directory
 once configured.
 
 Each token goes to the system credential store, filed under its account username,
@@ -115,17 +115,18 @@ Set-GhContext
 ```
 
 PowerShell re-renders the prompt after every command, so wrapping `prompt` is the
-closest analog to the `chpwd` hook and the variable follows a directory change.
+closest analog to the `chpwd` hook: the variable follows every directory change.
 The bare `Set-GhContext` on the last line mirrors the `_gh_ctx` call at the foot
-of `.zshenv`, setting the variable once as the profile loads. Appending `'\'` to
-`$PWD.Path` matches the account tree root itself, not just the paths beneath it,
-and the `$__basePrompt` guard keeps a re-sourced profile from wrapping the
-wrapper.
+of `.zshenv`, setting the variable once as the profile loads.
 
-**The `prompt` hook is interactive-only.** `$PROFILE` does run for a script
-launched with `pwsh -File`, so that script starts with the right directory — but
-PowerShell calls `prompt` from the REPL alone, so a script that changes directory
-mid-run keeps the value it started with. Call `Set-GhContext` after any such `cd`.
+Appending `'\'` to `$PWD.Path` matches the account tree root itself, not just the
+paths beneath it. The `$__basePrompt` guard keeps a re-sourced profile from
+wrapping the wrapper.
+
+**The `prompt` hook is interactive-only.** A script launched with `pwsh -File`
+does load `$PROFILE`, so it starts in the right account. But PowerShell calls
+`prompt` from the REPL alone, so a script that changes directory mid-run keeps
+the value it started with; call `Set-GhContext` after any such `cd`.
 
 A profile skipped altogether — `pwsh -NoProfile`, a remote session, or a
 `Restricted` execution policy — leaves `GH_CONFIG_DIR` unset and falls through to

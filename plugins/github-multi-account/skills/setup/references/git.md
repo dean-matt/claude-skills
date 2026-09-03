@@ -20,14 +20,17 @@ ssh-keygen -t ed25519 -C "<email1> (windows)" -f "$HOME\.ssh\id_ed25519_account1
 ssh-keygen -t ed25519 -C "<email2> (windows)" -f "$HOME\.ssh\id_ed25519_account2"
 ```
 
-Press Enter twice at each passphrase prompt. `-N ""` is left off deliberately:
+Press Enter twice at each passphrase prompt. The block omits `-N ""` on purpose:
 Windows PowerShell 5.1 drops an empty-string argument before the command sees it,
 while PowerShell 7.3 and later preserve it, so the prompt is the one route that
-works on both. The paths are spelled `$HOME\.ssh\...` rather than `~/.ssh/...`
-because PowerShell does not expand `~` for native commands, and ssh-keygen does
-not expand it either. Confirm the result with
-`ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"` — it prints the public key
-straight away if there is no passphrase, and prompts if there is.
+works on both.
+
+These paths use `$HOME\.ssh\...` rather than `~/.ssh/...` because neither
+PowerShell nor ssh-keygen expands `~` for a native command.
+
+Confirm the result with `ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"`. It
+prints the public key straight away if there is no passphrase, and prompts if
+there is.
 
 `-f` names the file; the default `id_ed25519` would collide across accounts.
 Leaving the key without a passphrase lets scripts and coding agents use it
@@ -134,7 +137,7 @@ GH_CONFIG_DIR=~/.config/gh-account1 \
 
 ```powershell
 $env:GH_CONFIG_DIR = "$env:AppData\gh-account1"
-gh ssh-key add "$HOME\.ssh\id_ed25519_account1.pub" --title $env:COMPUTERNAME
+gh ssh-key add "$HOME\.ssh\id_ed25519_account1.pub" --title "$env:COMPUTERNAME"
 ```
 
 ## 5. Authorize SSO where an org enforces it
@@ -181,7 +184,6 @@ account, which is the only rule to remember day to day.
 | ------------------------------------------------------------------ | ----------------------------------------------------------------------------------- |
 | `ssh -T` greets the wrong account                                  | `IdentitiesOnly yes` missing, wrong `IdentityFile`, or another key offered first — check `ssh -G github-account1` |
 | `ERROR: The '<org>' organization has enabled or enforced SAML SSO` | Key needs SSO authorization — step 5                                                |
-| `git ls-remote --get-url` returns the raw HTTPS URL                | Repo sits outside every account tree; check the path and the trailing slash         |
-| `git ls-remote --get-url` returns the raw HTTPS URL on Windows only | The `includeIf` rule uses `gitdir:` where the path case differs; use `gitdir/i:` |
+| `git ls-remote --get-url` returns the raw HTTPS URL                | Repo sits outside every account tree; check the path and the trailing slash. On Windows, check that the rule uses `gitdir/i:` |
 | `Permission denied (publickey)` in one account tree only            | That account lacks that key                                                         |
 | Commits land under the wrong email                                 | Repo sits outside every account tree, or a local `user.email` overrides the include |

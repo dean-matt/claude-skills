@@ -27,8 +27,8 @@ The next four belong to git, the last to gh.
 
 ## Gather Inputs First
 
-Before generating any config, ask the user for their account labels, repo root,
-usernames, and emails, and establish their OS and shell. The references use two
+Before generating any config, establish the user's OS and shell, then ask for
+their account labels, repo root, usernames, and emails. The references use two
 accounts named `account1` and `account2`, a repo root of `~/Repos`, and
 `<username1>` / `<email1>` placeholders. Substitute real values throughout.
 
@@ -50,7 +50,7 @@ subheadings, macOS first, with the shared explanation below both. Steps without
 them are the same everywhere.
 
 Paths appear in POSIX form throughout, so a Windows reader takes `~/Repos` as
-`C:\Users\<you>\Repos`. Inside the ssh and git config files themselves `~` stays
-literal on every platform — ssh and git expand it, not the shell — so it is typed
-as written. Only the PowerShell command blocks spell paths out, because native
-commands on Windows get no expansion from either side.
+`C:\Users\<you>\Repos`. Inside the ssh and git config files, `~` stays literal on
+every platform — ssh and git expand it, not the shell — so type it as written.
+Only the PowerShell blocks spell paths out, because on Windows neither the shell
+nor the command expands `~`.

@@ -1,7 +1,7 @@
 # Discovering a repository
 
-Every `sdlc` skill finds these facts itself and asks only when it cannot. `setup` records
-the answers in `.claude/sdlc.json`; when that file exists, its values win over discovery.
+Every `github-sdlc` skill finds these facts itself and asks only when it cannot. `setup` records
+the answers in `.claude/github-sdlc.json`; when that file exists, its values win over discovery.
 
 | Fact | Discover by | Fallback |
 |---|---|---|
@@ -12,8 +12,8 @@ the answers in `.claude/sdlc.json`; when that file exists, its values win over d
 | Project board | `gh project list --owner <owner> --format json`, matched to the repository | skip board steps |
 | Status field and options | `gh project field-list <n> --owner <owner> --format json` | skip board steps |
 | Review labels | `gh label list` | create them (below) |
-| Version bump | `.claude/sdlc.json` `versionBump` | off |
-| Protected paths | `.claude/sdlc.json` `protectedPaths` | none |
+| Version bump | `.claude/github-sdlc.json` `versionBump` | off |
+| Protected paths | `.claude/github-sdlc.json` `protectedPaths` | none |
 
 State which source each fact came from, so a wrong guess is visible.
 
@@ -29,7 +29,7 @@ gh label create "ai-review:completed" --color 0E8A16 --description "AI review fi
 gh label create "ai-review:changes-requested" --color D93F0B --description "AI review left something for a person" --force
 ```
 
-## `.claude/sdlc.json`
+## `.claude/github-sdlc.json`
 
 Optional. Every key is optional.
 

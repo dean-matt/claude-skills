@@ -13,7 +13,7 @@ change was written reads its intent into the diff instead of the code.
 Send the `pr-auditor` agent this and nothing about the change — no rationale, no defense:
 
 ```
-Review pull request <n> with the sdlc:review-pr criteria and return findings in the
+Review pull request <n> with the github-sdlc:review-pr criteria and return findings in the
 required format. Do not post, label, merge, edit a tracked file, commit or push.
 ```
 

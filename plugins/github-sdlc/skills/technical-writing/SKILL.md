@@ -28,7 +28,7 @@ Then continue with section 2 anyway, which stands on its own.
   follows only if the reader needs it to act.
 - **One fact, once.** Delete anything the diff, title, or a link already says.
 - **Name things exactly.** Use the identifier, path, command or number, in code font. "The
-  config" becomes `.claude/sdlc.json`; "a lot slower" becomes "3.2 s to 11 s".
+  config" becomes `.claude/github-sdlc.json`; "a lot slower" becomes "3.2 s to 11 s".
 - **Structure over paragraphs** where the reader scans: a list for parallel items, a table
   for comparisons, a code block for anything typed. Prose for reasoning.
 - **State results, not effort.** "`pnpm check` passes, 412 tests" — not "I ran the tests and

@@ -12,33 +12,34 @@ Shape, types and the pipeline: [`../issue/references/shape.md`](../issue/referen
 
 1. **Read it** in full, and decide the type. Set the `type:` label if missing.
 2. **Check for duplicates** conservatively: search open issues and those closed in the last few
-   months on the title and symptom words, and read the top matches rather than ranking by text
-   overlap. A close match is only a candidate. **Ask the user before closing.** On a yes,
-   close it with the duplicate reason and a comment naming the original, and carry anything
-   useful (a screenshot, a reproduction detail) over to the original as a comment.
-3. **Fill gaps** without rewriting the reporter's words, taking what you write through [`technical-writing`](../technical-writing/SKILL.md): ask for a missing reproduction, and
-   add an unticked Open question where a root cause or a decision is unknown.
-4. **Bug:** propose a `severity:` label from the repository's rule for what is critical
-   (recorded by [`setup`](../setup/SKILL.md)), and confirm it with the user. Severity informs;
-   it does not reorder the queue.
+   months on the title and symptom words, and read the top matches. A close match is only a
+   candidate. **Ask the user before closing.** On a yes, close it as a duplicate with a comment
+   naming the original, and copy anything useful (screenshot, reproduction detail) to the original
+   as a comment.
+3. **Fill gaps** without rewriting the reporter's words, taking what you write through
+   [`technical-writing`](../technical-writing/SKILL.md): ask for a missing reproduction, and add
+   an unticked Open question where a root cause or decision is unknown.
+4. **Bug:** propose a `severity:` label from the repository's rule for critical
+   ([`setup`](../setup/SKILL.md) records it) and confirm it with the user. Severity never
+   reorders the queue.
 5. **Area:** apply an existing `area:*` label that fits. Never invent one.
-6. **Milestone and rank:** propose a milestone, and leave the choice to the user. An issue
-   with no milestone is backlog, and stays so until the user ranks it.
+6. **Milestone and rank:** propose a milestone; the user chooses. An issue with no milestone is
+   backlog until the user ranks it.
 7. **Restructure** only if the user wants the issue in the standard shape: run
    [`issue`](../issue/SKILL.md) in reshape mode, which keeps the reporter's words.
-8. **Board:** set Triage on arrival and Todo once ready, as
-   [`../setup/references/board.md`](../setup/references/board.md) describes.
+8. **Board:** set Triage on arrival and Todo once ready
+   ([`board.md`](../setup/references/board.md)).
 
 ## Clusters
 
-When several issues share a goal, offer a bounded parent: an issue stating the goal, with the
-others as sub-issues, no milestone, closing when its children do. Offer it; do not create one
-for a single issue or as a standing bucket.
+When several issues share a goal, offer a bounded parent: an issue stating the goal, the others
+as sub-issues, no milestone, closing when its children do. Offer it; never create one for a single
+issue or as a standing bucket.
 
 ## Across the backlog
 
-Report: how many issues wait in Triage, any open `severity:critical` bug (even though it is
-not picked), and clusters worth a parent.
+Report: issues waiting in Triage, any open `severity:critical` bug (even if not picked), and
+clusters worth a parent.
 
 ## Options
 

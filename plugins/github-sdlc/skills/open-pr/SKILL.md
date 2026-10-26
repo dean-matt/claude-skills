@@ -6,16 +6,16 @@ argument-hint: "[issue-number] [--draft]"
 
 # Opening a pull request
 
-The body is defined in [`references/body-template.md`](references/body-template.md). Read it
-first: it names what the body must not repeat.
+The body follows [`references/body-template.md`](references/body-template.md), which also lists
+what it must not repeat.
 
 ## 1. Preconditions
 
-- The branch is pushed and the repository's check command has passed on it. Find the command
-  as [`setup`](../setup/references/discovery.md#check-command) describes.
-- The working tree is clean. Never open a pull request over uncommitted work.
-- Apply any rule the repository's CLAUDE.md or CONTRIBUTING.md states for pull requests, such as
-  opening as a draft when certain paths change, or a required label.
+- The branch is pushed and the check command has passed on it
+  ([`setup`](../setup/references/discovery.md#check-command) finds it).
+- The working tree is clean.
+- Apply the repository's pull request rules from CLAUDE.md or CONTRIBUTING.md, such as a draft
+  for certain paths or a required label.
 
 ## 2. Gather
 
@@ -25,8 +25,8 @@ gh issue view "$n" --json title,body
 git log --format='%s%n%b' origin/HEAD..HEAD
 ```
 
-A number passed as an argument wins over the branch name. If neither carries one, ask which
-issue it closes, or write the body with no closing line.
+An issue number passed as an argument wins over the branch name. With neither, ask which issue it
+closes, or write the body with no closing line.
 
 ## 3. Screenshots
 
@@ -35,9 +35,9 @@ and keep the subjects it returns.
 
 ## 4. Deviations
 
-Compare what was built with the issue's design sections and acceptance criteria. Record each
-difference with its kind, as the template defines. A **Narrowing** names the issue that takes
-the rest; file it first if it does not exist.
+Compare the build with the issue's design sections and acceptance criteria. Record each
+difference with its kind (see the template). A **Narrowing** names the issue that takes the rest;
+file it first if missing.
 
 ## 5. Write and open
 
@@ -55,13 +55,11 @@ Then move the issue's card to **In Review** with
 ## Keeping it accurate
 
 When later commits change what the pull request delivers, rewrite the affected sections with
-`gh pr edit <n> --body-file`. A body describing code the review rejected misleads the next
-reader.
+`gh pr edit <n> --body-file`.
 
 ## Options
 
-Pass an issue number to name the issue it closes, which the branch name would otherwise supply,
-and `--draft`.
+Pass an issue number to name the issue it closes, and `--draft`.
 
-Ask only when the answer is not already known: **draft or ready**, and **whether to attach
-screenshots** when the diff is ambiguous about being visible.
+Ask only what is not already known: **draft or ready**, and **screenshots** when it is unclear
+whether the diff is visible.

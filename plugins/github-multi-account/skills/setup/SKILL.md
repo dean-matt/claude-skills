@@ -22,17 +22,15 @@ Use when the user:
 - an `includeIf` rule pointing at its account tree
 - a gh config directory
 
-The account tree is the shared input — both tools decide from the path inside it.
-The next four belong to git, the last to gh. Signing commits adds a second GitHub
-registration of that same SSH key — see
-[`references/signing.md`](./references/signing.md).
+The account tree is the shared input: both tools decide from the path inside it. The next four
+belong to git, the last to gh. Signing commits registers the same SSH key a second time on
+GitHub ([`references/signing.md`](./references/signing.md)).
 
 ## Gather Inputs First
 
-Before generating any config, establish the user's OS and shell, then ask for
-their account labels, repo root, usernames, and emails. The references use two
-accounts named `account1` and `account2`, a repo root of `~/Repos`, and
-`<username1>` / `<email1>` placeholders. Substitute real values throughout.
+Before generating config, establish the user's OS and shell, then ask for their account labels,
+repo root, usernames and emails. The references use accounts `account1` and `account2`, a repo
+root of `~/Repos`, and `<username1>` / `<email1>` placeholders; substitute real values.
 
 ## Then Read What the Task Needs
 
@@ -44,16 +42,12 @@ accounts named `account1` and `account2`, a repo root of `~/Repos`, and
 | Sign commits as the right account — signing keys, `allowed_signers`, GitHub registration | [`references/signing.md`](./references/signing.md) |
 | Diagnose a machine already set up, or answering as the wrong account | [`references/audit.md`](./references/audit.md) |
 
-git and gh authenticate differently and are configured independently; either works
-without the other. A full setup reads `layout.md`, then `git.md`, then `gh.md`,
-working through each section in order.
+git and gh authenticate differently and are configured independently; either works alone. A
+full setup reads `layout.md`, `git.md`, then `gh.md`, each section in order.
 
-Steps whose commands differ by platform carry `macOS / Linux` and `Windows`
-subheadings, macOS first, with the shared explanation below both. Steps without
-them are the same everywhere.
+Steps whose commands differ by platform carry `macOS / Linux` and `Windows` subheadings, macOS
+first, with the shared explanation below both. Other steps are the same everywhere.
 
-Paths appear in POSIX form throughout, so a Windows reader takes `~/Repos` as
-`C:\Users\<you>\Repos`. Inside the ssh and git config files, `~` stays literal on
-every platform — ssh and git expand it, not the shell — so type it as written.
-Only the PowerShell blocks spell paths out, because on Windows neither the shell
-nor the command expands `~`.
+Paths are in POSIX form: a Windows reader takes `~/Repos` as `C:\Users\<you>\Repos`. In the ssh and
+git config files `~` stays literal on every platform (ssh and git expand it, not the shell). Only
+the PowerShell blocks spell paths out, since neither PowerShell nor the command expands `~`.

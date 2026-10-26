@@ -5,19 +5,18 @@ description: Capture screenshots or a short recording of a UI change, upload the
 
 # Screenshots
 
-Skip this skill when the change has no visible effect (library, config, docs, backend only).
-Say so in the pull request instead of attaching nothing silently.
+Skip when the change has no visible effect (library, config, docs, backend only), and say so in
+the pull request.
 
 ## 1. Capture
 
-Capture the state a reviewer must see, at a width that shows it. For a visual change take a
-**before** from the base branch and an **after** from the change; for something new, an
-after only. Use whatever can drive the app: the project's own run or e2e tooling, the
-built-in browser, or Claude in Chrome. Save PNGs outside the repository, named for what they
-show (`level-up-before.png`), and never commit them.
+Capture the state a reviewer must see, at a width that shows it: a **before** from the base branch
+and an **after** from the change; for something new, an after only. Drive the app with the
+project's run or e2e tooling, the built-in browser, or Claude in Chrome. Save PNGs outside the
+repository, named for what they show (`level-up-before.png`); never commit them.
 
-Check each image before uploading: it shows the change, no secrets, tokens or personal data,
-and nothing half-loaded.
+Check each image before uploading: it shows the change, no secrets, tokens or personal data, and
+nothing half-loaded.
 
 ## 2. Upload
 
@@ -25,16 +24,14 @@ and nothing half-loaded.
 url=$("${CLAUDE_PLUGIN_ROOT}/skills/screenshots/scripts/upload.sh" level-up-after.png)
 ```
 
-The script posts to GitHub's `user-attachments` endpoint with the `gh` token and prints the
-URL. Run it once per file. It accepts PNG, JPEG, GIF, WebP, MP4 and MOV.
+It posts to GitHub's `user-attachments` endpoint with the `gh` token and prints the URL. Run it
+once per file. It accepts PNG, JPEG, GIF, WebP, MP4 and MOV.
 
-Uploading sends the file to GitHub, and the URL works for anyone holding it even on a private
-repository. Confirm with the user before the first upload of a session unless they have
-already asked for screenshots.
+The URL works for anyone holding it, even on a private repository. Confirm with the user before
+the first upload of a session, unless they asked for screenshots.
 
-The endpoint is unofficial. If the script fails, report the response it printed and fall back
-to asking the user to drag the images into the pull request; do not commit the images as a
-workaround.
+The endpoint is unofficial. On failure, report the response and ask the user to drag the images
+into the pull request; never commit them as a workaround.
 
 ## 3. Embed
 
@@ -56,6 +53,6 @@ stacked inside. The format and its rules are in
 </details>
 ```
 
-Use **New** for something that did not exist and **Removed** for something that no longer
-does. Write alt text that says what the image shows. For a recording, put the bare URL on its
-own line under its label.
+Use **New** for something that did not exist and **Removed** for something that no longer does.
+Alt text says what the image shows. For a recording, put the bare URL on its own line under its
+label.

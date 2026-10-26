@@ -5,7 +5,7 @@ description: Prepare a GitHub repository for the github-sdlc workflow — detect
 
 # Setting up a repository
 
-The other `github-sdlc` skills work without this one; it saves them from asking. Run it once per
+The other `github-sdlc` skills work without this one; it saves them asking. Run it once per
 repository, and again when a setting changes.
 
 ## Steps
@@ -29,18 +29,16 @@ repository, and again when a setting changes.
      [`../open-pr/references/body-template.md`](../open-pr/references/body-template.md)
    - issue forms under `.github/ISSUE_TEMPLATE/` for the issue types, following
      [`../issue/references/shape.md`](../issue/references/shape.md)
-   - a short section in the repository's CLAUDE.md. It states each rule once, in prose, and no
-     rule appears in a plugin file:
+   - a short section in the repository's CLAUDE.md, stating each rule once, in prose:
      - the workflow, in a sentence
      - the severity rule: what counts as a `severity:critical` bug here
      - a pointer to `.github/protected-paths.txt`, never a copy of its list
      - the version rule, if the user wants one: "the merge raises the version in `<file>`:
-       `feat` raises the minor and anything else the patch; docs-only changes skip it" 
+       `feat` raises the minor and anything else the patch; docs-only changes skip it"
 5. **Show the diff** of every file written and leave committing to the user.
 
 ## Boundaries
 
-Setup changes labels on GitHub and writes files; it does not change branch protection, board
-settings or repository permissions. Report what needs an admin instead. It writes no file the
-plugin alone would read: everything it records is plain prose or a plain list a person can use
-without the plugin.
+Setup changes labels on GitHub and writes files. It does not change branch protection, board
+settings or repository permissions; report what needs an admin. Everything it writes is plain
+prose or a plain list a person can use without the plugin.

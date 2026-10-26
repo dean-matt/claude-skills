@@ -1,8 +1,7 @@
 # Git setup
 
-SSH keys, host aliases and `includeIf` rules. Read [`layout.md`](./layout.md)
-first: it defines the account trees every step below refers to. Configuring gh is
-a separate job that works without this one — see [`gh.md`](./gh.md).
+SSH keys, host aliases and `includeIf` rules. Read [`layout.md`](./layout.md) first: it defines
+the account trees every step refers to. gh is configured separately ([`gh.md`](./gh.md)).
 
 ## Generate one key per account
 
@@ -20,23 +19,20 @@ ssh-keygen -t ed25519 -C "<email1> $env:COMPUTERNAME" -f "$HOME\.ssh\id_ed25519_
 ssh-keygen -t ed25519 -C "<email2> $env:COMPUTERNAME" -f "$HOME\.ssh\id_ed25519_account2"
 ```
 
-`-f` names the file; the default `id_ed25519` would collide across accounts. `-C`
-sets the comment GitHub shows beside the key, so it names the machine — that is
-what you revoke when one is lost, and the upload below gives the key the same
-title. Leaving the key without a passphrase lets scripts and coding agents use it
-without prompting.
+`-f` names the file; the default `id_ed25519` would collide across accounts. `-C` sets the comment
+GitHub shows beside the key; it names the machine, which is what you revoke when one is lost, and
+the upload below uses it as the key's title. A key without a passphrase lets scripts and coding
+agents use it without prompting.
 
-**On Windows**, press Enter twice at each passphrase prompt. That block omits
-`-N ""` on purpose: Windows PowerShell 5.1 drops an empty-string argument before
-the command sees it, while PowerShell 7.3 and later preserve it, so the prompt is
-the one route that works on both.
+**On Windows**, press Enter twice at each passphrase prompt. The block omits `-N ""` because
+Windows PowerShell 5.1 drops an empty-string argument, while PowerShell 7.3+ keeps it; the prompt
+works on both.
 
-These paths use `$HOME\.ssh\...` rather than `~/.ssh/...` because neither
-PowerShell nor ssh-keygen expands `~` for a native command.
+The Windows paths use `$HOME\.ssh\...` because neither PowerShell nor ssh-keygen expands `~` for a
+native command.
 
-Confirm the result with `ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"`. It
-prints the public key straight away if there is no passphrase, and prompts if
-there is.
+Confirm with `ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"`: it prints the public key, or
+prompts if there is a passphrase.
 
 ## Add one SSH host alias per account
 

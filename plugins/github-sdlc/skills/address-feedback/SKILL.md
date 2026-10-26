@@ -21,7 +21,19 @@ The loop is the same; the references hold what differs.
 4. **Reply** to each item last with a verdict: `**Applied**` or `**Declined** — <reason>`.
 5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
    Stop after three passes and let the replies carry what remains.
-6. **Finish.** Mode-specific; see below.
+6. **Close out** in pr mode, once the last pass came back clean: hide what the earlier passes
+   left so the pull request does not carry them. The last pass stays visible; nothing a person
+   wrote is touched.
+
+   ```bash
+   node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" pr <n>
+   ```
+
+   It minimizes earlier passes and verdict-only reviews as outdated, and resolves each thread
+   whose last reply is `**Applied**` or `**Accepted**`. A `**Declined**` thread stays open until
+   the user agrees. A failure here is reported and never undoes the review. Design mode tidies
+   from [`review-design`](../review-design/SKILL.md), which posts the last pass.
+7. **Finish.** Mode-specific; see below.
 
 ## Options
 

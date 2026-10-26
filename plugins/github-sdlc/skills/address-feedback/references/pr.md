@@ -6,7 +6,9 @@
 - **Replying:** `gh api repos/{owner}/{repo}/pulls/<n>/comments/<id>/replies -f body=...`.
   A fix that moves a line outdates its thread; the reply still posts.
 - **Resolving:** resolve each thread once it carries its verdict and the fix is pushed. A
-  declined thread stays unresolved until the user agrees.
+  declined thread stays unresolved until the user agrees. `tidy.mjs pr <n>` does this for every
+  `**Applied**` or `**Accepted**` thread and hides earlier passes, as the loop's step 6 says; run
+  it after the last clean pass and before setting the label.
 
   ```bash
   gh api graphql -f query='query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){reviewThreads(first:100){nodes{id isResolved comments(first:1){nodes{databaseId}}}}}}}' \

@@ -69,6 +69,14 @@ gh issue comment <n> --body-file <pass.md>
 
 A pass with nothing to report still posts its marked comment.
 
+When the stage gets `review-passed`, or the third pass leaves `changes-requested`, hide the earlier
+passes and their replies so the issue does not carry them. The last pass stays visible and nothing
+a person wrote is touched. A failure here is reported and never undoes the review.
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" issue <n> <stage>
+```
+
 ## 6. Repeat
 
 `address-feedback` returns here for a fresh pass while the last returned a `critical` or

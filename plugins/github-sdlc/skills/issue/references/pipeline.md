@@ -28,9 +28,29 @@ The labels, their colors and the commands that create them are in
   stage's, because what follows was designed against the old text.
 - A later stage that finds an earlier one wrong removes the earlier `review-passed`, adds its
   `changes-requested`, and says why in a comment. The pipeline then runs from that stage again.
-- A stage that cannot proceed adds an unticked Open question and stops.
-- Review stops after three passes with `changes-requested` still set. The issue is then held
-  for the user with the last findings attached.
+- A stage that cannot proceed adds an unticked Open question and stops. In **autonomous** mode
+  (`auto`) it sorts each question first:
+  - **Low stakes** (naming, wording, a default for an edge the criteria leave open): decide it
+    from the issue, the code and Out of scope, taking the narrower answer where they leave it open.
+    Write `- [x] <question> — Decided (auto): <answer>, because <reason>`.
+  - **Needs a person** (changes stored data or a migration, behavior a user will notice, or scope
+    beyond the title; or only the user can know it, such as a credential, price or deadline): leave
+    it unticked and return it with a recommended answer and alternatives. The caller asks the
+    user and writes `- [x] <question> — Answered: <answer>`.
+
+  When unsure, it needs a person. An answer that changes a criterion sends the pipeline back to
+  the criteria stage. When the last question is ticked and its answer is in the sections that
+  carry it, post one comment, through [`technical-writing`](../../technical-writing/SKILL.md), listing each question and answer
+  tagged `Decided (auto)` or `Answered`, then delete the `## Open questions` section
+  ([`shape.md`](shape.md)). Report every decision.
+- Review stops after three passes in one loop. The last findings are applied and unreviewed, so
+  the stage ends with `designed` and no result label, and the issue is held for the user with
+  those findings. `review-design` reviews the edits next.
+
+## Claiming
+
+A skill that writes or edits a stage claims the issue first and releases it when nothing in the
+run continues the work: [`claim.md`](claim.md). Review passes claim nothing.
 
 ## Ready to build
 

@@ -1,6 +1,7 @@
 ---
 name: issue
 description: Draft a GitHub issue from a rough idea or bug report — pick its type, write the summary, open questions, out of scope and numbered acceptance criteria, ask about gaps, create it with labels, and queue it for criteria review. Use when asked to write, file, draft or create an issue, or to turn feedback into one.
+argument-hint: "[idea] [--autonomous]"
 ---
 
 # Writing an issue
@@ -14,7 +15,8 @@ writes the **criteria stage** only: it never writes a design section.
 1. **Take the idea.** Search for a duplicate first (`gh issue list --search`), and say so if
    one is close; [`triage`](../triage/SKILL.md) owns closing duplicates.
 2. **Pick the type.** Infer it and state it; ask only when two fit.
-3. **Draft** the sections for that type, in order. Open with the problem, not the solution.
+3. **Draft** the sections for that type, in order, with the criteria wrapped as
+   [`shape.md`](references/shape.md#foldable-sections) says. Open with the problem, not the solution.
    Write each criterion as an observable result and number it.
 4. **Ask about gaps** in one batch with AskUserQuestion, instead of inventing: a missing
    reproduction, an ambiguous expected result, a scope boundary. Anything left unanswered becomes an
@@ -37,10 +39,13 @@ writes the **criteria stage** only: it never writes a design section.
 
 ## Options
 
+Pass `--autonomous`.
+
 - **Interactive** (default): show the draft before creating it.
 - **Autonomous**: create without asking, and turn every gap into an Open question.
 - **Reshape**: restructure an existing issue into this shape, keeping the reporter's words
-  in Summary and Reproduction. Used from `triage`.
+  in Summary and Reproduction. Used from `triage`. Claim the issue first, per
+  [`claim`](references/claim.md); a new issue has no one else to hold it.
 
 ## Will not do
 

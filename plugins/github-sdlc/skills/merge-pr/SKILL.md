@@ -1,6 +1,7 @@
 ---
 name: merge-pr
 description: Carry one reviewed pull request to the default branch — raise the version if the repository opted in, wait on the checks, run the merge gate, squash-merge, delete the branch and its worktree, move the board to Done, and leave the checkout current. Use when asked to merge, land or ship a pull request. Stops and names the condition where the gate fails.
+argument-hint: "<pr-number> [--autonomous]"
 ---
 
 # Merging a pull request
@@ -102,6 +103,8 @@ the merge: report the card as not moved and carry on.
 Report the merge commit, the issue it closed, and that the checkout is on the default branch.
 
 ## Options
+
+Pass `--autonomous`.
 
 - **Interactive** (default): confirm once before `gh pr merge`, since it cannot be undone from here.
 - **Autonomous**: merge when the gate exits 0, and stop on the first condition it names.

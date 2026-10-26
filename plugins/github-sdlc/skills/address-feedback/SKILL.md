@@ -1,6 +1,7 @@
 ---
 name: address-feedback
 description: Work through review feedback on a pull request or on an issue's design stage — decide apply or decline for each item, make the changes, reply to every item, and re-review until nothing blocking remains. Use after review-pr or review-design returns findings, or when asked to address review comments.
+argument-hint: "<pr-number | issue-number stage> [--autonomous]"
 ---
 
 # Addressing feedback
@@ -17,12 +18,24 @@ The loop is the same; the references hold what differs.
 3. **Apply** the accepted changes. For a pull request, run the check command, take the prose
    through [`technical-writing`](../technical-writing/SKILL.md), and commit and push a new
    commit — never amend, rebase or force-push a pushed branch.
-4. **Reply** to each item last with a verdict: `**Applied**` or `**Declined** — <reason>`.
+4. **Reply** to each item last, through [`technical-writing`](../technical-writing/SKILL.md), with a verdict: `**Applied**` or `**Declined** — <reason>`. In
+   design mode the verdict goes into the pass comment itself, per the mode's reference.
 5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
    Stop after three passes and let the replies carry what remains.
-6. **Finish.** Mode-specific; see below.
+6. **Tidy** in pr mode after each pass is answered and pushed. It hides earlier passes and
+   verdict-only reviews, and resolves each thread whose last reply is `**Applied**` or
+   `**Accepted**`. A `**Declined**` thread stays open until the user agrees. The last pass stays
+   visible. A failure is reported and never undoes the review.
+
+   ```bash
+   node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" pr <n>
+   ```
+   Design mode tidies from [`review-design`](../review-design/SKILL.md).
+7. **Finish.** Mode-specific; see below.
 
 ## Options
+
+Pass `--autonomous`.
 
 - **Interactive**: show the decisions before applying and ask on each declined `critical` or
   `warning`.

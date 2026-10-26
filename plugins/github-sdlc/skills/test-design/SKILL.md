@@ -1,6 +1,7 @@
 ---
 name: test-design
 description: Write the Test Design section of an issue — a list of cases, each naming the acceptance criterion it covers — after the technical design passes review. Use when asked how an issue will be tested, or as the last design stage before building.
+argument-hint: "<issue-number>"
 ---
 
 # Test design
@@ -9,13 +10,15 @@ Stages and gates: [`../issue/references/pipeline.md`](../issue/references/pipeli
 
 ## Preconditions
 
+Claim the issue first, per [`claim`](../issue/references/claim.md).
+
 `technical-agent:review-passed`, and every earlier needed stage passed. Otherwise stop and
 name the missing stage.
 
 ## Steps
 
 1. Read the criteria and the Technical Design.
-2. Write one line per case, starting with the AC it covers:
+2. Write one line per case, starting with the AC it covers, wrap it as [`shape.md`](../issue/references/shape.md#foldable-sections) says:
 
    ```markdown
    - AC2: two characters with the same skill name and ability → one `HB` row
@@ -33,7 +36,7 @@ name the missing stage.
 4. A chore's lines name the existing tests that prove behavior is unchanged. A docs issue
    writes `n/a — <reason>`.
 5. If a criterion cannot be tested as written, add an unticked Open question; do not edit it.
-6. Replace only the `## Test Design` section (re-read first), set `test-agent:designed`, and
+6. Take the section through [`technical-writing`](../technical-writing/SKILL.md): terse, no history or narrative. Then replace only the `## Test Design` section (re-read first), set `test-agent:designed`, and
    clear this stage's `review-passed` and `changes-requested`.
 7. Hand off to [`review-design`](../review-design/SKILL.md) for the test stage.
 

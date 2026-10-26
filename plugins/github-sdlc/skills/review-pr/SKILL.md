@@ -1,6 +1,7 @@
 ---
 name: review-pr
 description: Review one pull request through engineering, testing, QA and editing lenses with a fresh reviewer, post the findings as one GitHub review, and label the pull request. Use when asked to review a pull request, after build opens one, or to re-review after changes.
+argument-hint: "<pr-number>"
 ---
 
 # Reviewing a pull request

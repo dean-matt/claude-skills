@@ -1,6 +1,7 @@
 ---
 name: review-design
 description: Review one stage of an issue — acceptance criteria, UI/UX design, technical design or test design — with a fresh reviewer, post the findings as an issue comment, and set that stage's review labels. Use after a stage is written, when asked to review an issue or a design, or to re-review after changes.
+argument-hint: "<issue-number> [criteria|ui|technical|test]"
 ---
 
 # Reviewing a design stage
@@ -55,12 +56,15 @@ Open each finding with its severity in bold, then the defect and what it costs:
 
 ## 5. Post and label
 
-Post one comment per pass, opening with `<!-- design-pass:<stage> -->` so a pass can be told
-from a person's comment, then each finding numbered.
+Take the findings through [`technical-writing`](../technical-writing/SKILL.md) first: one line per defect and its cost, no narrative. Post one comment per pass, opening with `<!-- design-pass:<stage> -->` so a pass can be told
+from a person's comment, then each finding numbered. Post it with the script. It adds the heading under the marker (`### Criteria review — pass 2`)
+and hides the earlier passes, so the issue shows the current pass and anything waiting on the user:
 
 ```bash
-gh issue comment <n> --body-file <pass.md>
+node "${CLAUDE_PLUGIN_ROOT}/skills/review-design/scripts/post-pass.mjs" <n> <stage> <pass.md>
 ```
+
+Never post a pass with `gh issue comment`. A hiding failure is reported and never undoes the pass.
 
 - No `critical` or `warning`: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`.
 - Any `critical` or `warning`: add `<prefix>:changes-requested`, remove `<prefix>:review-passed`,
@@ -71,8 +75,9 @@ A pass with nothing to report still posts its marked comment.
 ## 6. Repeat
 
 `address-feedback` returns here for a fresh pass while the last returned a `critical` or
-`warning`. After three passes with `changes-requested` still set, stop: leave the label, and
-tell the user what is outstanding. The next stage does not start.
+`warning`. After three passes in one loop, stop. The last findings are applied and unreviewed, so
+the stage carries `designed` and no result label. Tell the user what the last pass found. The next
+stage does not start.
 
 ## Will not do
 

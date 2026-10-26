@@ -16,8 +16,7 @@ and lacks `<prefix>:review-passed`. If none qualifies, say so and stop.
 
 ## 2. Dispatch
 
-Send the `github-sdlc:design-auditor` agent the issue number and stage only, with no account of how the
-stage was written:
+Send the `github-sdlc:design-auditor` agent the issue number and stage only:
 
 ```
 Review the <stage> stage of issue <n> with the github-sdlc:review-design checklist and return
@@ -37,8 +36,7 @@ The checklist for the stage is read from a reference:
 | technical | [`references/technical.md`](references/technical.md) |
 | test | [`references/test.md`](references/test.md) |
 
-Every stage is also held to one rule: it repeats nothing another section or a link already
-says.
+Every stage is also held to one rule: repeat nothing another section or a link says.
 
 ## 4. Finding format
 

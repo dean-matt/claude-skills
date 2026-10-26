@@ -44,8 +44,8 @@ Then use the first source that exists for new work:
 2. **Milestones**: the earliest due, else the lowest title, then oldest within it.
 3. **Oldest first.**
 
-An issue with no milestone or no rank is backlog and is not picked; the user ranks it.
-Severity informs and rank decides: never reorder by severity.
+An issue with no milestone or rank is backlog; the user ranks it. Severity informs, rank
+decides: never reorder by severity.
 
 ## Ready
 
@@ -61,8 +61,7 @@ It prints a line per candidate and ends `take <n>` or `none`. Skip `not ready` i
 the reasons. With `--design`, an issue lacking passed stages, in no pipeline, or carrying an
 unticked Open question is `needs design` and takeable. Without it, an issue `ready.sh` calls
 `not in the pipeline` (exit 2) is taken only if the user agrees to build it as written.
-A parent is never ready, since the check skips an issue with open sub-issues; its children
-are the work.
+A parent is never ready (it has open sub-issues); its children are the work.
 
 ## Held
 

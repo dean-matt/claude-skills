@@ -16,7 +16,8 @@ Each line is `verdict`, kind, ref and reason:
 - **safe**: merged, or a claim with no commits. Removing loses nothing.
 - **ask**: a branch whose pull request closed unmerged, a copy with commits the merge lacks,
   a worktree on an unrecognised branch, an assignment with no branch or pull request.
-- **keep**: an open pull request, uncommitted changes (including in the checkout you are on), or commits with no pull request.
+- **keep**: an open pull request, uncommitted changes (including in the checkout you are on), or
+  commits with no pull request.
 
 ## Steps
 
@@ -28,16 +29,16 @@ Each line is `verdict`, kind, ref and reason:
 
 ## Removing
 
-Remove a worktree before its branch. A branch cannot be deleted while a checkout is on it, so
-when the main checkout is on one you are removing, move it off first. Do this from the main
-checkout, not from inside a worktree being removed:
+Remove a worktree before its branch. A branch cannot be deleted while a checkout is on it: if the
+main checkout is on one you are removing, move it off first, from the main checkout and not from
+inside a worktree being removed:
 
 ```bash
 git switch <default-branch> && git pull --ff-only
 ```
 
-The scan keeps a branch whose checkout has uncommitted changes, so this never carries work
-across. Say which branch you moved to.
+The scan keeps a branch whose checkout has uncommitted changes, so this carries no work across.
+Say which branch you moved to.
 
 ```bash
 git worktree remove <path>                          # refuses on uncommitted work; never add --force

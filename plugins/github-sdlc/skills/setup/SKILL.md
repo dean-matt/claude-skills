@@ -23,7 +23,7 @@ repository, and again when a setting changes.
    [`references/labels.md`](references/labels.md), and offer the renames and removals it lists.
    Say which labels the plugin will own before creating any.
 4. **Offer** (do not assume) to write:
-   - `.github/protected-paths`, a plain list of globs with `#` comments, only if the user named
+   - `.github/protected-paths.txt`, a plain list of globs with `#` comments, only if the user named
      paths. The gate reads it from the default branch and it protects itself.
    - `.github/pull_request_template.md` from
      [`../open-pr/references/body-template.md`](../open-pr/references/body-template.md)
@@ -33,7 +33,7 @@ repository, and again when a setting changes.
      rule appears in a plugin file:
      - the workflow, in a sentence
      - the severity rule: what counts as a `severity:critical` bug here
-     - a pointer to `.github/protected-paths`, never a copy of its list
+     - a pointer to `.github/protected-paths.txt`, never a copy of its list
      - the version rule, if the user wants one: "the merge raises the version in `<file>`:
        `feat` raises the minor and anything else the patch; docs-only changes skip it" 
 5. **Show the diff** of every file written and leave committing to the user.

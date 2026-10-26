@@ -71,7 +71,7 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/merge-gate.mjs" "$n"
 
 It prints each condition as `pass` or `FAIL` with the detail. Merge where it exits 0 and
 otherwise name each failure and stop. A branch that is behind goes to
-[`references/behind-branch.md`](references/behind-branch.md). A protected path (one listed in `.github/protected-paths`), a blocking
+[`references/behind-branch.md`](references/behind-branch.md). A protected path (one listed in `.github/protected-paths.txt`), a blocking
 decline, an unconfirmed deviation and any review label other than `ai-review:completed` wait on
 the user: name each and hand back. The user clears them by the records in
 [`references/records.md`](references/records.md). Read the pass body the script points at too,

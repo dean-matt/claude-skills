@@ -56,7 +56,7 @@ test("a bot-opened pull request is skipped, however GitHub names the bot", () =>
 test("the protected list drops blanks and comments, and protects itself", () => {
   assert.deepEqual(parseList("# why\n\nCLAUDE.md\n  docs/  \n#x\n"), ["CLAUDE.md", "docs/"]);
   const run = () => "# fence\nCLAUDE.md\n";
-  assert.deepEqual(protectedPaths("main", run), ["CLAUDE.md", ".github/protected-paths"]);
+  assert.deepEqual(protectedPaths("main", run), ["CLAUDE.md", ".github/protected-paths.txt"]);
 });
 
 test("no list means no fence, so a repository that never opted in is never blocked", () => {
@@ -72,7 +72,7 @@ test("the list is read from the default branch, never the pull request's", () =>
     asked = args;
     return "x";
   });
-  assert.deepEqual(asked, ["show", "origin/trunk:.github/protected-paths"]);
+  assert.deepEqual(asked, ["show", "origin/trunk:.github/protected-paths.txt"]);
 });
 
 test("a repository runs checks only if it has a workflow file at that commit", () => {

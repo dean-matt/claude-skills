@@ -1,13 +1,16 @@
 ---
 name: auto
-description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build and merge-pr per issue in fresh subagents, and stop on the first issue that does not merge. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
+description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build (which includes the pull request review) and merge-pr per issue in fresh subagents, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
 ---
 
 # Working the backlog
 
-[`build`](../build/SKILL.md) takes an issue to a reviewed pull request;
-[`merge-pr`](../merge-pr/SKILL.md) takes that pull request to the default branch. This calls them
-in turn and decides only when to stop. Run every command from the main checkout.
+The lifecycle, in order: the [design pipeline](../issue/references/pipeline.md) where an issue
+lacks it, [`build`](../build/SKILL.md) to a pull request, which `build` hands to
+[`review-pr`](../review-pr/SKILL.md) and [`address-feedback`](../address-feedback/SKILL.md) until
+`ai-review:completed`, [`merge-pr`](../merge-pr/SKILL.md) to the default branch, and
+[`cleanup`](../cleanup/SKILL.md) when the run ends. This calls them in turn and decides only when
+to stop. Run every command from the main checkout.
 
 Take a count of issues to merge, a wall-clock deadline, both, or neither — wall clock is the
 only budget a skill can measure. Print a deadline once with `echo $(( $(date +%s) + <seconds> ))`
@@ -75,6 +78,14 @@ instead of a merge commit.
 merged; a subagent's report does not. A `state` other than `MERGED` stops the run. The count is
 of merges, not attempts.
 
+## Cleanup
+
+When the run ends, for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in
+this conversation — never a subagent, since it asks the user before it deletes. Run it before the
+report, so the report names what is left rather than what was there. A stopped issue's branch,
+pull request and worktree are **keep** or **ask** items: cleanup shows them and leaves them
+unless the user says otherwise.
+
 ## The report
 
 One line per issue attempted, in order:
@@ -85,7 +96,7 @@ One line per issue attempted, in order:
   that the next run picks the same issue unless its readiness or rank changed
 
 Close with why the run ended, and name which of a branch, a pull request and a worktree are
-there — read them off disk and GitHub rather than inferring them from where the run stopped.
+there after cleanup — read them off disk and GitHub rather than inferring them from where the run stopped.
 Name a worktree in particular: the next run's `git worktree add` fails on it until it is cleared.
 
 ## Rate limits

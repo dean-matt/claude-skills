@@ -49,7 +49,8 @@ if [ "$(date +%s)" -ge <deadline> ]; then echo past; else echo within; fi
 Read them here and nowhere else — abandoning an issue mid-flight leaves a branch and a pull
 request nobody asked for. The deadline stops the next issue from starting, not the one running.
 
-**2. Choose.** Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, then run
+**2. Choose.** Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an issue
+you claimed and left unfinished ahead of new work, then run
 `next.sh --design` on that list from the main checkout. Drop any issue pick-issue's *Held* rules exclude first. One script reads the backlog, so the
 choice and the dispatches cannot disagree. It ends `take <n>` or `none`. Stop on `none` and give
 each reason it printed; a board with nothing designed is not an empty board.

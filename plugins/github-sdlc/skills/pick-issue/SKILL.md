@@ -11,7 +11,24 @@ claims it.
 
 ## Order
 
-Use the first source that exists:
+**Resume first.** An issue you claimed and left unfinished comes before any new one: it sits
+`In Progress` on the board, assigned to you, with no open pull request. The board query below
+reads `Todo` cards only, and a claim moves the card out of `Todo`, so without this step a claimed
+issue is never picked again.
+
+```bash
+me=$(gh api user --jq .login)
+gh project item-list <n> --owner <owner> --limit 2000 --format json --jq "
+  .items[] | select(.status == \"In Progress\" and .content.type == \"Issue\"
+                    and ((.assignees // []) | index(\"$me\"))) | .content.number"
+```
+
+Drop any of those numbers that an open pull request closes (`closedByPullRequestsReferences` in
+the *Held* command below): `build`'s claim resumes that work. Put the rest ahead of the ranked list
+below, in the board's order. They still pass the readiness and held checks, so one that is now
+blocked, or waits on the user, is skipped with its reason.
+
+Then use the first source that exists for new work:
 
 1. **The project board**, when [`setup`](../setup/references/discovery.md) found one. Read its
    `Todo` issue cards that have a milestone and a rank, soonest milestone first (by due date,

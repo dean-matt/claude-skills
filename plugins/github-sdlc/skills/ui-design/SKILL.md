@@ -31,7 +31,7 @@ Claim the issue first, per [`claim`](../issue/references/claim.md).
      layout" and uploaded through [`screenshots`](../screenshots/SKILL.md).
 3. **Add no requirement.** If the design needs behavior no criterion covers, add an unticked
    Open question proposing the criterion, and stop. Never edit the criteria.
-4. Replace only the `## UI/UX Design` section: re-read the issue, edit that section, then
+4. Take the section through [`technical-writing`](../technical-writing/SKILL.md): terse, no history or narrative. Then replace only the `## UI/UX Design` section: re-read the issue, edit that section, then
    write the body back, so a concurrent edit elsewhere survives.
 5. Set `ui-agent:designed` and remove `ui-agent:review-passed` and `ui-agent:changes-requested`.
 6. Hand off to [`review-design`](../review-design/SKILL.md) for the ui stage.

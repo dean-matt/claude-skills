@@ -1,16 +1,12 @@
 /**
- * Closes out the review noise once a review has converged, so an issue or a pull request does
- * not carry every pass it took to get there.
+ * Hides superseded review passes.
  *
  *   tidy.mjs issue <n> <stage>   minimize earlier design passes as outdated
  *   tidy.mjs pr <n>              minimize earlier review passes, resolve answered threads
  *
- * The last pass stays visible, with whatever follows it: it is the one a reader needs, and the
- * merge gate reads it. A person's comment, an `**Accepted**` record and a thread still waiting
- * on a verdict are never touched. Minimizing hides a comment behind a "show" link; it is not
- * deleted and the API still returns it.
- *
- * Needs `gh`. The exported functions are pure so the choice of what to hide is testable.
+ * The last pass stays visible, since the merge gate reads it. A person's comment, an
+ * `**Accepted**` record and a thread waiting on a verdict are never touched. Minimized comments
+ * stay in the API. Needs `gh`. The exported functions are pure so they can be tested.
  */
 import { capture } from "../../merge-pr/scripts/capture.mjs";
 import { PASS_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";

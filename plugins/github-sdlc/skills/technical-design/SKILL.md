@@ -31,7 +31,7 @@ Design heading. Otherwise stop and name the missing stage.
    Open question and stop.
 4. If the design shows an earlier stage is wrong, follow the pipeline's rule for it: clear
    that stage's `review-passed`, add its `changes-requested`, and comment why.
-5. Replace only the `## Technical Design` section (re-read first), set
+5. Take the section through [`technical-writing`](../technical-writing/SKILL.md): terse, no history or narrative. Then replace only the `## Technical Design` section (re-read first), set
    `technical-agent:designed`, and clear this stage's `review-passed` and `changes-requested`.
 6. Hand off to [`review-design`](../review-design/SKILL.md) for the technical stage.
 

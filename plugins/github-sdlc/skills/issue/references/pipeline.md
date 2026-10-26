@@ -29,30 +29,28 @@ The labels, their colors and the commands that create them are in
 - A later stage that finds an earlier one wrong removes the earlier `review-passed`, adds its
   `changes-requested`, and says why in a comment. The pipeline then runs from that stage again.
 - A stage that cannot proceed adds an unticked Open question and stops. In **autonomous** mode
-  (the `auto` skill's) it sorts each question first:
-  - **Low stakes:** naming, wording, or a default for an edge the criteria leave open. Decide it:
-    the answer the issue, the code and Out of scope best support, and the narrower one where they
-    leave it open. Tick it and append the answer and reason on the same line, as
-    `- [x] <question> — Decided (auto): <answer>, because <reason>`.
-  - **Needs a person:** it changes stored data or a migration, behavior a user will notice, or
-    scope beyond the issue's title; or only the user can know the answer, such as a credential, a
-    price or a deadline. Leave it unticked and return it with a recommended answer and the
-    alternatives. The caller asks the user and records the reply as
-    `- [x] <question> — Answered: <answer>`.
-  When in doubt it is a question for a person. Where an answer changes a criterion, the criteria
-  stage rewrites it and the pipeline runs again from there. Report every decision and answer.
-  When the last question is ticked and its answer is written into the sections that carry it,
-  post one comment listing each question with its answer, tagged `Decided (auto)` or `Answered`,
-  and delete the `## Open questions` section, as [`shape.md`](shape.md) says.
-- Review stops after three passes in one loop. The last pass's findings are applied but not
-  reviewed, so the stage ends with `designed` and no result label, and the issue is held for the
-  user with the last findings attached. `review-design` runs again to review the edits.
+  (`auto`) it sorts each question first:
+  - **Low stakes** (naming, wording, a default for an edge the criteria leave open): decide it
+    from the issue, the code and Out of scope, taking the narrower answer where they leave it open.
+    Write `- [x] <question> — Decided (auto): <answer>, because <reason>`.
+  - **Needs a person** (changes stored data or a migration, behavior a user will notice, or scope
+    beyond the title; or only the user can know it, such as a credential, price or deadline): leave
+    it unticked and return it with a recommended answer and alternatives. The caller asks the
+    user and writes `- [x] <question> — Answered: <answer>`.
+
+  When unsure, it needs a person. An answer that changes a criterion sends the pipeline back to
+  the criteria stage. When the last question is ticked and its answer is in the sections that
+  carry it, post one comment, through [`technical-writing`](../../technical-writing/SKILL.md), listing each question and answer
+  tagged `Decided (auto)` or `Answered`, then delete the `## Open questions` section
+  ([`shape.md`](shape.md)). Report every decision.
+- Review stops after three passes in one loop. The last findings are applied and unreviewed, so
+  the stage ends with `designed` and no result label, and the issue is held for the user with
+  those findings. `review-design` reviews the edits next.
 
 ## Claiming
 
-A skill that writes or edits a stage claims the issue first, so two people or sessions do not
-design it at once, and releases it when nothing in the run continues the work. See
-[`claim.md`](claim.md). Review passes only read the issue and claim nothing.
+A skill that writes or edits a stage claims the issue first and releases it when nothing in the
+run continues the work: [`claim.md`](claim.md). Review passes claim nothing.
 
 ## Ready to build
 

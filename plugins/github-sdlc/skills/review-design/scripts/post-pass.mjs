@@ -1,15 +1,11 @@
 /**
- * Posts a design review pass and hides the passes before it, in one step, so the issue never
- * carries a superseded pass and the tidying cannot be skipped by a run that reads the posting
- * instruction and not the one after it.
+ * Posts a design review pass, adds its heading, and hides the passes before it.
  *
  *   post-pass.mjs <issue> <stage> <pass.md>
  *
- * The file must open with `<!-- design-pass:<stage> -->`, which is how a pass is told from a
- * person's comment and how `tidy.mjs` finds it. The script adds the visible heading under it,
- * `### Criteria review — pass 3`, so a reader and the next reviewer can tell which stage a pass
- * covers and how many came before. The pass number counts the stage's earlier passes, hidden
- * ones included. Needs `gh`.
+ * The file opens with `<!-- design-pass:<stage> -->`, which `tidy.mjs` uses to find passes. The
+ * script adds `### Criteria review — pass 3` under it; the number counts the stage's earlier
+ * passes, hidden ones included. Needs `gh`.
  */
 import { mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";

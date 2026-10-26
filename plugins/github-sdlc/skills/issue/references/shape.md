@@ -20,10 +20,9 @@ The headings are exactly these, `##` level, so tooling can find them.
 
 ## Foldable sections
 
-Acceptance criteria, UI/UX Design, Technical Design and Test Design are wrapped so a long one can
-be folded. They start open. The `##` heading stays outside, since tooling finds it; the content
-sits inside, with a blank line after `<summary>` and before `</details>`, or the Markdown inside
-does not render:
+Acceptance criteria, UI/UX Design, Technical Design and Test Design are wrapped so they can fold,
+and start open. The `##` heading stays outside, where tooling finds it. Keep a blank line after
+`<summary>` and before `</details>`, or the Markdown inside does not render:
 
 ````markdown
 ## Acceptance criteria
@@ -36,10 +35,8 @@ does not render:
 </details>
 ````
 
-Summary, Out of scope and Open questions are never wrapped: a reader should not have to unfold
-what stops the pipeline. Rewrite a section's content and keep its wrapper. A section that is
-`n/a — <reason>` needs none. An older issue without wrappers is left alone until a stage rewrites
-the section.
+Summary, Out of scope and Open questions are never wrapped. A section reading `n/a — <reason>`
+needs no wrapper. Keep the wrapper when rewriting a section.
 
 ## Acceptance criteria
 
@@ -55,11 +52,9 @@ Each is a checkbox. Tick it and add the answer on the same line when it is resol
 condition with nothing to link, such as "wait for the schema freeze", is an Open question too.
 Relationships are not: use a dependency.
 
-The section holds what is unresolved, so it does not outlive its questions. Once the last one is
-ticked and the stage that owns the answer has written it into the Summary, Out of scope or the
-criteria, post one comment listing each question with its answer, then delete the whole
-`## Open questions` section, heading included. A section of ticked items is stale text: the
-answers are already in the sections that carry them, and the comment keeps the record.
+Once the last question is ticked and its answer is in the Summary, Out of scope or the criteria,
+post one comment listing each question and answer, then delete the whole `## Open questions`
+section, heading included.
 
 ## Types
 

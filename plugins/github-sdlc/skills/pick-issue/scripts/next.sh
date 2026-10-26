@@ -1,14 +1,12 @@
 #!/usr/bin/env bash
-# Check ranked candidates for readiness in parallel and name the first one worth taking.
+# Check ranked candidates for readiness and name the first one worth taking.
 #
 #   next.sh [--design] <issue>...        or the numbers on stdin, one per line, in rank order
 #
-# Runs ready.sh on the candidates ten at a time and prints one line per candidate, in rank
-# order: "<n>: ready", "<n>: needs design: <why>" (with --design) or "<n>: not ready: <why>".
-# Stops after the first batch that holds a takeable issue, so a long backlog of blocked
-# issues costs one batch per ten and a ready one near the top costs one. Ends with
-# "take <n>", or "none". Without --design only a ready issue is takeable; with it, an issue
-# that needs design is too. Needs `gh` and `jq`.
+# Runs ready.sh ten candidates at a time and prints a line per candidate, in rank order:
+# "<n>: ready", "<n>: needs design: <why>" (--design only) or "<n>: not ready: <why>". Stops after
+# the first batch holding a takeable issue and ends "take <n>" or "none". Takeable means ready,
+# or with --design also needs design. Needs `gh` and `jq`.
 set -euo pipefail
 
 flag=""

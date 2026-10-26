@@ -16,7 +16,7 @@ Shape, types and the pipeline: [`../issue/references/shape.md`](../issue/referen
    overlap. A close match is only a candidate. **Ask the user before closing.** On a yes,
    close it with the duplicate reason and a comment naming the original, and carry anything
    useful (a screenshot, a reproduction detail) over to the original as a comment.
-3. **Fill gaps** without rewriting the reporter's words: ask for a missing reproduction, and
+3. **Fill gaps** without rewriting the reporter's words, taking what you write through [`technical-writing`](../technical-writing/SKILL.md): ask for a missing reproduction, and
    add an unticked Open question where a root cause or a decision is unknown.
 4. **Bug:** propose a `severity:` label from the repository's rule for what is critical
    (recorded by [`setup`](../setup/SKILL.md)), and confirm it with the user. Severity informs;

@@ -11,10 +11,9 @@ claims it.
 
 ## Order
 
-**Resume first.** An issue you claimed and left unfinished comes before any new one: it sits
-`In Progress` on the board, assigned to you, with no open pull request. The board query below
-reads `Todo` cards only, and a claim moves the card out of `Todo`, so without this step a claimed
-issue is never picked again.
+**Resume first.** An issue you claimed and left unfinished comes before new work: `In Progress` on
+the board, assigned to you, no open pull request. The board query below reads `Todo` only, and a
+claim moves the card out of `Todo`.
 
 ```bash
 me=$(gh api user --jq .login)
@@ -23,10 +22,9 @@ gh project item-list <n> --owner <owner> --limit 2000 --format json --jq "
                     and ((.assignees // []) | index(\"$me\"))) | .content.number"
 ```
 
-Drop any of those numbers that an open pull request closes (`closedByPullRequestsReferences` in
-the *Held* command below): `build`'s claim resumes that work. Put the rest ahead of the ranked list
-below, in the board's order. They still pass the readiness and held checks, so one that is now
-blocked, or waits on the user, is skipped with its reason.
+Drop numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held* command
+below); `build` resumes those. Put the rest ahead of the ranked list, in board order. They still
+pass the readiness and held checks.
 
 Then use the first source that exists for new work:
 
@@ -51,20 +49,18 @@ Severity informs and rank decides: never reorder by severity.
 
 ## Ready
 
-Check the candidates in rank order with one command. It runs the readiness check on ten at a
-time and stops at the first batch holding an issue worth taking, so a board of blocked cards
-costs a few calls, not three per card in sequence:
+Check candidates in rank order with one command. It runs the readiness check ten at a time and
+stops at the first batch holding a takeable issue:
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" <n>...    # or the numbers on stdin
 "${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" --design <n>...
 ```
 
-It prints a line per candidate and ends `take <n>` or `none`. Skip an issue that is `not ready`
-and report the reasons. With `--design`, an issue that lacks passed stages, or is not in the
-pipeline at all, is `needs design` and takeable: it is the pipeline's to work, not the build's.
-Without it, an issue `ready.sh` calls `not in the pipeline` (exit 2) is taken only if the user
-agrees to build it as written.
+It prints a line per candidate and ends `take <n>` or `none`. Skip `not ready` issues and report
+the reasons. With `--design`, an issue lacking passed stages, in no pipeline, or carrying an
+unticked Open question is `needs design` and takeable. Without it, an issue `ready.sh` calls
+`not in the pipeline` (exit 2) is taken only if the user agrees to build it as written.
 A parent is never ready, since the check skips an issue with open sub-issues; its children
 are the work.
 

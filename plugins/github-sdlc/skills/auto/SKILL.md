@@ -6,37 +6,34 @@ argument-hint: "[--issue <n>] [--count <n>] [--deadline <2h>]"
 
 # Working the backlog
 
-The lifecycle, in order: the [design pipeline](../issue/references/pipeline.md) where an issue
-lacks it, [`build`](../build/SKILL.md) to a pull request, which `build` hands to
+Lifecycle, per issue: the [design pipeline](../issue/references/pipeline.md) where the issue lacks
+it, [`build`](../build/SKILL.md) (which hands the pull request to
 [`review-pr`](../review-pr/SKILL.md) and [`address-feedback`](../address-feedback/SKILL.md) until
-`ai-review:completed`, [`merge-pr`](../merge-pr/SKILL.md) to the default branch, and
-[`cleanup`](../cleanup/SKILL.md) when the run ends. This calls them in turn and decides only when
-to stop. Run every command from the main checkout.
+`ai-review:completed`), [`merge-pr`](../merge-pr/SKILL.md). [`cleanup`](../cleanup/SKILL.md) runs
+when the run ends. This skill calls them in turn and decides when to stop. Run every command from
+the main checkout.
 
 ## Limits
 
-Arguments are `--issue <n>`, `--count <n>` and `--deadline <duration>`, in any order, all optional:
+Optional arguments, in any order:
+
+| Argument | Meaning |
+|---|---|
+| `--issue <n>` | Run this one issue and skip the ranking. Implies a count of 1; with `--count`, stop before taking anything |
+| `--count <n>` | Stop after `<n>` merges |
+| `--deadline <n>m\|<n>h` | Stop starting issues after this wall-clock time |
 
 ```
 /github-sdlc:auto --issue 42
-/github-sdlc:auto --count 1
 /github-sdlc:auto --count 3 --deadline 2h
 ```
 
-`--issue <n>` runs the lifecycle on that one issue and skips the ranking, with a count of 1. Step 2
-still checks it: `next.sh --design` on that number alone, and its *Held* rules. An issue that is
-not ready, blocked or held stops the run with the reason. Give `--issue` with `--count` and the run
-stops on the contradiction before it takes anything.
+Print a deadline once with `echo $(( $(date +%s) + <seconds> ))` and carry the number. Restate the
+limits in one line before starting, such as "count 3, deadline 2h". With neither limit, the run
+ends when `next.sh` returns `none`; say so.
 
-A duration is a number and `m` or `h`. Wall clock is the only budget a skill can measure. Print a
-deadline once with `echo $(( $(date +%s) + <seconds> ))` and carry the number. With neither
-argument, the run ends when [`pick-issue`](../pick-issue/SKILL.md) returns `none`; say so before
-starting. Before starting, restate the limits in one line, such as "count 3, deadline 2h".
-
-Free wording ("merge one issue") is read as the same arguments, but an argument that cannot be
-read, such as `--count many` or `--deadline soon`, stops the run before it takes an issue, naming the
-argument and the form above. Never guess a limit: a wrong guess merges the wrong number of
-pull requests.
+An argument that cannot be read (`--count many`) stops the run before it takes an issue, naming the
+argument. Never guess a limit.
 
 ## Per issue
 
@@ -49,19 +46,16 @@ if [ "$(date +%s)" -ge <deadline> ]; then echo past; else echo within; fi
 Read them here and nowhere else — abandoning an issue mid-flight leaves a branch and a pull
 request nobody asked for. The deadline stops the next issue from starting, not the one running.
 
-**2. Choose.** Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an issue
-you claimed and left unfinished ahead of new work, then run
-`next.sh --design` on that list from the main checkout. Drop any issue pick-issue's *Held* rules exclude first. One script reads the backlog, so the
-choice and the dispatches cannot disagree. It ends `take <n>` or `none`. Stop on `none` and give
-each reason it printed; a board with nothing designed is not an empty board.
+**2. Choose.** Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an
+issue you claimed and left unfinished ahead of new work. Drop what its *Held* rules exclude. Run
+`next.sh --design` on that list. It ends `take <n>` or `none`; on `none`, stop and give each
+reason it printed.
 
-**Claim `<n>` now,** before any dispatch, as [`claim`](../issue/references/claim.md) says:
-assign it, read the assignees again, and move the card to In Progress. Print the issue number once
-the card has moved. Where someone else holds it, drop it and run `next.sh --design` on the
-rest. The claim waits on nothing a subagent does, so the issue is taken the moment it is chosen.
+**Claim `<n>` before any dispatch,** as [`claim`](../issue/references/claim.md) says. Print the
+issue number once the card has moved. If someone else holds it, drop it and run `next.sh --design`
+on the rest.
 
-Where the line for `<n>` reads `needs design`, go to *Design* below and come back with the
-issue designed. Where it reads `ready`, go to step 2b.
+`needs design` goes to *Design*, then back here. `ready` goes to step 2b.
 
 **2b. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` in autonomous mode for
 issue `<n>`. Ask for `build`'s report. Stop where it:
@@ -72,40 +66,29 @@ issue `<n>`. Ask for `build`'s report. Stop where it:
 - **names an issue and no pull request.** Give the condition. Looping back either retakes a
   not-ready issue forever or skips a check that failed
 
-**Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md)
-on issue `<n>` in autonomous mode: write each needed stage with its skill and review it with
-[`review-design`](../review-design/SKILL.md), starting at the first stage that lacks
-`review-passed`, and sort each Open question as the pipeline says. The issue is already claimed,
-so it claims nothing and releases nothing. Ask for the issue, the label each stage ended on, every question it decided with its answer, and
-every question it left for a person with its recommendation and alternatives. Running `auto` is the user's
-word to run the pipeline, never to build an issue as written. Then run `next.sh` for `<n>` once
-more: `ready` goes to step 2b. Where it returned questions for a person, ask them yourself,
-in this conversation: one `AskUserQuestion` for the batch, the recommended answer first. Then
-dispatch a fresh design subagent that gets the issue and the user's answers, quoted as theirs,
-records each as `Answered`, and carries on from where the pipeline stopped.
+**Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md) on
+issue `<n>` in autonomous mode, from the first stage lacking `review-passed`. The issue is already
+claimed. Ask for the label each stage ended on, each question it decided with its answer, and each
+question it left for a person with a recommendation and alternatives. Running `auto` authorizes the
+pipeline, never building an issue as written.
 
-Where a stage still lacks `review-passed` after the design subagent reports three review passes,
-ask rather than stop: one `AskUserQuestion` that quotes the last findings from the stage's latest
-`design-pass` comment and says how many criteria or items the stage has grown by, with these
-options, the first being the default. A stage with no result label has edits nobody has reviewed;
-one on `changes-requested` has findings still standing:
+Then run `next.sh` for `<n>`. `ready` goes to step 2b.
 
-- **One more review pass.** Dispatch `review-design` for the stage once, and ask again if it
-  still lacks `review-passed`.
-- **Accept it as it stands.** Offered only when the last pass found no `critical`. Run this
-  yourself, on the user's word in this conversation, never in a subagent: post one comment
-  quoting the findings accepted, then set `<prefix>:review-passed` and remove
-  `<prefix>:changes-requested`. Carry on with the next stage.
-- **Stop here.** The issue stays with the user.
+- **Questions for a person.** Ask them yourself in one `AskUserQuestion`, recommended answer first.
+  Dispatch a fresh design subagent with the issue and the user's answers, quoted as theirs; it
+  records each as `Answered` and continues.
+- **A stage still lacks `review-passed` after three passes.** Ask in one `AskUserQuestion` that
+  quotes the last findings and the stage's growth in criteria or items. No result label means
+  unreviewed edits; `changes-requested` means findings stand. Options, first is the default:
+  - **One more review pass:** dispatch `review-design` once; ask again if it still fails.
+  - **Accept as it stands:** only when the last pass found no `critical`. Do it yourself on the
+    user's word, never in a subagent: comment quoting the accepted findings, add
+    `<prefix>:review-passed`, remove `<prefix>:changes-requested`, continue.
+  - **Stop here.**
 
-Stop where:
-
-- **the user declines to answer a question, or chooses to stop.** Quote the question or the last
-  findings; the issue is the user's to answer
-- **`<n>` is not `ready` after the pipeline.** Looping would design it forever. Give the reason
-
-Release `<n>` as `claim` says on either stop, since the run ends with nothing continuing the work.
-The build that follows a design keeps the claim. A `build` that stops releases its own claim.
+Stop when the user declines a question or chooses to stop (quote the question or findings), or when
+`<n>` is not `ready` after the pipeline (give the reason). On a stop, release `<n>` as `claim`
+says. A design followed by a build keeps the claim; a `build` that stops releases its own.
 
 **3. Run the gate.**
 
@@ -134,13 +117,14 @@ of merges, not attempts.
 
 ## Cleanup
 
-When the run ends, for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in
-this conversation — never a subagent, since it asks the user before it deletes. Run it before the
-report, so the report names what is left rather than what was there. A stopped issue's branch,
-pull request and worktree are **keep** or **ask** items: cleanup shows them and leaves them
-unless the user says otherwise.
+When the run ends for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in this
+conversation, never in a subagent, since it asks before deleting. Run it before the report. A
+stopped issue's branch, pull request and worktree show as keep or ask items and stay unless the
+user says otherwise.
 
 ## The report
+
+Take the report, and any comment this skill posts, through [`technical-writing`](../technical-writing/SKILL.md).
 
 One line per issue attempted, in order:
 
@@ -149,8 +133,8 @@ One line per issue attempted, in order:
 - `#<n>` **stopped** — the pull request, the condition quoted from the skill that named it, and
   that the next run picks the same issue unless its readiness or rank changed
 
-Close with why the run ended, and name which of a branch, a pull request and a worktree are
-there after cleanup — read them off disk and GitHub rather than inferring them from where the run stopped.
+Close with why the run ended, and which branch, pull request and worktree remain after cleanup,
+read off disk and GitHub.
 Name a worktree in particular: the next run's `git worktree add` fails on it until it is cleared.
 
 ## Rate limits

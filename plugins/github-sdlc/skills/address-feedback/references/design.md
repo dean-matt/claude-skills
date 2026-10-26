@@ -16,8 +16,16 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
   and add an unticked Open question proposing the criterion, which the caller asks the user.
 - **A finding that needs another stage changed** is not applied here. Record it as a reply and
   follow the pipeline's rule for sending an earlier stage back.
-- **Replying:** one issue comment answering each finding by number: `**Applied**` or
-  `**Declined** — <reason>`. It opens with `<!-- design-replies:<stage> -->` so tidying can find it.
+- **Replying:** edit the stage's latest `<!-- design-pass:<stage> -->` comment in place, not a new
+  one. Append the verdict under each numbered finding, indented: `**Applied** — <what changed>`,
+  `**Declined** — <reason>` or `**Held for the user** — <the Open question it became>`. The
+  finding and its answer then sit together, and a pass costs one comment. Keep the marker as the
+  first line and change nothing else in the body.
+
+  ```bash
+  gh api repos/{owner}/{repo}/issues/comments/<id> -X PATCH -F body=@pass.md
+  ```
+  A comment with a `Declined` or `Held` verdict stays visible for the user; `tidy.mjs` leaves it.
 - **Labels:** once the edits are written, remove the stage's `changes-requested`, since it
   describes the text before them. A stage with `designed` and no result label is written and
   awaiting review. This mode never adds `review-passed` or `changes-requested`.

@@ -70,7 +70,7 @@ gh issue comment <n> --body-file <pass.md>
 A pass with nothing to report still posts its marked comment.
 
 When the stage gets `review-passed`, or the loop ends after its third pass, hide the earlier
-passes and their replies so the issue does not carry them. The last pass stays visible and nothing
+passes so the issue does not carry them. The last pass stays visible and nothing
 a person wrote is touched. A failure here is reported and never undoes the review.
 
 ```bash

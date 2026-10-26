@@ -2,7 +2,7 @@
  * Closes out the review noise once a review has converged, so an issue or a pull request does
  * not carry every pass it took to get there.
  *
- *   tidy.mjs issue <n> <stage>   minimize earlier design passes and their replies as outdated
+ *   tidy.mjs issue <n> <stage>   minimize earlier design passes as outdated
  *   tidy.mjs pr <n>              minimize earlier review passes, resolve answered threads
  *
  * The last pass stays visible, with whatever follows it: it is the one a reader needs, and the
@@ -17,15 +17,23 @@ import { PASS_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
 
 export const designMarker = (stage) => `<!-- design-pass:${stage} -->`;
 
-/** @param {string} body @param {string} stage */
-export function isDesignReply(body, stage) {
-  return body.startsWith(`<!-- design-replies:${stage} -->`) ||
-    new RegExp(`^Replies to design pass \\d+ \\(${stage}\\b`).test(body);
+/**
+ * A reply comment from before verdicts went inline in the pass itself. Issues written then still
+ * carry them.
+ *
+ * @param {string} body @param {string} stage
+ */
+export function isLegacyReply(body, stage) {
+  return new RegExp(`^Replies to design pass \\d+ \\(${stage}\\b`).test(body);
 }
 
+/** A verdict that waits on the user, which keeps its comment visible. */
+export const waiting = (body) => body.includes("**Declined**") || body.includes("**Held for the user**");
+
 /**
- * Comments of one stage that an earlier pass left behind: every pass and reply before the last
- * pass. Replies to the last pass stay with it.
+ * Comments of one stage that an earlier pass left behind: every pass before the last, and the
+ * legacy replies before it, unless one still holds a declined or held finding. The last pass
+ * stays with whatever follows it.
  *
  * @param {{ node_id: string, body: string }[]} comments oldest first
  * @param {string} stage
@@ -34,7 +42,12 @@ export function isDesignReply(body, stage) {
 export function staleDesign(comments, stage) {
   const last = comments.findLastIndex((c) => c.body.startsWith(designMarker(stage)));
   return comments
-    .filter((c, i) => i < last && (c.body.startsWith(designMarker(stage)) || isDesignReply(c.body, stage)))
+    .filter(
+      (c, i) =>
+        i < last &&
+        (c.body.startsWith(designMarker(stage)) || isLegacyReply(c.body, stage)) &&
+        !waiting(c.body),
+    )
     .map((c) => c.node_id);
 }
 

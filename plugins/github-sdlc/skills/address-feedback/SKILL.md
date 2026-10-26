@@ -18,7 +18,8 @@ The loop is the same; the references hold what differs.
 3. **Apply** the accepted changes. For a pull request, run the check command, take the prose
    through [`technical-writing`](../technical-writing/SKILL.md), and commit and push a new
    commit — never amend, rebase or force-push a pushed branch.
-4. **Reply** to each item last with a verdict: `**Applied**` or `**Declined** — <reason>`.
+4. **Reply** to each item last with a verdict: `**Applied**` or `**Declined** — <reason>`. In
+   design mode the verdict goes into the pass comment itself, per the mode's reference.
 5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
    Stop after three passes and let the replies carry what remains.
 6. **Close out** in pr mode, once the last pass came back clean: hide what the earlier passes

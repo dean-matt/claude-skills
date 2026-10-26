@@ -5,15 +5,24 @@ import { doneThreads, staleDesign, staleReviews, tidy } from "./tidy.mjs";
 
 const c = (node_id, body) => ({ node_id, body });
 
-test("design: every pass and reply before the last pass is stale, the last pass and what follows are not", () => {
+test("design: every pass before the last is stale, the last pass and what follows are not", () => {
   const comments = [
-    c("p1", "<!-- design-pass:criteria -->\n1. **critical** — x"),
+    c("p1", "<!-- design-pass:criteria -->\n1. **critical** — x\n   **Applied** — fixed"),
     c("r1", "Replies to design pass 1 (criteria):\n1. **Applied**"),
     c("human", "looks right to me"),
-    c("p2", "<!-- design-pass:criteria -->\n1. **warning** — y"),
-    c("r2", "<!-- design-replies:criteria -->\n1. **Applied**"),
+    c("p2", "<!-- design-pass:criteria -->\n1. **warning** — y\n   **Applied** — fixed"),
+    c("r2", "Replies to design pass 2 (criteria):\n1. **Applied**"),
   ];
   assert.deepEqual(staleDesign(comments, "criteria"), ["p1", "r1"]);
+});
+
+test("design: a pass that still holds a declined or held finding stays visible", () => {
+  const comments = [
+    c("p1", "<!-- design-pass:criteria -->\n1. **warning** — x\n   **Declined** — out of scope"),
+    c("p2", "<!-- design-pass:criteria -->\n1. **warning** — y\n   **Held for the user** — new criterion"),
+    c("p3", "<!-- design-pass:criteria -->\n1. **comment** — z"),
+  ];
+  assert.deepEqual(staleDesign(comments, "criteria"), []);
 });
 
 test("design: another stage's passes and the decisions comment are left alone", () => {

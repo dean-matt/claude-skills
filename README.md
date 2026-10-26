@@ -52,6 +52,7 @@ claude plugin validate plugins/github-multi-account
 (cd plugins/github-sdlc/skills/merge-pr/scripts && node --test)
 node --test plugins/github-sdlc/hooks/read-only-bash.test.mjs
 (cd plugins/github-sdlc/skills/issue/scripts && node --test ready.test.mjs)
+node --test plugins/github-sdlc/skills/cleanup/scripts/scan.test.mjs
 
 # Remove
 claude plugin uninstall github-multi-account

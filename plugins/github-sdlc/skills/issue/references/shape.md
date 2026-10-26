@@ -32,6 +32,12 @@ Each is a checkbox. Tick it and add the answer on the same line when it is resol
 condition with nothing to link, such as "wait for the schema freeze", is an Open question too.
 Relationships are not: use a dependency.
 
+The section holds what is unresolved, so it does not outlive its questions. Once the last one is
+ticked and the stage that owns the answer has written it into the Summary, Out of scope or the
+criteria, post one comment listing each question with its answer, then delete the whole
+`## Open questions` section, heading included. A section of ticked items is stale text: the
+answers are already in the sections that carry them, and the comment keeps the record.
+
 ## Types
 
 One `type:` label per issue.

@@ -13,6 +13,8 @@ Stage: criteria. Covers Summary, Reproduction, Open questions, Out of scope and 
 - Out of scope exists. `Nothing` is acceptable.
 - Every unresolved point is an unticked Open question, and none that changes a criterion is
   left unanswered while the criterion is written as if settled.
+- `## Open questions` is present only while one item is unticked. A section of ticked items is a
+  `warning`: the answers belong in the sections that carry them, and the section should go.
 - A `## UI/UX Design` heading is present exactly when a user can see the change.
 - The issue's type matches its content, and a bug has a `type:fix` label.
 - No relationship (blocked by, part of) is written in the body.

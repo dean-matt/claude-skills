@@ -41,6 +41,9 @@ The labels, their colors and the commands that create them are in
     `- [x] <question> — Answered: <answer>`.
   When in doubt it is a question for a person. Where an answer changes a criterion, the criteria
   stage rewrites it and the pipeline runs again from there. Report every decision and answer.
+  When the last question is ticked and its answer is written into the sections that carry it,
+  post one comment listing each question with its answer, tagged `Decided (auto)` or `Answered`,
+  and delete the `## Open questions` section, as [`shape.md`](shape.md) says.
 - Review stops after three passes with `changes-requested` still set. The issue is then held
   for the user with the last findings attached.
 

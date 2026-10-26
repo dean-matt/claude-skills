@@ -52,3 +52,13 @@ needs a decision that is the user's. A second bug found on the way becomes its o
 part of this branch.
 
 Close the worktree when the run ends; the branch and pull request stand.
+
+## Report
+
+End with these, so a caller can act without reading the run:
+
+- the issue taken, or the reason none was
+- the pull request number, or the condition that stopped the run before one opened
+- the label left on it, and where its review pass ran (the `pr-auditor` agent, or not)
+- what waits on the user: a held deviation, a declined `critical` or `warning`, a protected
+  path, a second issue this run filed. Write "nothing" when there is none.

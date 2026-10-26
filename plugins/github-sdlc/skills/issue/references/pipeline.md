@@ -42,8 +42,10 @@ no Open question is unticked, nothing open blocks it, and it has no open sub-iss
 "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/ready.sh" <issue>
 ```
 
-It prints `ready` (exit 0), one `not ready: <reason>` line per failure (exit 1), or
-`not in the pipeline` (exit 2) for an issue with no agent label.
+It prints `ready` (exit 0) or one `not ready: <reason>` line per failure (exit 1). Blockers,
+sub-issues, open questions and state are checked for every issue. The stage labels are checked
+only for an issue in the pipeline; one that passes the rest but carries no agent label prints
+`not in the pipeline` (exit 2), so a caller can offer to run the pipeline or build it as written.
 
 ## Moving a label
 

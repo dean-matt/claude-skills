@@ -4,8 +4,11 @@
 #   ready.sh <issue> [owner/repo]
 #
 # Prints "ready" and exits 0; or one "not ready: <reason>" line per failure and exits 1.
-# Exits 2 with "not in the pipeline" for an issue that carries no *-agent: label, so a caller
-# can offer to run the pipeline or build from the issue as written. Needs `gh` and `jq`.
+# Blockers, sub-issues, open questions and state are checked for every issue. The stage labels
+# are checked only for an issue in the pipeline, meaning one carrying a *-agent: label. An issue
+# that passes the first checks but is not in the pipeline prints "not in the pipeline" and
+# exits 2, so a caller can offer to run the pipeline or build from the issue as written.
+# Needs `gh` and `jq`.
 set -euo pipefail
 
 n=${1:?usage: ready.sh <issue> [owner/repo]}
@@ -17,25 +20,25 @@ body=$(jq -r '.body // ""' <<<"$issue")
 
 has() { printf '%s\n' "$labels" | grep -qx "$1"; }
 
-if ! printf '%s\n' "$labels" | grep -q -- '-agent:'; then
-  echo "not in the pipeline"
-  exit 2
-fi
+pipeline=0
+printf '%s\n' "$labels" | grep -q -- '-agent:' && pipeline=1
 
 fail=0
 no() { echo "not ready: $1"; fail=1; }
 
 type=$(printf '%s\n' "$labels" | sed -n 's/^type://p' | head -1)
 
-stages="criteria"
-if [ "$type" != spike ]; then
-  printf '%s\n' "$body" | grep -q '^## UI/UX Design' && stages="$stages ui"
-  stages="$stages technical test"
+if [ "$pipeline" -eq 1 ]; then
+  stages="criteria"
+  if [ "$type" != spike ]; then
+    printf '%s\n' "$body" | grep -q '^## UI/UX Design' && stages="$stages ui"
+    stages="$stages technical test"
+  fi
+  for s in $stages; do
+    has "$s-agent:changes-requested" && no "$s review has findings to address"
+    has "$s-agent:review-passed" || no "$s has not passed review"
+  done
 fi
-for s in $stages; do
-  has "$s-agent:changes-requested" && no "$s review has findings to address"
-  has "$s-agent:review-passed" || no "$s has not passed review"
-done
 
 open_questions=$(printf '%s\n' "$body" | awk '
   /^## /{inq = ($0 == "## Open questions"); next}
@@ -51,4 +54,6 @@ children=$(gh api "repos/$repo/issues/$n/sub_issues" --jq '[.[] | select(.state=
 
 [ "$(jq -r .state <<<"$issue")" = open ] || no "the issue is closed"
 
-if [ "$fail" -eq 0 ]; then echo ready; else exit 1; fi
+[ "$fail" -eq 0 ] || exit 1
+if [ "$pipeline" -eq 0 ]; then echo "not in the pipeline"; exit 2; fi
+echo ready

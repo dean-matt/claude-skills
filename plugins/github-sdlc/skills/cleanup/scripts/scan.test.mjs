@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { classify } from "./scan.mjs";
 
-const base = { base: "main", worktrees: [], branches: [], prs: [], assigned: [] };
+const base = { base: "main", worktrees: [], branches: [], prs: [], assigned: [], here: { branch: null, dirty: false } };
 const branch = (name, extra = {}) => ({ name, local: "aaa", remote: "aaa", ahead: 2, ...extra });
 const pr = (head, state, extra = {}) => ({ number: 7, state, head, sha: "aaa", closes: [], ...extra });
 const one = (facts) => classify({ ...base, ...facts })[0];
@@ -46,4 +46,12 @@ test("an assignment is asked about unless a branch or an open pull request holds
   assert.equal(one({ assigned: [5] }).kind, "assignment");
   assert.deepEqual(classify({ ...base, assigned: [5], branches: [branch("feat/5-z")], prs: [pr("feat/5-z", "OPEN")] }).filter((r) => r.kind === "assignment"), []);
   assert.deepEqual(classify({ ...base, assigned: [5], prs: [pr("other", "OPEN", { closes: [5] })] }).filter((r) => r.kind === "assignment"), []);
+});
+
+test("the branch checked out in the main checkout is flagged, and kept if that checkout is dirty", () => {
+  const facts = { branches: [branch("feat/1-x")], prs: [pr("feat/1-x", "MERGED")] };
+  const clean = one({ ...facts, here: { branch: "feat/1-x", dirty: false } });
+  assert.equal(clean.verdict, "safe");
+  assert.match(clean.reason, /checked out here/);
+  assert.equal(one({ ...facts, here: { branch: "feat/1-x", dirty: true } }).verdict, "keep");
 });

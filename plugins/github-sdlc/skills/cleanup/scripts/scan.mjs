@@ -21,13 +21,20 @@ const CLAIM = /^[a-z]+\/(\d+)-/;
  *   branches: { name: string, local: string | null, remote: string | null, ahead: number }[],
  *   prs: { number: number, state: string, head: string, sha: string, closes: number[] }[],
  *   assigned: number[],
+ *   here: { branch: string | null, dirty: boolean },
  * }} facts
  * @returns {{ verdict: "safe" | "ask" | "keep", kind: string, ref: string, reason: string }[]}
  */
-export function classify({ base, worktrees, branches, prs, assigned }) {
+export function classify({ base, worktrees, branches, prs, assigned, here }) {
   const prFor = (name) => prs.find((p) => p.head === name);
 
   const branchVerdict = (b) => {
+    if (b.name === here.branch && here.dirty) return ["keep", "checked out here with uncommitted changes"];
+    const [verdict, reason] = prVerdict(b);
+    return [verdict, b.name === here.branch ? `${reason}; checked out here, so the skill switches to ${base} first` : reason];
+  };
+
+  const prVerdict = (b) => {
     const pr = prFor(b.name);
     if (pr?.state === "OPEN") return ["keep", `open pull request #${pr.number}`];
     if (pr?.state === "MERGED") {
@@ -102,7 +109,11 @@ export function gather(run = capture) {
     closes: p.closingIssuesReferences.map((i) => i.number),
   }));
   const assigned = json("gh", ["issue", "list", "--assignee", "@me", "--state", "open", "--limit", "200", "--json", "number"]).map((i) => i.number);
-  return { base, worktrees, branches, prs, assigned };
+  const here = {
+    branch: sh("git", ["branch", "--show-current"], { cwd: main }).trim() || null,
+    dirty: sh("git", ["status", "--porcelain"], { cwd: main }).trim() !== "",
+  };
+  return { base, worktrees, branches, prs, assigned, here };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

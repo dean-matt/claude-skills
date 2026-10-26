@@ -46,6 +46,6 @@ Each sign-off taken: what was approved, and that it was heard directly in this c
 
 ## Will not do
 
-Widen what the repository protects: editing `.github/protected-paths` is itself a protected path, so
+Widen what the repository protects: editing `.github/protected-paths.txt` is itself a protected path, so
 changing the list is a separate, reviewed change. Sign off on a relayed answer. Merge past any failing condition other than the
 label.

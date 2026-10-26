@@ -31,7 +31,7 @@ export function matchesAny(globs, path) {
 }
 
 /** Where a repository lists the paths whose changes need its owner's sign-off. */
-export const PROTECTED_FILE = ".github/protected-paths";
+export const PROTECTED_FILE = ".github/protected-paths.txt";
 
 /** One glob per line; a blank line and a `#` comment are ignored. */
 export function parseList(text) {

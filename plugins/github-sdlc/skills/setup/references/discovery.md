@@ -13,7 +13,7 @@ and a statement there wins over discovery.
 | Project board and its Status options | [`board.md`](board.md) | skip board steps |
 | Review labels | `gh label list` | create them (below) |
 | Version bump | a sentence in the repository's CLAUDE.md or CONTRIBUTING.md saying the merge raises a version | off |
-| Protected paths | `.github/protected-paths` on the default branch | none |
+| Protected paths | `.github/protected-paths.txt` on the default branch | none |
 | Runs checks | a workflow file under `.github/workflows/`, or a required check in the ruleset | no checks to wait on |
 | Severity rule | a sentence in the repository's CLAUDE.md | `triage` asks |
 

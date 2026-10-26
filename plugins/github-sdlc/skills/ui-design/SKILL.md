@@ -21,7 +21,7 @@ Claim the issue first, per [`claim`](../issue/references/claim.md).
 
 1. Read the issue and the existing interface it touches: the components, design tokens and
    docs the repository keeps, so the design reuses what exists.
-2. Write the section:
+2. Write the section, wrap it as [`shape.md`](../issue/references/shape.md#foldable-sections) says:
    - **Flow:** the steps from the user's side.
    - **States:** default, empty, loading, error, disabled or locked, and any other the
      criteria imply.

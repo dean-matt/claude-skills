@@ -18,7 +18,7 @@ name the missing stage.
 ## Steps
 
 1. Read the criteria and the Technical Design.
-2. Write one line per case, starting with the AC it covers:
+2. Write one line per case, starting with the AC it covers, wrap it as [`shape.md`](../issue/references/shape.md#foldable-sections) says:
 
    ```markdown
    - AC2: two characters with the same skill name and ability → one `HB` row

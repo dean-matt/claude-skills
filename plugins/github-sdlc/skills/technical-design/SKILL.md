@@ -19,7 +19,7 @@ Design heading. Otherwise stop and name the missing stage.
 
 1. Read the issue and **investigate the code**: find the real modules, callers, data and
    conventions. Cite files and symbols, never guesses.
-2. Write the section for the type:
+2. Write the section for the type, wrap it as [`shape.md`](../issue/references/shape.md#foldable-sections) says:
    - **Feature or chore:** the approach, the data and module changes, migrations and their
      reversibility, risks, and the alternatives rejected with a clause each.
    - **Bug:** the **root cause** (where and why it fails, not where it shows, confirmed by

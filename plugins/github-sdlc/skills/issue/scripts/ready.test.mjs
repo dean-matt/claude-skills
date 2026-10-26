@@ -122,3 +122,11 @@ test("--design hands an unticked open question to the pipeline; without it the q
   assert.deepEqual(d, { code: 3, out: "needs design: 1 open question(s) unticked" });
   assert.equal(ready({ labels: PASSED, body }).code, 1);
 });
+
+test("an unclosed <details> blocks, and a balanced pair does not", () => {
+  const open = "## Acceptance criteria\n\n<details open>\n<summary>Show or hide</summary>\n\n- AC1\n";
+  const r = ready({ labels: PASSED, body: open });
+  assert.equal(r.code, 1);
+  assert.match(r.out, /1 <details> opened and 0 closed/);
+  assert.deepEqual(ready({ labels: PASSED, body: `${open}\n</details>\n` }), { code: 0, out: "ready" });
+});

@@ -18,6 +18,29 @@ sub-issues) and are never repeated in the body. Pull request links belong to the
 
 The headings are exactly these, `##` level, so tooling can find them.
 
+## Foldable sections
+
+Acceptance criteria, UI/UX Design, Technical Design and Test Design are wrapped so a long one can
+be folded. They start open. The `##` heading stays outside, since tooling finds it; the content
+sits inside, with a blank line after `<summary>` and before `</details>`, or the Markdown inside
+does not render:
+
+````markdown
+## Acceptance criteria
+
+<details open>
+<summary>Show or hide</summary>
+
+- **AC1.** ...
+
+</details>
+````
+
+Summary, Out of scope and Open questions are never wrapped: a reader should not have to unfold
+what stops the pipeline. Rewrite a section's content and keep its wrapper. A section that is
+`n/a — <reason>` needs none. An older issue without wrappers is left alone until a stage rewrites
+the section.
+
 ## Acceptance criteria
 
 - State an observable result: "the dialog shows X", never "implement X".

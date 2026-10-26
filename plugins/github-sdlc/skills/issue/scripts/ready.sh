@@ -61,6 +61,12 @@ if [ "$open_questions" -ne 0 ]; then
   else no "$open_questions open question(s) unticked"; fi
 fi
 
+# A section is wrapped in <details open>. A wrapper left unclosed folds the rest of the issue into
+# it, so unequal counts of opening and closing tags is a failure whichever section lost its tag.
+opened=$(printf '%s\n' "$body" | grep -c '^[[:space:]]*<details' || true)
+closed=$(printf '%s\n' "$body" | grep -c '^[[:space:]]*</details>' || true)
+[ "$opened" -eq "$closed" ] || no "$opened <details> opened and $closed closed; a section wrapper is broken"
+
 blockers=$(gh api "repos/$repo/issues/$n/dependencies/blocked_by" --jq '[.[] | select(.state=="open") | .number] | map("#"+tostring) | join(", ")')
 [ -z "$blockers" ] || no "blocked by $blockers"
 

@@ -1,6 +1,7 @@
 ---
 name: build
 description: Take one GitHub issue from open to a pull request ready for review — check it is ready, claim it, open an isolated worktree, implement, run the checks, take screenshots, commit, push and open the pull request. Use when asked to implement, build, fix or work an issue.
+argument-hint: "[issue-number] [draft] [autonomous]"
 ---
 
 # Building an issue
@@ -8,6 +9,8 @@ description: Take one GitHub issue from open to a pull request ready for review 
 Read the repository's CLAUDE.md and CONTRIBUTING.md first; they outrank this skill.
 
 ## Options
+
+Pass the words `draft` and `autonomous`, e.g. `/github-sdlc:build 42 draft`.
 
 Ask which of these apply only when the request does not say:
 

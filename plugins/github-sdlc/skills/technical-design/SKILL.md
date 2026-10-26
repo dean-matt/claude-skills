@@ -1,6 +1,7 @@
 ---
 name: technical-design
 description: Write the Technical Design section of an issue — the approach for a feature, or the root cause, fix and blast radius for a bug — after investigating the code. Use after earlier stages pass review, or when asked how an issue should be built or what causes a bug.
+argument-hint: "<issue-number>"
 ---
 
 # Technical design

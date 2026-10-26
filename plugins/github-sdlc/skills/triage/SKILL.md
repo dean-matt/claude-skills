@@ -1,6 +1,7 @@
 ---
 name: triage
 description: Triage an incoming GitHub issue or feedback — classify its type, check for duplicates, set severity and area, fill gaps with questions, propose a milestone, and put it on the board. Use when new issues, bug reports or feedback arrive, or when asked to triage, sort or review the backlog.
+argument-hint: "[issue-number] [autonomous]"
 ---
 
 # Triage
@@ -40,6 +41,8 @@ Report: how many issues wait in Triage, any open `severity:critical` bug (even t
 not picked), and clusters worth a parent.
 
 ## Options
+
+Pass the word `autonomous`.
 
 - **Interactive** (default): propose each change and apply on a yes.
 - **Autonomous**: apply labels and board moves; still ask before closing a duplicate and

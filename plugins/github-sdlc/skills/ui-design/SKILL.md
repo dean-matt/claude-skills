@@ -1,6 +1,7 @@
 ---
 name: ui-design
 description: Write the UI/UX Design section of an issue — the flow, every state, copy, and keyboard and screen-reader behavior — for a change a user can see. Use after an issue's acceptance criteria pass review, when the issue has a UI/UX Design heading, or when asked to design the UI for an issue.
+argument-hint: "<issue-number>"
 ---
 
 # UI/UX design

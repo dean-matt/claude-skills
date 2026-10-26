@@ -1,6 +1,7 @@
 ---
 name: test-design
 description: Write the Test Design section of an issue — a list of cases, each naming the acceptance criterion it covers — after the technical design passes review. Use when asked how an issue will be tested, or as the last design stage before building.
+argument-hint: "<issue-number>"
 ---
 
 # Test design

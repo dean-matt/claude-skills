@@ -1,6 +1,7 @@
 ---
 name: open-pr
 description: Open a pull request for the current branch with a short structured body — closing link, what, why, screenshots, deviations — and keep that body accurate as the branch changes. Use when a branch is pushed and ready for review, or when a pull request body needs rewriting.
+argument-hint: "[draft]"
 ---
 
 # Opening a pull request
@@ -58,6 +59,8 @@ When later commits change what the pull request delivers, rewrite the affected s
 reader.
 
 ## Options
+
+Pass the word `draft`.
 
 Ask only when the answer is not already known: **draft or ready**, and **whether to attach
 screenshots** when the diff is ambiguous about being visible.

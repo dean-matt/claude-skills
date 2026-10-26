@@ -1,6 +1,7 @@
 ---
 name: pick-issue
 description: Choose the next GitHub issue to work — list open issues in priority order, keep only those ready to build and not held, and either take the first or let the user choose. Use when asked what to work on next, to pick up an issue, or when `build` is invoked with no issue named.
+argument-hint: "[issue-number] [auto]"
 ---
 
 # Picking an issue
@@ -66,6 +67,8 @@ git ls-remote --heads origin '*/<n>-*'
 Any open `severity:critical` bug, even when not picked, and how many issues wait in Triage.
 
 ## Options
+
+Pass an issue number to name one, or the word `auto`.
 
 - **Named issue**: skip ordering; still run the readiness and held checks.
 - **Interactive** (default when several qualify): show the top five with title, milestone and

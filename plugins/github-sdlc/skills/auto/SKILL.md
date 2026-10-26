@@ -1,6 +1,7 @@
 ---
 name: auto
 description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build (which includes the pull request review) and merge-pr per issue in fresh subagents, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
+argument-hint: "[count=<n>] [deadline=<2h>]"
 ---
 
 # Working the backlog

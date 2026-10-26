@@ -1,6 +1,7 @@
 ---
 name: review-design
 description: Review one stage of an issue — acceptance criteria, UI/UX design, technical design or test design — with a fresh reviewer, post the findings as an issue comment, and set that stage's review labels. Use after a stage is written, when asked to review an issue or a design, or to re-review after changes.
+argument-hint: "<issue-number> [criteria|ui|technical|test]"
 ---
 
 # Reviewing a design stage

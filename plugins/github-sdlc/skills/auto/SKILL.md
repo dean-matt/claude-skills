@@ -54,6 +54,11 @@ request nobody asked for. The deadline stops the next issue from starting, not t
 choice and the dispatches cannot disagree. It ends `take <n>` or `none`. Stop on `none` and give
 each reason it printed; a board with nothing designed is not an empty board.
 
+**Claim `<n>` now,** before any dispatch, as [`claim`](../issue/references/claim.md) says:
+assign it, read the assignees again, and move the card to In Progress. Print the issue number once
+the card has moved. Where someone else holds it, drop it and run `next.sh --design` on the
+rest. The claim waits on nothing a subagent does, so the issue is taken the moment it is chosen.
+
 Where the line for `<n>` reads `needs design`, go to *Design* below and come back with the
 issue designed. Where it reads `ready`, go to step 2b.
 
@@ -69,10 +74,8 @@ issue `<n>`. Ask for `build`'s report. Stop where it:
 **Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md)
 on issue `<n>` in autonomous mode: write each needed stage with its skill and review it with
 [`review-design`](../review-design/SKILL.md), starting at the first stage that lacks
-`review-passed`, and sort each Open question as the pipeline says. It claims the issue and moves
-the card to In Progress before its first edit, and keeps the claim for the build that follows;
-where the pipeline stops it releases the issue, except when it returns questions for a person.
-Ask for the issue, the label each stage ended on, every question it decided with its answer, and
+`review-passed`, and sort each Open question as the pipeline says. The issue is already claimed,
+so it claims nothing and releases nothing. Ask for the issue, the label each stage ended on, every question it decided with its answer, and
 every question it left for a person with its recommendation and alternatives. Running `auto` is the user's
 word to run the pipeline, never to build an issue as written. Then run `next.sh` for `<n>` once
 more: `ready` goes to step 2b. Where it returned questions for a person, ask them yourself,
@@ -83,6 +86,9 @@ records each as `Answered`, and carries on from where the pipeline stopped. Stop
 - **the user declines to answer a question,** or a stage ends on `changes-requested` after three
   review passes. Quote the question or the last findings; the issue is the user's to answer
 - **`<n>` is not `ready` after the pipeline.** Looping would design it forever. Give the reason
+
+Release `<n>` as `claim` says on either stop, since the run ends with nothing continuing the work.
+The build that follows a design keeps the claim. A `build` that stops releases its own claim.
 
 **3. Run the gate.**
 

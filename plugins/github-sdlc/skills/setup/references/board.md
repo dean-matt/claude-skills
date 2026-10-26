@@ -1,7 +1,7 @@
 # The project board
 
-Skills move an issue's card between statuses. They look the project, field and option up by
-name each time, so nothing here is hard-coded and a rebuilt board needs no edit.
+Skills move an issue's card between statuses, looking the project, field and option up by name
+each time; nothing is hard-coded.
 
 | Status | Set by |
 |---|---|
@@ -11,8 +11,7 @@ name each time, so nothing here is hard-coded and a rebuilt board needs no edit.
 | In Review | `open-pr` |
 | Done | `merge-pr` |
 
-A board lacking a status skips that move and says so. `setup` offers to add the missing
-options.
+A board lacking a status skips that move and says so; `setup` offers to add the missing option.
 
 ## Find the project
 
@@ -42,8 +41,7 @@ gh project item-edit --id "$item" --project-id "$pid" --field-id "$fid" --single
 ## Failures
 
 - **"rate limit exceeded":** stop and report; do not retry in a loop.
-- **A missing `project` scope, a permission error, or `Could not resolve to a ProjectV2`:**
-  stop without retrying and report that this login cannot edit the project. The fix is
-  `gh auth refresh -s project`, plus the owner adding the login under the project's access.
-- A failure moving a card never undoes the work around it. Report the card as not moved and
-  carry on.
+- **A missing `project` scope, a permission error, or `Could not resolve to a ProjectV2`:** stop,
+  do not retry, and report that this login cannot edit the project. Fix: `gh auth refresh -s
+  project`, and the owner adds the login under the project's access.
+- A failed card move never undoes the work around it. Report the card as not moved.

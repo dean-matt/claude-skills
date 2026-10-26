@@ -10,16 +10,17 @@ Stages and gates: [`../issue/references/pipeline.md`](../issue/references/pipeli
 
 ## Preconditions
 
-Claim the issue first, per [`claim`](../issue/references/claim.md).
+Claim the issue first ([`claim`](../issue/references/claim.md)).
 
-`criteria-agent:review-passed`, plus `ui-agent:review-passed` when the issue has a UI/UX
-Design heading. Otherwise stop and name the missing stage.
+`criteria-agent:review-passed`, plus `ui-agent:review-passed` when the issue has a UI/UX Design
+heading. Otherwise stop and name the missing stage.
 
 ## Steps
 
 1. Read the issue and **investigate the code**: find the real modules, callers, data and
    conventions. Cite files and symbols, never guesses.
-2. Write the section for the type, wrap it as [`shape.md`](../issue/references/shape.md#foldable-sections) says:
+2. Write the section for the type, wrapped per
+   [`shape.md`](../issue/references/shape.md#foldable-sections):
    - **Feature or chore:** the approach, the data and module changes, migrations and their
      reversibility, risks, and the alternatives rejected with a clause each.
    - **Bug:** the **root cause** (where and why it fails, not where it shows, confirmed by
@@ -31,8 +32,9 @@ Design heading. Otherwise stop and name the missing stage.
    Open question and stop.
 4. If the design shows an earlier stage is wrong, follow the pipeline's rule for it: clear
    that stage's `review-passed`, add its `changes-requested`, and comment why.
-5. Take the section through [`technical-writing`](../technical-writing/SKILL.md): terse, no history or narrative. Then replace only the `## Technical Design` section (re-read first), set
-   `technical-agent:designed`, and clear this stage's `review-passed` and `changes-requested`.
+5. Take the section through [`technical-writing`](../technical-writing/SKILL.md). Then replace
+   only the `## Technical Design` section (re-read first), set `technical-agent:designed`, and
+   clear this stage's `review-passed` and `changes-requested`.
 6. Hand off to [`review-design`](../review-design/SKILL.md) for the technical stage.
 
 ## Will not do

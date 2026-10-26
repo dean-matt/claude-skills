@@ -10,7 +10,7 @@ Stages and gates: [`../issue/references/pipeline.md`](../issue/references/pipeli
 
 ## Preconditions
 
-Claim the issue first, per [`claim`](../issue/references/claim.md).
+Claim the issue first ([`claim`](../issue/references/claim.md)).
 
 - The issue carries `criteria-agent:review-passed`, and no open Open question changes a
   criterion. Otherwise stop and say which is missing.
@@ -21,7 +21,7 @@ Claim the issue first, per [`claim`](../issue/references/claim.md).
 
 1. Read the issue and the existing interface it touches: the components, design tokens and
    docs the repository keeps, so the design reuses what exists.
-2. Write the section, wrap it as [`shape.md`](../issue/references/shape.md#foldable-sections) says:
+2. Write the section, wrapped per [`shape.md`](../issue/references/shape.md#foldable-sections):
    - **Flow:** the steps from the user's side.
    - **States:** default, empty, loading, error, disabled or locked, and any other the
      criteria imply.
@@ -31,7 +31,8 @@ Claim the issue first, per [`claim`](../issue/references/claim.md).
      layout" and uploaded through [`screenshots`](../screenshots/SKILL.md).
 3. **Add no requirement.** If the design needs behavior no criterion covers, add an unticked
    Open question proposing the criterion, and stop. Never edit the criteria.
-4. Take the section through [`technical-writing`](../technical-writing/SKILL.md): terse, no history or narrative. Then replace only the `## UI/UX Design` section: re-read the issue, edit that section, then
+4. Take the section through [`technical-writing`](../technical-writing/SKILL.md). Then replace
+   only the `## UI/UX Design` section: re-read the issue, edit that section, then
    write the body back, so a concurrent edit elsewhere survives.
 5. Set `ui-agent:designed` and remove `ui-agent:review-passed` and `ui-agent:changes-requested`.
 6. Hand off to [`review-design`](../review-design/SKILL.md) for the ui stage.

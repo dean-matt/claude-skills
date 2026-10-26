@@ -2,8 +2,8 @@
 
 ## Claim
 
-The branch name derives from the issue number, so two sessions claiming one issue create the
-same ref and GitHub refuses the second with `Reference already exists (HTTP 422)`.
+The branch name derives from the issue number, so a second session claiming the issue creates
+the same ref and GitHub refuses it with `Reference already exists (HTTP 422)`.
 
 ```bash
 n=<n>; base=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
@@ -16,8 +16,8 @@ if git ls-remote --exit-code --heads origin "*/$n-*" >/dev/null; then echo held;
 fi
 ```
 
-`type` is `fix`, `feat`, `chore` or the repository's own prefix. `held` or a 422 means
-someone holds it: take the next issue, or stop naming the holder.
+`type` is `fix`, `feat`, `chore` or the repository's own prefix. `held` or a 422 means someone
+holds it: take the next issue, or stop and name the holder.
 
 ## Open the worktree
 
@@ -27,10 +27,10 @@ git fetch --quiet origin "$b"; git worktree prune
 git worktree add --quiet "$d" "$b" && cd "$d"
 ```
 
-Keep `.claude/worktrees/` out of git with `echo .claude/worktrees/ >> "$main/.git/info/exclude"`.
-Run the install command from `setup` inside the worktree. Link untracked local state the
-build needs (a vendored data directory, `.env`) with `ln -sfn`; never link a database two
-agents would write. Enter with `cd`, not a harness worktree tool.
+Exclude it from git: `echo .claude/worktrees/ >> "$main/.git/info/exclude"`. Run the install
+command from `setup` inside the worktree. Link untracked local state the build needs (a vendored
+data directory, `.env`) with `ln -sfn`; never link a database two agents would write. Enter with
+`cd`, not a harness worktree tool.
 
 ## Release a claim no pull request followed
 
@@ -45,4 +45,4 @@ gh issue edit "$n" --remove-assignee @me
 ## Close
 
 From outside the worktree: `git worktree remove .claude/worktrees/<n> && git worktree prune`.
-It refuses rather than discarding uncommitted work; stop on that refusal and never force it.
+It refuses to discard uncommitted work; stop on that refusal and never force it.

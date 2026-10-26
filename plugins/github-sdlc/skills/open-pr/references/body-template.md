@@ -1,8 +1,7 @@
 # Pull request body
 
-Facts live in one place. The issue holds the problem, the acceptance criteria and the
-design, and CI holds the check results. The body holds only what neither can know, and links
-instead of restating.
+Facts live in one place: the issue holds the problem, criteria and design; CI holds the check
+results. The body holds only what neither can know, and links instead of restating.
 
 ````markdown
 > Closes #<issue>
@@ -35,16 +34,16 @@ instead of restating.
   and links the issue natively. Several issues each take their own keyword:
   `> Closes #1, closes #2`. Never close a parent issue; it closes when its sub-issues do.
   With no issue, omit the line and let Why carry the reason.
-- **What** says what this pull request delivers. For a slice of an issue, it says which
-  slice. It never restates the issue's goal, lists files, or describes the diff.
-- **Why** holds only the reason that belongs to this pull request, such as why this approach
-  beat the alternative. If the issue already says why, link it and stop.
+- **What** says what this pull request delivers; for a slice of an issue, which slice. It never
+  restates the issue's goal, lists files, or describes the diff.
+- **Why** holds only the reason that belongs to this pull request, such as why this approach beat
+  the alternative. If the issue says why, link it and stop.
 - **Screenshots** appear only when a user can see the change. See below.
 - **Deviations** appear only when the build differed from the issue. Never write "None".
 - **No Verification section.** A missed acceptance criterion is a finding for
   [`review-pr`](../../review-pr/SKILL.md), and CI reports the checks.
-- **No Reviewer notes section.** A reviewer's note is a review comment on the line, resolved
-  when addressed. A follow-up is an issue, linked inline where it matters.
+- **No Reviewer notes section.** A reviewer's note is a review comment on the line. A follow-up is
+  an issue, linked inline where it matters.
 - Never restate an acceptance criterion or any part of the design.
 - Plain prose and short lists. No greeting, sign-off, recap or praise.
 - The repository's own `.github/pull_request_template.md`, if it has one, wins for headings;
@@ -52,9 +51,8 @@ instead of restating.
 
 ## Screenshots
 
-One `<details open>` per subject, always open. The `<summary>` names what is inside, so a
-reader knows before reading the images. Leave a blank line after `<summary>` and before
-`</details>`, or the Markdown inside does not render.
+One `<details open>` per subject. The `<summary>` names what is inside. Leave a blank line after
+`<summary>` and before `</details>`, or the Markdown inside does not render.
 
 | Subject | Shows | Labels, stacked, in this order |
 |---|---|---|

@@ -83,13 +83,14 @@ in this conversation: one `AskUserQuestion` for the batch, the recommended answe
 dispatch a fresh design subagent that gets the issue and the user's answers, quoted as theirs,
 records each as `Answered`, and carries on from where the pipeline stopped.
 
-Where a stage ends on `changes-requested` after three review passes, ask rather than stop: one
-`AskUserQuestion` that quotes the last findings and says how many criteria or items the stage
-has grown by, with these options, the first being the default:
+Where a stage still lacks `review-passed` after the design subagent reports three review passes,
+ask rather than stop: one `AskUserQuestion` that quotes the last findings from the stage's latest
+`design-pass` comment and says how many criteria or items the stage has grown by, with these
+options, the first being the default. A stage with no result label has edits nobody has reviewed;
+one on `changes-requested` has findings still standing:
 
 - **One more review pass.** Dispatch `review-design` for the stage once, and ask again if it
-  still ends on `changes-requested`. Offer this first where edits since the last pass were never
-  reviewed.
+  still lacks `review-passed`.
 - **Accept it as it stands.** Offered only when the last pass found no `critical`. Run this
   yourself, on the user's word in this conversation, never in a subagent: post one comment
   quoting the findings accepted, then set `<prefix>:review-passed` and remove

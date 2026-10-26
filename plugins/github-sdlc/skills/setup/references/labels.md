@@ -10,7 +10,7 @@ Re-running is safe.
 | `severity:critical`, `severity:high`, `severity:medium`, `severity:low` | How bad a bug is. Bugs only. `triage` proposes and the user confirms |
 | `ai-review:completed`, `ai-review:changes-requested` | The state of a pull request's review |
 | `<agent>:designed` | The stage's section is written. Accumulates |
-| `<agent>:review-passed`, `<agent>:changes-requested` | The stage's review result. Only one is set |
+| `<agent>:review-passed`, `<agent>:changes-requested` | The review result for the stage's current text. Only one is set. Editing the stage clears both, so `designed` alone means written and not yet reviewed |
 
 `<agent>` is `criteria-agent`, `ui-agent`, `technical-agent` or `test-agent`, as
 [`pipeline.md`](../../issue/references/pipeline.md) lists. For the criteria stage,

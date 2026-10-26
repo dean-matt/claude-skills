@@ -69,7 +69,7 @@ gh issue comment <n> --body-file <pass.md>
 
 A pass with nothing to report still posts its marked comment.
 
-When the stage gets `review-passed`, or the third pass leaves `changes-requested`, hide the earlier
+When the stage gets `review-passed`, or the loop ends after its third pass, hide the earlier
 passes and their replies so the issue does not carry them. The last pass stays visible and nothing
 a person wrote is touched. A failure here is reported and never undoes the review.
 
@@ -80,8 +80,10 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" issue <n> 
 ## 6. Repeat
 
 `address-feedback` returns here for a fresh pass while the last returned a `critical` or
-`warning`. After three passes with `changes-requested` still set, stop: leave the label, and
-tell the user what is outstanding. The next stage does not start.
+`warning`. After three passes in one loop, stop. `address-feedback` has applied the last
+findings and removed `changes-requested`, so the stage carries `designed` and no result label:
+written, and awaiting a review nobody has run. Tell the user what the last pass found and that
+the edits since are unreviewed. The next stage does not start.
 
 ## Will not do
 

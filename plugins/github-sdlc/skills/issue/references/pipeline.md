@@ -44,8 +44,9 @@ The labels, their colors and the commands that create them are in
   When the last question is ticked and its answer is written into the sections that carry it,
   post one comment listing each question with its answer, tagged `Decided (auto)` or `Answered`,
   and delete the `## Open questions` section, as [`shape.md`](shape.md) says.
-- Review stops after three passes with `changes-requested` still set. The issue is then held
-  for the user with the last findings attached.
+- Review stops after three passes in one loop. The last pass's findings are applied but not
+  reviewed, so the stage ends with `designed` and no result label, and the issue is held for the
+  user with the last findings attached. `review-design` runs again to review the edits.
 
 ## Claiming
 

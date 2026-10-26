@@ -18,7 +18,11 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
   follow the pipeline's rule for sending an earlier stage back.
 - **Replying:** one issue comment answering each finding by number: `**Applied**` or
   `**Declined** — <reason>`. It opens with `<!-- design-replies:<stage> -->` so tidying can find it.
-- **Finish:** hand back to [`review-design`](../../review-design/SKILL.md) for a fresh pass.
-  The pass sets `review-passed` or `changes-requested`; this mode never sets either. After
-  three passes the issue is held for the user with the last findings attached. The next stage
-  does not start until `review-passed` is set.
+- **Labels:** once the edits are written, remove the stage's `changes-requested`, since it
+  describes the text before them. A stage with `designed` and no result label is written and
+  awaiting review. This mode never adds `review-passed` or `changes-requested`.
+- **Finish:** hand back to [`review-design`](../../review-design/SKILL.md) for a fresh pass,
+  which sets `review-passed` or `changes-requested`. After three passes stop without another:
+  the last findings are applied and unreviewed, so the stage ends awaiting review, with no
+  result label, and is held for the user. The next stage does not start until `review-passed`
+  is set.

@@ -13,6 +13,18 @@ import { fileURLToPath } from "node:url";
 import { capture } from "../../merge-pr/scripts/capture.mjs";
 
 const CLAIM = /^[a-z]+\/(\d+)-/;
+const LOOKUPS = 50;
+
+/**
+ * Whether a branch is a build run's leftover: named like a claim (`feat/12-slug`), or the head of
+ * a pull request. A chore branch with no issue number matches only by its pull request.
+ *
+ * @param {string} name
+ * @param {Set<string>} heads head branch names of every known pull request
+ */
+export function isOurs(name, heads) {
+  return CLAIM.test(name) || heads.has(name);
+}
 
 /**
  * Calls `fn` until it returns, up to `attempts` times, pausing longer after each failure.
@@ -110,24 +122,34 @@ export function gather(run = capture) {
     const local = ref?.startsWith("refs/heads/") ? ref.slice(11) : null;
     const remote = ref?.startsWith("refs/remotes/origin/") ? ref.slice(20) : null;
     const name = local ?? remote;
-    if (!name || !CLAIM.test(name)) continue;
+    if (!name || name === base || name === "HEAD") continue;
     const entry = tips.get(name) ?? { name, local: null, remote: null };
     if (local) entry.local = sha;
     else entry.remote = sha;
     tips.set(name, entry);
   }
-  const branches = [...tips.values()].map((b) => ({
-    ...b,
-    ahead: Math.max(...[b.local, b.remote].filter(Boolean).map((sha) => Number(sh("git", ["rev-list", "--count", `origin/${base}..${sha}`]).trim()))),
-  }));
 
-  const prs = json("gh", ["pr", "list", "--state", "all", "--limit", "500", "--json", "number,state,headRefName,headRefOid,closingIssuesReferences"]).map((p) => ({
+  const toPr = (p) => ({
     number: p.number,
     state: p.state,
     head: p.headRefName,
     sha: p.headRefOid,
     closes: p.closingIssuesReferences.map((i) => i.number),
-  }));
+  });
+  const FIELDS = "number,state,headRefName,headRefOid,closingIssuesReferences";
+  const prs = json("gh", ["pr", "list", "--state", "all", "--limit", "500", "--json", FIELDS]).map(toPr);
+  // The list stops at the newest 500; a local branch outside it is asked about by name.
+  const listed = new Set(prs.map((p) => p.head));
+  const unlisted = [...tips.values()].filter((b) => b.local && !listed.has(b.name)).slice(0, LOOKUPS);
+  for (const b of unlisted) prs.push(...json("gh", ["pr", "list", "--state", "all", "--head", b.name, "--limit", "5", "--json", FIELDS]).map(toPr));
+  const heads = new Set(prs.map((p) => p.head));
+
+  const branches = [...tips.values()]
+    .filter((b) => isOurs(b.name, heads))
+    .map((b) => ({
+      ...b,
+      ahead: Math.max(...[b.local, b.remote].filter(Boolean).map((sha) => Number(sh("git", ["rev-list", "--count", `origin/${base}..${sha}`]).trim()))),
+    }));
   const assigned = json("gh", ["issue", "list", "--assignee", "@me", "--state", "open", "--limit", "200", "--json", "number"]).map((i) => i.number);
   const here = {
     branch: sh("git", ["branch", "--show-current"], { cwd: main }).trim() || null,

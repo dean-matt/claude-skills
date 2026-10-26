@@ -11,6 +11,9 @@ Run it from any checkout of the repository. It changes nothing until you confirm
 node "${CLAUDE_PLUGIN_ROOT}/skills/cleanup/scripts/scan.mjs"
 ```
 
+It covers branches named like a claim (`feat/12-slug`) and any local or remote branch that heads a
+pull request, so a chore branch with no issue number is included.
+
 Each line is `verdict`, kind, ref and reason:
 
 - **safe**: merged, or a claim with no commits. Removing loses nothing.

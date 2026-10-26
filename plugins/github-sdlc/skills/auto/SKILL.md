@@ -32,11 +32,23 @@ disagree. Ask for `build`'s report. Stop where it:
 - **puts the review pass outside the `pr-auditor` agent.** An agent that reviews its own work
   still earns `ai-review:completed`, and GitHub cannot check the claim, so this catches a failed
   dispatch and not a skipped one
-- **names no issue.** Give the reason it named. If ready issues are missing only because their
-  design stages are unfinished, say which, and offer to run the
-  [pipeline](../issue/references/pipeline.md) on them
+- **names no issue.** Where the reason is that the first candidates are missing only their design
+  stages, go to *Design* below. Otherwise give the reason it named
 - **names an issue and no pull request.** Give the condition. Looping back either retakes a
   not-ready issue forever or skips a check that failed
+
+**Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md)
+on the first issue `pick-issue` would take but for its stages, in autonomous mode: write each
+needed stage with its skill and review it with [`review-design`](../review-design/SKILL.md),
+starting at the first stage that lacks `review-passed`. Ask for the issue and the label each stage
+ended on. Running `auto` is the user's word to run the pipeline, never to build an issue as
+written. Then repeat step 2, once for that issue. Stop where:
+
+- **a stage ends on an unticked Open question,** or on `changes-requested` after three review
+  passes. Quote the question or the last findings; the issue is the user's to answer
+- **step 2 again finds the same issue not ready.** Looping would design it forever
+- **the pipeline names no issue,** because every candidate is blocked, has open questions or is
+  held. Give each reason
 
 **3. Run the gate.**
 
@@ -90,6 +102,9 @@ second pull request. Step 3's `signoff` is not skipping past it: the user weighe
 the run goes on only on their word.
 
 **Rerank the backlog.** Rank and milestone belong to the repository's collaborators.
+
+**Build from an issue as written.** An issue with no pipeline labels gets the pipeline, never an
+approach written and approved by the run itself.
 
 **Start itself.** No cron, no workflow trigger, nothing that begins a run without a person
 asking. Nobody reads an unwatched run, and it merges all the same.

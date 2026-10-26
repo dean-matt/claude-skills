@@ -1,37 +1,79 @@
 # Pull request body
 
-Fill every section that has content; delete a section that has none. No placeholder text
-survives into the posted body.
+Facts live in one place. The issue holds the problem, the acceptance criteria and the
+design, and CI holds the check results. The body holds only what neither can know, and links
+instead of restating.
 
-```markdown
-Closes #<issue>
+````markdown
+> Closes #<issue>
 
-## Summary
-<One to three bullets: what changes for the user or the system, and why. No file lists.>
+## What
+<What this pull request delivers, in a sentence or two.>
 
-## Changes
-- `<area or path>` — <what changed, in one line>
+## Why
+<Only the reason that belongs to this pull request.>
 
 ## Screenshots
-<Output of the screenshots skill. Omit when the change is not visible.>
+<details open>
+<summary><Subject: what these images show></summary>
 
-## Verification
-- `<check command>` — <result, with counts>
-- <what else ran, against what, and what came out>
+**Before**
+<img src="<url>" width="640" alt="<what the image shows>">
 
-## Reviewer notes
-- <A decision a reader might question, a risk, or an issue filed for follow-up.>
-```
+**After**
+<img src="<url>" width="640" alt="<what the image shows>">
+
+</details>
+
+## Deviations
+- **<Kind>:** <what differed from the issue, and why, in a clause.>
+````
 
 ## Rules
 
-- `Closes #<issue>` is the first line when an issue exists. With none, start at Summary.
-- **Summary** answers "what and why". It does not restate the title.
-- **Changes** names what moved at the level a reviewer navigates the diff, not every file.
-  Omit it for a change small enough that Summary covers it.
-- **Verification** states what ran and what came out. "Tests pass" is not a result;
-  "`pnpm check` green, 412 tests" is. Say what was *not* run and why.
-- **Reviewer notes** holds only what the diff cannot show.
-- Lists and tables over paragraphs. No greeting, no sign-off, no recap, no praise adjectives.
-- The repository's own PR template, if it has one, wins; follow its headings and keep these
-  rules for the content.
+- **`> Closes #<issue>`** is the first line, in a blockquote. GitHub reads the keyword there
+  and links the issue natively. Several issues each take their own keyword:
+  `> Closes #1, closes #2`. Never close a parent issue; it closes when its sub-issues do.
+  With no issue, omit the line and let Why carry the reason.
+- **What** says what this pull request delivers. For a slice of an issue, it says which
+  slice. It never restates the issue's goal, lists files, or describes the diff.
+- **Why** holds only the reason that belongs to this pull request, such as why this approach
+  beat the alternative. If the issue already says why, link it and stop.
+- **Screenshots** appear only when a user can see the change. See below.
+- **Deviations** appear only when the build differed from the issue. Never write "None".
+- **No Verification section.** A missed acceptance criterion is a finding for
+  [`review-pr`](../../review-pr/SKILL.md), and CI reports the checks.
+- **No Reviewer notes section.** A reviewer's note is a review comment on the line, resolved
+  when addressed. A follow-up is an issue, linked inline where it matters.
+- Never restate an acceptance criterion or any part of the design.
+- Plain prose and short lists. No greeting, sign-off, recap or praise.
+- The repository's own `.github/pull_request_template.md`, if it has one, wins for headings;
+  the rules above still govern the content.
+
+## Screenshots
+
+One `<details open>` per subject, always open. The `<summary>` names what is inside, so a
+reader knows before reading the images. Leave a blank line after `<summary>` and before
+`</details>`, or the Markdown inside does not render.
+
+| Subject | Shows | Labels, stacked, in this order |
+|---|---|---|
+| A change | the same view before and after | **Before**, then **After** |
+| An addition | something that did not exist | **New** |
+| A removal | something that no longer exists | **Removed**, showing the old image |
+
+Width 640; a phone-width capture keeps its natural width. Alt text says what the image shows,
+never the subject name that the summary already gives.
+
+## Deviations
+
+Each line starts with its kind:
+
+| Kind | Means | Waits on the user? |
+|---|---|---|
+| **Correction** | The issue's premise was wrong, and the change follows the real behavior | No |
+| **Narrowing** | Part of what the issue asked is deferred. Link the issue that takes the rest | Yes |
+| **Addition** | Something the issue did not authorize, such as a new dependency or wider scope | Yes |
+| **Technical Design**, **UI/UX Design**, **Test Design** | The build differed from that design section | No |
+
+A line for a section that did not change is never written.

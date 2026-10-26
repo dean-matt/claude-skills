@@ -9,8 +9,7 @@ the answers in `.claude/github-sdlc.json`; when that file exists, its values win
 | Default branch | the same call | `main` |
 | Install command | lockfile: `pnpm-lock.yaml`, `package-lock.json`, `yarn.lock`, `bun.lock`, `uv.lock`, `Cargo.lock`, `go.sum` | none |
 | <a id="check-command"></a>Check command | the repository's CLAUDE.md or CONTRIBUTING.md, then a `check`, `ci` or `test` script in `package.json`, `Makefile` target, or CI workflow | ask |
-| Project board | `gh project list --owner <owner> --format json`, matched to the repository | skip board steps |
-| Status field and options | `gh project field-list <n> --owner <owner> --format json` | skip board steps |
+| Project board and its Status options | [`board.md`](board.md) | skip board steps |
 | Review labels | `gh label list` | create them (below) |
 | Version bump | `.claude/github-sdlc.json` `versionBump` | off |
 | Protected paths | `.claude/github-sdlc.json` `protectedPaths` | none |

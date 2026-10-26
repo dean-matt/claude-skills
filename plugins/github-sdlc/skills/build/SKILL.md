@@ -23,7 +23,8 @@ Ask which of these apply only when the request does not say:
    Read [`references/claim-and-worktree.md`](references/claim-and-worktree.md).
 3. **Read the issue in full**, acceptance criteria and any out-of-scope list. Out of scope is
    a fence. Check every number or shape it states against the code or data before designing.
-4. **Mark it in progress** on the board when one is configured.
+4. **Mark it In Progress** on the board when one is configured, as
+   [`../setup/references/board.md`](../setup/references/board.md) describes.
 5. **Plan** if asked. Present it, then wait.
 6. **Implement** at the smallest change that meets the criteria. Tests ride with the code.
    Update docs the change made stale in the same commit.

@@ -26,7 +26,8 @@ Then continue with section 2 anyway, which stands on its own.
 
 - **Lead with the point.** First line: what changed or what the reader must do. Background
   follows only if the reader needs it to act.
-- **One fact, once.** Delete anything the diff, title, or a link already says.
+- **One fact, once.** Delete anything the diff, title, or a link already says. Where another
+  document owns the fact, link to it and stop; never restate it.
 - **Name things exactly.** Use the identifier, path, command or number, in code font. "The
   config" becomes `.claude/github-sdlc.json`; "a lot slower" becomes "3.2 s to 11 s".
 - **Structure over paragraphs** where the reader scans: a list for parallel items, a table

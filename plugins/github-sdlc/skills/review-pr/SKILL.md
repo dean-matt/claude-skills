@@ -33,6 +33,11 @@ pull request:
   zero, negative, concurrent.
 - **Editor**: the prose the change writes, through [`technical-writing`](../technical-writing/SKILL.md).
 
+Read the pull request's **Deviations** first, then judge each: is the departure justified,
+and is it in the right kind? Read the closing issue's acceptance criteria next and check
+every one against the diff. The body does not list them, so a criterion nothing in the diff
+meets is yours to find.
+
 Add lenses the repository's CLAUDE.md names (security, accessibility, a domain's rules) only
 where the diff reaches them. A red CI check is a finding.
 
@@ -46,9 +51,13 @@ Open with the severity in bold, then the defect and its cost:
 
 | Severity | Means |
 |---|---|
-| `critical` | Wrong at runtime, or misleading about what the code does |
-| `warning` | Contradicts the repository's stated rules |
+| `critical` | Wrong at runtime, misleading about what the code does, or an acceptance criterion the change does not meet |
+| `warning` | Contradicts the repository's stated rules, or a departure from the issue that Deviations does not record |
 | `comment` | A taste call, reported once |
+
+A **Narrowing** or **Addition** deviation is a `warning` stating that it needs the user's
+confirmation. A reviewer's note about a decision worth a reader's attention is a `comment` on
+the line, never body text.
 
 Write `**critical**`, never `` `critical` `` — the merge gate parses the marker.
 
@@ -68,6 +77,6 @@ gh api 'repos/{owner}/{repo}/pulls/<n>/reviews' --input pass.json
 
 ## 5. Label and hand off
 
-Set `ai-review:changes-requested` while findings stand. Then run
+Set `ai-review:changes-requested` while findings stand, and swap it for `ai-review:completed` only as [`address-feedback`](../address-feedback/SKILL.md) describes. Then run
 [`address-feedback`](../address-feedback/SKILL.md), which loops back here until a pass
 returns nothing blocking and sets `ai-review:completed`. This skill never merges.

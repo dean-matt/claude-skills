@@ -38,15 +38,24 @@ workaround.
 
 ## 3. Embed
 
-Return markdown ready to paste into the body. A before/after pair:
+Return markdown for [`open-pr`](../open-pr/SKILL.md)'s Screenshots section: one
+`<details open>` per subject, the `<summary>` naming what is inside, and bold state labels
+stacked inside. The format and its rules are in
+[`../open-pr/references/body-template.md`](../open-pr/references/body-template.md#screenshots).
 
 ```markdown
-| Before | After |
-| --- | --- |
-| <img src="URL_BEFORE" width="420" alt="Level-up dialog before: no spell picker"> | <img src="URL_AFTER" width="420" alt="Level-up dialog after: spell picker shown"> |
+<details open>
+<summary>Sources card</summary>
+
+**Before**
+<img src="URL_BEFORE" width="640" alt="Only the global source switch is shown">
+
+**After**
+<img src="URL_AFTER" width="640" alt="Per-character list with Follow Settings and locked rows">
+
+</details>
 ```
 
-A single image: `<img src="URL" width="640" alt="…">`. Write alt text that says what the
-image proves. For a recording, put the bare URL on its own line.
-
-[`open-pr`](../open-pr/SKILL.md) places this under its `## Screenshots` heading.
+Use **New** for something that did not exist and **Removed** for something that no longer
+does. Write alt text that says what the image shows. For a recording, put the bare URL on its
+own line under its label.

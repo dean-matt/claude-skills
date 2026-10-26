@@ -16,6 +16,14 @@ test("design: every pass before the last is stale, the last pass and what follow
   assert.deepEqual(staleDesign(comments, "criteria"), ["p1", "r1"]);
 });
 
+test("design: a declined comment waits on nobody, a declined warning does", () => {
+  const taste = [
+    c("p1", "<!-- design-pass:criteria -->\n1. **comment** — x\n   **Declined** — taste"),
+    c("p2", "<!-- design-pass:criteria -->\n1. **comment** — z"),
+  ];
+  assert.deepEqual(staleDesign(taste, "criteria"), ["p1"]);
+});
+
 test("design: a pass that still holds a declined or held finding stays visible", () => {
   const comments = [
     c("p1", "<!-- design-pass:criteria -->\n1. **warning** — x\n   **Declined** — out of scope"),

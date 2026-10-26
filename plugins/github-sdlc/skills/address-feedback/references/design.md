@@ -25,7 +25,8 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
   ```bash
   gh api repos/{owner}/{repo}/issues/comments/<id> -X PATCH -F body=@pass.md
   ```
-  A comment with a `Declined` or `Held` verdict stays visible for the user; `tidy.mjs` leaves it.
+  A comment whose `critical` or `warning` carries a `Declined` or `Held` verdict stays visible for
+  the user; `tidy.mjs` leaves it. A declined `comment` is a taste call and waits on nobody.
 - **Labels:** once the edits are written, remove the stage's `changes-requested`, since it
   describes the text before them. A stage with `designed` and no result label is written and
   awaiting review. This mode never adds `review-passed` or `changes-requested`.

@@ -27,12 +27,20 @@ export function isLegacyReply(body, stage) {
   return new RegExp(`^Replies to design pass \\d+ \\(${stage}\\b`).test(body);
 }
 
-/** A verdict that waits on the user, which keeps its comment visible. */
-export const waiting = (body) => body.includes("**Declined**") || body.includes("**Held for the user**");
+/**
+ * Whether a `critical` or `warning` finding in the comment carries a verdict that waits on the
+ * user. A declined `comment` is a taste call refused and waits on nobody.
+ *
+ * @param {string} body
+ */
+export const waiting = (body) =>
+  body
+    .split(/^\d+\. /m)
+    .some((item) => /\*\*(critical|warning)\*\*/.test(item) && /\*\*(Declined|Held for the user)\*\*/.test(item));
 
 /**
  * Comments of one stage that an earlier pass left behind: every pass before the last, and the
- * legacy replies before it, unless one still holds a declined or held finding. The last pass
+ * legacy replies before it, unless one still holds a declined or held `critical` or `warning`. The last pass
  * stays with whatever follows it.
  *
  * @param {{ node_id: string, body: string }[]} comments oldest first

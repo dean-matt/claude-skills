@@ -38,6 +38,12 @@ The labels, their colors and the commands that create them are in
 - Review stops after three passes with `changes-requested` still set. The issue is then held
   for the user with the last findings attached.
 
+## Claiming
+
+A skill that writes or edits a stage claims the issue first, so two people or sessions do not
+design it at once, and releases it when nothing in the run continues the work. See
+[`claim.md`](claim.md). Review passes only read the issue and claim nothing.
+
 ## Ready to build
 
 An issue is ready when every needed stage has `review-passed`, none has `changes-requested`,

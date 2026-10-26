@@ -48,7 +48,9 @@ issue `<n>`. Ask for `build`'s report. Stop where it:
 **Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md)
 on issue `<n>` in autonomous mode: write each needed stage with its skill and review it with
 [`review-design`](../review-design/SKILL.md), starting at the first stage that lacks
-`review-passed`, and decide an Open question as the pipeline says. Ask for the issue, the label
+`review-passed`, and decide an Open question as the pipeline says. It claims the issue and moves
+the card to In Progress before its first edit, and keeps the claim for the build that follows;
+where the pipeline stops it releases the issue. Ask for the issue, the label
 each stage ended on, and every question it decided with its answer. Running `auto` is the user's
 word to run the pipeline, never to build an issue as written. Then run `next.sh` for `<n>` once
 more: `ready` goes to step 2b. Stop where:

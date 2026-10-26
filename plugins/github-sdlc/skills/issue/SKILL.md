@@ -40,7 +40,8 @@ writes the **criteria stage** only: it never writes a design section.
 - **Interactive** (default): show the draft before creating it.
 - **Autonomous**: create without asking, and turn every gap into an Open question.
 - **Reshape**: restructure an existing issue into this shape, keeping the reporter's words
-  in Summary and Reproduction. Used from `triage`.
+  in Summary and Reproduction. Used from `triage`. Claim the issue first, per
+  [`claim`](references/claim.md); a new issue has no one else to hold it.
 
 ## Will not do
 

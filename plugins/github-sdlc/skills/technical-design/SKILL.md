@@ -9,6 +9,8 @@ Stages and gates: [`../issue/references/pipeline.md`](../issue/references/pipeli
 
 ## Preconditions
 
+Claim the issue first, per [`claim`](../issue/references/claim.md).
+
 `criteria-agent:review-passed`, plus `ui-agent:review-passed` when the issue has a UI/UX
 Design heading. Otherwise stop and name the missing stage.
 

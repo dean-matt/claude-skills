@@ -9,6 +9,8 @@ Stages and gates: [`../issue/references/pipeline.md`](../issue/references/pipeli
 
 ## Preconditions
 
+Claim the issue first, per [`claim`](../issue/references/claim.md).
+
 `technical-agent:review-passed`, and every earlier needed stage passed. Otherwise stop and
 name the missing stage.
 

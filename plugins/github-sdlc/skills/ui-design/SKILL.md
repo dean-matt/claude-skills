@@ -9,6 +9,8 @@ Stages and gates: [`../issue/references/pipeline.md`](../issue/references/pipeli
 
 ## Preconditions
 
+Claim the issue first, per [`claim`](../issue/references/claim.md).
+
 - The issue carries `criteria-agent:review-passed`, and no open Open question changes a
   criterion. Otherwise stop and say which is missing.
 - The body has a `## UI/UX Design` heading. Without it the change is not visual, so there is

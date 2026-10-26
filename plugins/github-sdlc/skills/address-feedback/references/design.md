@@ -5,6 +5,7 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
 
 - **Source of items:** the numbered findings in the stage's latest `<!-- design-pass:<stage> -->`
   comment.
+- **Claim first,** per [`claim`](../../issue/references/claim.md), before the first edit.
 - **Applying:** edit only that stage's own section. Re-read the issue first, change the
   section, and write the body back, so a concurrent edit elsewhere survives. Editing a section
   clears that stage's `review-passed` and every later stage's.

@@ -7,7 +7,7 @@ name each time, so nothing here is hard-coded and a rebuilt board needs no edit.
 |---|---|
 | Triage | `triage`, on a new issue |
 | Todo | `triage`, when the issue is ready to pick |
-| In Progress | `build`, on claim |
+| In Progress | a design stage or `build`, on claim |
 | In Review | `open-pr` |
 | Done | `merge-pr` |
 

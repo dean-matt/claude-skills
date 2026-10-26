@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { classify } from "./scan.mjs";
+import { classify, retrying } from "./scan.mjs";
 
 const base = { base: "main", worktrees: [], branches: [], prs: [], assigned: [], here: { branch: null, dirty: false } };
 const branch = (name, extra = {}) => ({ name, local: "aaa", remote: "aaa", ahead: 2, ...extra });
@@ -54,4 +54,33 @@ test("the branch checked out in the main checkout is flagged, and kept if that c
   assert.equal(clean.verdict, "safe");
   assert.match(clean.reason, /checked out here/);
   assert.equal(one({ ...facts, here: { branch: "feat/1-x", dirty: true } }).verdict, "keep");
+});
+
+test("retrying returns the first success and pauses longer after each failure", () => {
+  const pauses = [];
+  let calls = 0;
+  const result = retrying(
+    () => {
+      if (++calls < 3) throw new Error("HTTP 502");
+      return "ok";
+    },
+    { pause: (ms) => pauses.push(ms) },
+  );
+  assert.deepEqual([result, calls, pauses], ["ok", 3, [2000, 4000]]);
+});
+
+test("retrying rethrows the last error once the attempts are spent", () => {
+  let calls = 0;
+  assert.throws(
+    () =>
+      retrying(
+        () => {
+          calls++;
+          throw new Error("HTTP 504");
+        },
+        { pause: () => {} },
+      ),
+    /HTTP 504/,
+  );
+  assert.equal(calls, 3);
 });

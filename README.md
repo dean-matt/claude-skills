@@ -1,14 +1,14 @@
 # claude-skills
 
 Skills for Claude Code, packaged as installable plugins. Each skill is a directory holding a
-`SKILL.md` and whatever reference material it needs, in the
-[Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) format. claude.ai, Claude
-Desktop and the Agent SDK read that format too, so a skill directory works in all of them.
+`SKILL.md` and its reference material, in the
+[Agent Skills](https://docs.claude.com/en/docs/claude-code/skills) format, which claude.ai, Claude
+Desktop and the Agent SDK also read.
 
 ## Prerequisites
 
 - [Claude Code](https://docs.claude.com/en/docs/claude-code/overview)
-- For `github-sdlc`: the [GitHub CLI](https://cli.github.com/), authenticated, plus `jq`, and Node 20.11 or newer for its merge scripts
+- For `github-sdlc`: the [GitHub CLI](https://cli.github.com/), authenticated, `jq`, and Node 20.11+
 
 ## Getting started
 
@@ -22,11 +22,11 @@ claude plugin marketplace add .
 claude plugin install github-multi-account@dean-matt
 ```
 
-`validate` checks JSON syntax and manifest schema, and nothing else — see
-[`CONTRIBUTING.md`](CONTRIBUTING.md) for what it leaves uncovered.
+`validate` checks JSON syntax and manifest schema only; [`CONTRIBUTING.md`](CONTRIBUTING.md) lists
+what it misses.
 
-A local marketplace holds a snapshot rather than a live view of your clone, so after editing a
-manifest run `claude plugin marketplace update dean-matt` and reinstall.
+A local marketplace holds a snapshot of your clone. After editing a manifest, run
+`claude plugin marketplace update dean-matt` and reinstall.
 
 Every `claude plugin` command also runs inside Claude Code as `/plugin ...`.
 
@@ -49,10 +49,7 @@ claude plugin validate .
 claude plugin validate plugins/github-multi-account
 
 # Run the github-sdlc script and hook tests
-(cd plugins/github-sdlc/skills/merge-pr/scripts && node --test)
-node --test plugins/github-sdlc/hooks/read-only-bash.test.mjs
-(cd plugins/github-sdlc/skills/issue/scripts && node --test ready.test.mjs)
-node --test plugins/github-sdlc/skills/cleanup/scripts/scan.test.mjs
+node --test $(git ls-files '*.test.mjs')
 
 # Remove
 claude plugin uninstall github-multi-account
@@ -68,9 +65,8 @@ ln -s "$PWD/plugins/github-multi-account/skills/setup" \
       ~/.claude/skills/github-multi-account
 ```
 
-A plugin namespaces its skills, so `setup` reads as `/github-multi-account:setup` once installed.
-Outside a plugin nothing supplies that namespace, so give the symlink a fuller name and set
-`name:` in `SKILL.md` to match.
+A plugin namespaces its skills: `setup` becomes `/github-multi-account:setup`. Outside a plugin,
+give the symlink a fuller name and set `name:` in `SKILL.md` to match.
 
 ## Project structure
 
@@ -82,9 +78,9 @@ plugins/<plugin>/
   skills/<skill>/...                whatever else that skill needs, read on demand
 ```
 
-Claude Code looks for those paths exactly as they sit above; the layout is not a choice. Two files
-register a skill — `marketplace.json` lists the plugin, `plugin.json` names it — and nothing checks
-that they agree, or that either matches its directory name.
+Claude Code reads exactly these paths. Two files register a skill: `marketplace.json` lists the
+plugin and `plugin.json` names it. Nothing checks that they agree, or that either matches its
+directory name.
 
 Browse [`plugins/`](plugins/) for the current set of skills, or run
 `claude plugin details <plugin>` once installed.
@@ -92,12 +88,11 @@ Browse [`plugins/`](plugins/) for the current set of skills, or run
 ## Troubleshooting
 
 - **An installed skill does not appear.** Plugin changes apply on restart. Restart Claude Code,
-  then check `claude plugin list`.
-- **A change does not arrive.** The marketplace holds a snapshot and has to refresh before
-  `plugin update` can see it. Run `claude plugin marketplace update dean-matt` first, then
-  reinstall.
-- **A skill loads but never triggers.** Check the frontmatter `description` — it is what Claude
-  matches against, and `validate` only warns when it is absent, never when it is vague.
+  then run `claude plugin list`.
+- **A change does not arrive.** Refresh the marketplace snapshot first
+  (`claude plugin marketplace update dean-matt`), then reinstall.
+- **A skill loads but never triggers.** Check the frontmatter `description`, which Claude matches
+  against. `validate` warns when it is absent, never when it is vague.
 
 ## Further reading
 

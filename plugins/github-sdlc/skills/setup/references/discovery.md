@@ -1,8 +1,8 @@
 # Discovering a repository
 
 Every `github-sdlc` skill finds these facts itself and asks only when it cannot. `setup` records
-an answer as a sentence in the repository's own CLAUDE.md, never in a file only this plugin reads,
-and a statement there wins over discovery.
+an answer as a sentence in the repository's CLAUDE.md, never in a file only this plugin reads; a
+statement there wins over discovery.
 
 | Fact | Discover by | Fallback |
 |---|---|---|

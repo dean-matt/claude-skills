@@ -19,3 +19,7 @@ gh api -X POST "repos/{owner}/{repo}/issues/<parent>/sub_issues" -F sub_issue_id
 ```
 
 Read them back with `GET .../dependencies/blocked_by`, `.../sub_issues` and `.../parent`.
+
+Closing a blocker clears the block by itself: the dependency stays on record as closed and the
+issue's `issue_dependencies_summary.blocked_by` drops to zero, so nothing needs to be edited
+when a blocking issue merges. A parent's `sub_issues_summary` tracks its children the same way.

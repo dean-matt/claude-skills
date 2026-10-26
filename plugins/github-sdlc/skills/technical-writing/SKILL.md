@@ -5,6 +5,9 @@ description: Write or edit prose a developer will read — pull request bodies, 
 
 # Technical writing
 
+Write terse, clear and concise text, with not much narrative and no history, in our issues,
+comments, code and everywhere.
+
 Apply the general rules first, then the technical ones.
 
 ## 1. General prose

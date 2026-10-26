@@ -20,7 +20,8 @@ The repository owns `area:*` and any label it already has. `triage` uses the exi
 `area:*` labels and never invents one.
 
 ```bash
-mk() { gh label create "$1" --color "$2" --description "$3" --force >/dev/null; }
+have=$(gh label list --limit 200 --json name --jq '.[].name')
+mk() { printf '%s\n' "$have" | grep -qxF "$1" || gh label create "$1" --color "$2" --description "$3" >/dev/null; }
 for t in feat fix chore docs spike; do mk "type:$t" 1D76DB "Kind of issue"; done
 mk severity:critical B60205 "Data loss, a crash, or a wrong result in use"
 mk severity:high D93F0B "Broken with no reasonable workaround"
@@ -35,8 +36,7 @@ for a in criteria ui technical test; do
 done
 ```
 
-`--force` updates an existing label's color and description, so run it only where the user
-agreed to the plugin owning these names.
+A label that already exists is skipped, so a repository's own color or description for it survives.
 
 ## Retiring old names
 

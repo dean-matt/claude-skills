@@ -6,25 +6,24 @@ argument-hint: "<pr-number>"
 
 # Reviewing a pull request
 
-The pull request number is the only input about the change. A reviewer that knows how the
-change was written reads its intent into the diff instead of the code.
+The pull request number is the only input about the change. A reviewer who knows how it was
+written reads intent into the diff, not the code.
 
 ## 1. Dispatch
 
-Send the `github-sdlc:pr-auditor` agent this and nothing about the change — no rationale, no defense:
+Send the `github-sdlc:pr-auditor` agent this and nothing about the change:
 
 ```
 Review pull request <n> with the github-sdlc:review-pr criteria and return findings in the
 required format. Do not post, label, merge, edit a tracked file, commit or push.
 ```
 
-Use a fresh agent for every pass so none inherits the last one's conclusions.
+Use a fresh agent for every pass.
 
 ## 2. The reviewer's criteria
 
 Read the diff from a detached worktree at the head, outside the repository, and the issue it
-closes. Skip what the check command and formatters already assert. Four lenses run on every
-pull request:
+closes. Skip what the check command and formatters assert. Four lenses run on every pull request:
 
 - **Engineer**: is it needed; does it exist already; the smallest change; right module; the
   root cause rather than the path the report named.
@@ -34,13 +33,12 @@ pull request:
   zero, negative, concurrent.
 - **Editor**: the prose the change writes, through [`technical-writing`](../technical-writing/SKILL.md).
 
-Read the pull request's **Deviations** first, then judge each: is the departure justified,
-and is it in the right kind? Read the closing issue's acceptance criteria next and check
-every one against the diff. The body does not list them, so a criterion nothing in the diff
-meets is yours to find.
+Read the pull request's **Deviations** first and judge each: justified, and the right kind? Then
+check every acceptance criterion of the closing issue against the diff. The body does not list
+them, so a criterion nothing in the diff meets is yours to find.
 
-Add lenses the repository's CLAUDE.md names (security, accessibility, a domain's rules) only
-where the diff reaches them. A red CI check is a finding.
+Add lenses the repository's CLAUDE.md names (security, accessibility, a domain's rules) where the
+diff reaches them. A red CI check is a finding.
 
 ## 3. Finding format
 
@@ -56,21 +54,19 @@ Open with the severity in bold, then the defect and its cost:
 | `warning` | Contradicts the repository's stated rules, or a departure from the issue that Deviations does not record |
 | `comment` | A taste call, reported once |
 
-A **Narrowing** or **Addition** deviation is a `warning` stating that it needs the user's
-confirmation. A reviewer's note about a decision worth a reader's attention is a `comment` on
-the line, never body text.
+A **Narrowing** or **Addition** deviation is a `warning` stating it needs the user's confirmation.
+A note on a decision worth a reader's attention is a `comment` on the line, never body text.
 
-Write `**critical**`, never `` `critical` `` — the merge gate parses the marker.
+Write `**critical**`, never `` `critical` ``: the merge gate parses the marker.
 
 ## 4. Post
 
-Post one review per pass, before applying anything, so a run that dies mid-apply leaves the
-findings standing. The body starts with `<!-- audit-pass -->` (invisible on GitHub; it tells
-a pass from a person's review). Use `event: COMMENT`, since GitHub refuses an approval on your
-own pull request. A pass with no findings still posts its marked body.
+Post one review per pass, before applying anything. The body starts with `<!-- audit-pass -->`
+(invisible; it tells a pass from a person's review). Use `event: COMMENT`; GitHub refuses an
+approval on your own pull request. A pass with no findings still posts its marked body.
 
-Run the pass through the check first. It stops a finding the merge gate could not read, which
-a posted review cannot be edited to fix:
+Run the pass through the check first; a posted review cannot be edited to fix a finding the merge
+gate cannot read:
 
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/check-pass.mjs" pass.json
@@ -84,6 +80,6 @@ On exit 1, fix the faults it names and do not post.
 
 ## 5. Label and hand off
 
-Set `ai-review:changes-requested` while findings stand, and swap it for `ai-review:completed` only as [`address-feedback`](../address-feedback/SKILL.md) describes. Then run
-[`address-feedback`](../address-feedback/SKILL.md), which loops back here until a pass
-returns nothing blocking and sets `ai-review:completed`. This skill never merges.
+Set `ai-review:changes-requested` while findings stand. Then run
+[`address-feedback`](../address-feedback/SKILL.md), which loops back here until a pass returns
+nothing blocking and sets `ai-review:completed`. This skill never merges.

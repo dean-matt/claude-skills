@@ -1,8 +1,7 @@
 # Git setup
 
-SSH keys, host aliases and `includeIf` rules. Read [`layout.md`](./layout.md)
-first: it defines the account trees every step below refers to. Configuring gh is
-a separate job that works without this one — see [`gh.md`](./gh.md).
+SSH keys, host aliases and `includeIf` rules. Read [`layout.md`](./layout.md) first: it defines
+the account trees every step refers to. gh is configured separately ([`gh.md`](./gh.md)).
 
 ## Generate one key per account
 
@@ -20,23 +19,20 @@ ssh-keygen -t ed25519 -C "<email1> $env:COMPUTERNAME" -f "$HOME\.ssh\id_ed25519_
 ssh-keygen -t ed25519 -C "<email2> $env:COMPUTERNAME" -f "$HOME\.ssh\id_ed25519_account2"
 ```
 
-`-f` names the file; the default `id_ed25519` would collide across accounts. `-C`
-sets the comment GitHub shows beside the key, so it names the machine — that is
-what you revoke when one is lost, and the upload below gives the key the same
-title. Leaving the key without a passphrase lets scripts and coding agents use it
-without prompting.
+`-f` names the file; the default `id_ed25519` would collide across accounts. `-C` sets the comment
+GitHub shows beside the key; it names the machine, which is what you revoke when one is lost, and
+the upload below uses it as the key's title. A key without a passphrase lets scripts and coding
+agents use it without prompting.
 
-**On Windows**, press Enter twice at each passphrase prompt. That block omits
-`-N ""` on purpose: Windows PowerShell 5.1 drops an empty-string argument before
-the command sees it, while PowerShell 7.3 and later preserve it, so the prompt is
-the one route that works on both.
+**On Windows**, press Enter twice at each passphrase prompt. The block omits `-N ""` because
+Windows PowerShell 5.1 drops an empty-string argument, while PowerShell 7.3+ keeps it; the prompt
+works on both.
 
-These paths use `$HOME\.ssh\...` rather than `~/.ssh/...` because neither
-PowerShell nor ssh-keygen expands `~` for a native command.
+The Windows paths use `$HOME\.ssh\...` because neither PowerShell nor ssh-keygen expands `~` for a
+native command.
 
-Confirm the result with `ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"`. It
-prints the public key straight away if there is no passphrase, and prompts if
-there is.
+Confirm with `ssh-keygen -y -f "$HOME\.ssh\id_ed25519_account1"`: it prints the public key, or
+prompts if there is a passphrase.
 
 ## Add one SSH host alias per account
 
@@ -57,19 +53,16 @@ Host github-account2
 	IdentitiesOnly yes
 ```
 
-`Host` is an invented alias; `HostName` is the real destination. The SSH user is
-always `git`, for every account, so the key alone decides which one you are.
+`Host` is an invented alias; `HostName` is the real destination. The SSH user is always `git`, so
+the key alone decides the account.
 
-**`IdentitiesOnly yes` carries the whole design.** Omit it and SSH offers every
-key the agent holds, GitHub accepts the first valid one, and you authenticate
-silently as the wrong account. The more accounts on the machine, the likelier
-that misfire.
+**`IdentitiesOnly yes` carries the design.** Without it SSH offers every key the agent holds,
+GitHub accepts the first valid one, and you authenticate silently as the wrong account.
 
-Placement matters for the same reason. ssh accumulates every matching
-`IdentityFile` in the order it reads them, so a `Host *` default pulled in by an
-earlier `Include` is offered ahead of the account key — and GitHub accepts the
-first valid key it is offered. `ssh -G github-account1` lists the identities in
-the order they will be tried.
+Placement matters for the same reason. ssh accumulates every matching `IdentityFile` in the order
+it reads them, so a `Host *` default from an earlier `Include` is offered ahead of the account
+key, and GitHub accepts the first valid key. `ssh -G github-account1` lists the identities in the
+order they are tried.
 
 ## Map each account tree to its account
 
@@ -82,12 +75,10 @@ the order they will be tried.
 	path = ~/.gitconfig-account2
 ```
 
-The trailing slash matches the directory and everything beneath it, which covers
-worktrees.
+The trailing slash matches the directory and everything beneath it, worktrees included.
 
-On Windows, write `gitdir/i:` in place of `gitdir:`. The filesystem is
-case-insensitive but the match is not, so a rule written `c:/repos/account1/`
-never matches a path git resolves as `C:/Repos/account1/`.
+On Windows, write `gitdir/i:` in place of `gitdir:`: the filesystem is case-insensitive but the
+match is not, so `c:/repos/account1/` never matches `C:/Repos/account1/`.
 
 `~/.gitconfig-account1`:
 
@@ -109,18 +100,16 @@ never matches a path git resolves as `C:/Repos/account1/`.
 	insteadOf = git@github.com:
 ```
 
-Each account gets its own file. `insteadOf` rewrites the URL prefix at connect
-time, so the stored remote stays untouched: `git config --get remote.origin.url`
-still returns the original URL, while `git remote -v` and `git ls-remote
---get-url` apply the rewrite and show the alias. List both prefixes because
-remotes may use either.
+Each account gets its own file. `insteadOf` rewrites the URL prefix at connect time and leaves the
+stored remote untouched: `git config --get remote.origin.url` returns the original URL, while
+`git remote -v` and `git ls-remote --get-url` show the alias. List both prefixes, since remotes
+may use either.
 
 ## Upload each public key
 
-The `.pub` half goes to GitHub; the private half stays on the machine. Sign in as
-that account, open [`github.com/settings/keys`](https://github.com/settings/keys),
-choose **New SSH key**, leave the type as **Authentication key**, and paste the
-output of:
+The `.pub` half goes to GitHub; the private half stays on the machine. Sign in as that account,
+open [`github.com/settings/keys`](https://github.com/settings/keys), choose **New SSH key**, keep
+the type **Authentication key**, and paste:
 
 ```bash
 cat ~/.ssh/id_ed25519_account1.pub
@@ -144,9 +133,8 @@ gh ssh-key add "$HOME\.ssh\id_ed25519_account1.pub" --title "$env:COMPUTERNAME"
 
 ## Authorize SSO where an org enforces it
 
-On [`github.com/settings/keys`](https://github.com/settings/keys), click
-**Configure SSO**, then **Authorize** beside the key. Org repos reject an
-unauthorized key.
+On [`github.com/settings/keys`](https://github.com/settings/keys), click **Configure SSO**, then
+**Authorize** beside the key. Org repos reject an unauthorized key.
 
 ## Verification
 
@@ -157,8 +145,7 @@ ssh -T git@github-account1    # -> Hi <username1>! You've successfully authentic
 ssh -T git@github-account2    # -> Hi <username2>!
 ```
 
-The greeting names the account, proving the right key maps to the right identity.
-Then confirm the rewrite and fetch for real:
+The greeting names the account. Then confirm the rewrite and fetch for real:
 
 ```bash
 cd ~/Repos/account1/example1-api
@@ -176,9 +163,8 @@ cd ~/Repos/account1
 git clone https://github.com/<org>/<repo>.git
 ```
 
-`insteadOf` rewrites the URL, so the clone uses that account tree's key and the
-new repo inherits that account's email. The account tree you stand in decides the
-account, which is the only rule to remember day to day.
+`insteadOf` rewrites the URL, so the clone uses that tree's key and the new repo inherits that
+account's email. The account tree you stand in decides the account.
 
 ## Troubleshooting
 

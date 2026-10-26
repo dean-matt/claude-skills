@@ -6,9 +6,9 @@ argument-hint: "[idea] [--autonomous]"
 
 # Writing an issue
 
-The shape, types and rules are in [`references/shape.md`](references/shape.md); the stages and
-gates are in [`references/pipeline.md`](references/pipeline.md). Read both first. This skill
-writes the **criteria stage** only: it never writes a design section.
+Read [`references/shape.md`](references/shape.md) (shape, types, rules) and
+[`references/pipeline.md`](references/pipeline.md) (stages, gates) first. This skill writes the
+**criteria stage** only, never a design section.
 
 ## Steps
 

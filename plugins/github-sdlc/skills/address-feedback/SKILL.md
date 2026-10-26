@@ -13,13 +13,13 @@ The loop is the same; the references hold what differs.
 
 1. **Collect** every open item: review threads or comments, and the last pass's findings.
 2. **Decide** each: **apply**, **decline** with a reason, or **ask** the user when it needs a
-   person's call (a trade-off, a scope change, a point that changes behavior). A preference
-   waits on nobody.
+   person's call (a trade-off, a scope change, a behavior change). A preference waits on nobody.
 3. **Apply** the accepted changes. For a pull request, run the check command, take the prose
-   through [`technical-writing`](../technical-writing/SKILL.md), and commit and push a new
-   commit — never amend, rebase or force-push a pushed branch.
-4. **Reply** to each item last, through [`technical-writing`](../technical-writing/SKILL.md), with a verdict: `**Applied**` or `**Declined** — <reason>`. In
-   design mode the verdict goes into the pass comment itself, per the mode's reference.
+   through [`technical-writing`](../technical-writing/SKILL.md), and push a new commit; never
+   amend, rebase or force-push a pushed branch.
+4. **Reply** to each item last, through [`technical-writing`](../technical-writing/SKILL.md),
+   with a verdict: `**Applied**` or `**Declined** — <reason>`. In design mode the verdict goes
+   into the pass comment itself.
 5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
    Stop after three passes and let the replies carry what remains.
 6. **Tidy** in pr mode after each pass is answered and pushed. It hides earlier passes and

@@ -10,7 +10,7 @@ Stages and gates: [`../issue/references/pipeline.md`](../issue/references/pipeli
 
 ## Preconditions
 
-Claim the issue first, per [`claim`](../issue/references/claim.md).
+Claim the issue first ([`claim`](../issue/references/claim.md)).
 
 `technical-agent:review-passed`, and every earlier needed stage passed. Otherwise stop and
 name the missing stage.
@@ -18,7 +18,8 @@ name the missing stage.
 ## Steps
 
 1. Read the criteria and the Technical Design.
-2. Write one line per case, starting with the AC it covers, wrap it as [`shape.md`](../issue/references/shape.md#foldable-sections) says:
+2. Write one line per case, starting with the AC it covers, wrapped per
+   [`shape.md`](../issue/references/shape.md#foldable-sections):
 
    ```markdown
    - AC2: two characters with the same skill name and ability → one `HB` row
@@ -36,8 +37,9 @@ name the missing stage.
 4. A chore's lines name the existing tests that prove behavior is unchanged. A docs issue
    writes `n/a — <reason>`.
 5. If a criterion cannot be tested as written, add an unticked Open question; do not edit it.
-6. Take the section through [`technical-writing`](../technical-writing/SKILL.md): terse, no history or narrative. Then replace only the `## Test Design` section (re-read first), set `test-agent:designed`, and
-   clear this stage's `review-passed` and `changes-requested`.
+6. Take the section through [`technical-writing`](../technical-writing/SKILL.md). Then replace
+   only the `## Test Design` section (re-read first), set `test-agent:designed`, and clear this
+   stage's `review-passed` and `changes-requested`.
 7. Hand off to [`review-design`](../review-design/SKILL.md) for the test stage.
 
 ## Will not do

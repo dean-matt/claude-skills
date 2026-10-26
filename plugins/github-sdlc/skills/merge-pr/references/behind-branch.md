@@ -1,8 +1,8 @@
 # Recovering a branch behind the default branch
 
-Reached where the gate answers that the branch is behind. `$n` is the pull request number.
-Branch protection that requires a head carrying the default branch's tip makes `gh pr merge`
-refuse a pull request that sat while another merged.
+For a branch the gate reports behind. `$n` is the pull request number. Branch protection that
+requires the default branch's tip makes `gh pr merge` refuse a pull request that sat while
+another merged.
 
 ## Update the branch on the server
 
@@ -10,16 +10,17 @@ refuse a pull request that sat while another merged.
 gh api --method PUT "repos/{owner}/{repo}/pulls/$n/update-branch"
 ```
 
-That merges the default branch in on the server and leaves every pushed commit alone; never
-rebase or force push instead. A 422 exits non-zero with its reason on stderr.
-`There are no new commits on the base branch` means the branch is already current, so carry on
-to the wait. Any other 422 is a conflict the update left untouched: merge locally so it can be
-resolved or handed over, as [`conflicts.md`](conflicts.md) says.
+This merges the default branch in on the server and keeps every pushed commit; never rebase or
+force push instead. A 422 exits non-zero with its reason on stderr:
+
+- `There are no new commits on the base branch`: already current; go to the wait.
+- Any other 422: a conflict. Merge locally to resolve or hand over
+  ([`conflicts.md`](conflicts.md)).
 
 ## Wait out the stale window
 
-The call answers 202 and queues the merge. The local branch, whose tip `wait-checks` and the
-gate judge, carries it only after a pull.
+The call answers 202 and queues the merge. The local branch, whose tip `wait-checks` and the gate
+judge, carries it only after a pull.
 
 ```bash
 for _ in $(seq 8); do
@@ -30,12 +31,12 @@ for _ in $(seq 8); do
 done
 ```
 
-Where a run ends without `ready`, read `gh pr view "$n" --json mergeStateStatus --jq .mergeStateStatus`
-and reinvoke. Still `BEHIND` means the update never landed or the default branch moved again:
-update again. Three reinvocations go to the user, carrying that reading.
+If the loop ends without `ready`, read `gh pr view "$n" --json mergeStateStatus --jq
+.mergeStateStatus` and rerun it. Still `BEHIND`: the update never landed or the default branch
+moved; update again. After three reruns, hand back to the user with that reading.
 
 ## After every update
 
 Run *Raise the version* again where the repository opted in: two pull requests raising the
-version to the same number do not conflict, so a clean update can leave this branch at the
-default branch's version with nothing raised. Then wait on the checks and run the gate again.
+version to the same number do not conflict, so a clean update can leave nothing raised. Then wait
+on the checks and run the gate again.

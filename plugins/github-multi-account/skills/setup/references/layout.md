@@ -1,13 +1,12 @@
 # Layout and Resolution
 
-How a repo's path decides its account: the directory convention both tools read,
-and the separate mechanisms each uses to turn that path into an identity.
+How a repo's path decides its account: the directory convention both tools read, and how each
+turns the path into an identity.
 
 ## Account trees
 
-Give every account an account tree: one folder under your repo root holding every
-repo for that account. Group repos by account, not by client, and nest client
-folders inside the account tree.
+Give every account an account tree: one folder under your repo root holding every repo for that
+account. Group by account, not by client; nest client folders inside the tree.
 
 ```
 ~/Repos/
@@ -24,8 +23,8 @@ folders inside the account tree.
 
 ## How a path resolves
 
-The path is the only input. git and gh read it separately, because they
-authenticate differently: git over SSH with a key, gh over HTTPS with a token.
+The path is the only input. git and gh read it separately: git authenticates over SSH with a key,
+gh over HTTPS with a token.
 
 ```
                     ┌─ git: includeIf in ~/.gitconfig -> ~/.gitconfig-account1
@@ -40,10 +39,9 @@ repo path ──────────┤                                     
                                                             that account's token
 ```
 
-Every SSH alias points at `github.com` but presents a different key, and a URL
-rewrite sends each account tree to its own alias. Each gh config directory holds one
-account, and a shell function exports the matching one.
+Every SSH alias points at `github.com` but presents a different key; a URL rewrite sends each
+account tree to its own alias. Each gh config directory holds one account; a shell function
+exports the matching one.
 
-Configure the halves separately: [`git.md`](./git.md) for git, [`gh.md`](./gh.md)
-for gh. Either works without the other. To find out what a machine already does,
-start with [`audit.md`](./audit.md).
+Configure each half separately: [`git.md`](./git.md), [`gh.md`](./gh.md). Either works alone. To
+see what a machine already does, start with [`audit.md`](./audit.md).

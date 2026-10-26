@@ -69,9 +69,10 @@ gh issue comment <n> --body-file <pass.md>
 
 A pass with nothing to report still posts its marked comment.
 
-When the stage gets `review-passed`, or the loop ends after its third pass, hide the earlier
-passes so the issue does not carry them. The last pass stays visible and nothing
-a person wrote is touched. A failure here is reported and never undoes the review.
+After each pass is posted, hide the earlier ones so the issue never carries more than the current
+pass and anything waiting on the user, however long the loop runs or however it ends. The last pass
+stays visible and nothing a person wrote is touched. A failure here is reported and never undoes
+the review.
 
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" issue <n> <stage>

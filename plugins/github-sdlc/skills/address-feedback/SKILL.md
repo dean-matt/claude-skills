@@ -22,9 +22,9 @@ The loop is the same; the references hold what differs.
    design mode the verdict goes into the pass comment itself, per the mode's reference.
 5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
    Stop after three passes and let the replies carry what remains.
-6. **Close out** in pr mode, once the last pass came back clean: hide what the earlier passes
-   left so the pull request does not carry them. The last pass stays visible; nothing a person
-   wrote is touched.
+6. **Tidy** in pr mode after each pass is answered and its fixes are pushed, not only at the end:
+   hide what the earlier passes left so the pull request never carries them, however the loop
+   ends. The last pass stays visible; nothing a person wrote is touched.
 
    ```bash
    node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" pr <n>

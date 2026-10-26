@@ -115,3 +115,10 @@ test("--design still refuses an issue that is blocked, whatever its stages", () 
 test("--design on a fully designed issue is ready", () => {
   assert.deepEqual(ready({ labels: PASSED, body: "x" }, "--design"), { code: 0, out: "ready" });
 });
+
+test("--design hands an unticked open question to the pipeline; without it the question blocks", () => {
+  const body = "## Open questions\n- [ ] which one?\n";
+  const d = ready({ labels: PASSED, body }, "--design");
+  assert.deepEqual(d, { code: 3, out: "needs design: 1 open question(s) unticked" });
+  assert.equal(ready({ labels: PASSED, body }).code, 1);
+});

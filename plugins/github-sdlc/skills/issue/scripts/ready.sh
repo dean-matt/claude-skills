@@ -9,9 +9,9 @@
 # that passes the first checks but is not in the pipeline prints "not in the pipeline" and
 # exits 2, so a caller can offer to run the pipeline or build from the issue as written.
 #
-# With --design, an issue that passes the first checks but lacks a passed stage, or is not in
-# the pipeline, prints "needs design: <why>" and exits 3: it is the pipeline's to work, not
-# the build's. Every other failure still prints "not ready" and exits 1.
+# With --design, an issue that passes the first checks but lacks a passed stage, is not in the
+# pipeline, or carries an unticked Open question prints "needs design: <why>" and exits 3: it is
+# the pipeline's to work, not the build's. Every other failure still prints "not ready", exit 1.
 # Needs `gh` and `jq`.
 set -euo pipefail
 
@@ -55,7 +55,11 @@ open_questions=$(printf '%s\n' "$body" | awk '
   /^## /{inq = ($0 == "## Open questions"); next}
   inq && /^- \[ \]/{n++}
   END{print n+0}')
-[ "$open_questions" -eq 0 ] || no "$open_questions open question(s) unticked"
+if [ "$open_questions" -ne 0 ]; then
+  # The pipeline decides an open question in autonomous mode, so --design hands it on.
+  if [ "$design" -eq 1 ]; then gap "$open_questions open question(s) unticked"
+  else no "$open_questions open question(s) unticked"; fi
+fi
 
 blockers=$(gh api "repos/$repo/issues/$n/dependencies/blocked_by" --jq '[.[] | select(.state=="open") | .number] | map("#"+tostring) | join(", ")')
 [ -z "$blockers" ] || no "blocked by $blockers"

@@ -68,9 +68,15 @@ findings standing. The body starts with `<!-- audit-pass -->` (invisible on GitH
 a pass from a person's review). Use `event: COMMENT`, since GitHub refuses an approval on your
 own pull request. A pass with no findings still posts its marked body.
 
+Run the pass through the check first. It stops a finding the merge gate could not read, which
+a posted review cannot be edited to fix:
+
 ```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/check-pass.mjs" pass.json
 gh api 'repos/{owner}/{repo}/pulls/<n>/reviews' --input pass.json
 ```
+
+On exit 1, fix the faults it names and do not post.
 
 `pass.json` holds `commit_id`, `event`, `body` and each line comment as
 `{path, line, side, body}`.

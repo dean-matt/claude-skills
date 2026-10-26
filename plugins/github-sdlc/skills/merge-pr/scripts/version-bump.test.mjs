@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { globToRegex, matchesAny } from "./config.mjs";
-import { bumpedVersion } from "./version-bump.mjs";
+import { globToRegex, hasWorkflows, matchesAny, parseList, protectedPaths } from "./repo.mjs";
+import { bumpedVersion, isBot } from "./version-bump.mjs";
 
 const base = { version: "1.4.2", base: "1.4.2" };
 
@@ -43,4 +43,42 @@ test("globs: ** crosses directories, * stays in one, a trailing slash takes the 
   assert.ok(globToRegex("package.json").test("package.json"));
   assert.ok(!globToRegex("package.json").test("packages/web/package.json"));
   assert.ok(!matchesAny([], "anything"));
+});
+
+test("a bot-opened pull request is skipped, however GitHub names the bot", () => {
+  assert.ok(isBot({ login: "dependabot[bot]" }));
+  assert.ok(isBot({ login: "app/dependabot", is_bot: true }));
+  assert.ok(isBot({ login: "app/renovate" }));
+  assert.ok(!isBot({ login: "dean-matt" }));
+  assert.ok(!isBot(undefined));
+});
+
+test("the protected list drops blanks and comments, and protects itself", () => {
+  assert.deepEqual(parseList("# why\n\nCLAUDE.md\n  docs/  \n#x\n"), ["CLAUDE.md", "docs/"]);
+  const run = () => "# fence\nCLAUDE.md\n";
+  assert.deepEqual(protectedPaths("main", run), ["CLAUDE.md", ".github/protected-paths"]);
+});
+
+test("no list means no fence, so a repository that never opted in is never blocked", () => {
+  const missing = () => {
+    throw new Error("path does not exist");
+  };
+  assert.deepEqual(protectedPaths("main", missing), []);
+});
+
+test("the list is read from the default branch, never the pull request's", () => {
+  let asked;
+  protectedPaths("trunk", (file, args) => {
+    asked = args;
+    return "x";
+  });
+  assert.deepEqual(asked, ["show", "origin/trunk:.github/protected-paths"]);
+});
+
+test("a repository runs checks only if it has a workflow file at that commit", () => {
+  assert.ok(hasWorkflows("abc", () => ".github/workflows/ci.yml\n"));
+  assert.ok(!hasWorkflows("abc", () => "\n"));
+  assert.ok(!hasWorkflows("abc", () => {
+    throw new Error("bad ref");
+  }));
 });

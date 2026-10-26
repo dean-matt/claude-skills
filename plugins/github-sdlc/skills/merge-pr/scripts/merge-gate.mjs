@@ -11,7 +11,7 @@
  */
 import { realpathSync } from "node:fs";
 import { capture } from "./capture.mjs";
-import { defaultBranch, matchesAny, readConfig } from "./config.mjs";
+import { defaultBranch, hasWorkflows, matchesAny, protectedPaths } from "./repo.mjs";
 import {
   expectedChecks,
   headCommit,
@@ -38,14 +38,14 @@ export function notGreen(checks) {
 /**
  * A required check that has not reported blocks like a red one: a head too new to judge has
  * not passed. With no required name the reported checks stand in, and a head with none
- * reported blocks unless the repository opted out with `"checks": "none"`.
+ * reported blocks, unless the repository runs no checks at all (`noCi`).
  *
  * @param {{ name: string, bucket: string }[]} checks
  * @param {string[]} expected
- * @param {string | undefined} optOut the config's `checks` value
+ * @param {boolean} noCi no required check and no workflow file: nothing can report
  */
-export function checksBlocked(checks, expected, optOut) {
-  if (optOut === "none") return null;
+export function checksBlocked(checks, expected, noCi = false) {
+  if (noCi) return null;
   if (checks.length === 0) return "no check has reported on this head yet";
   const missing = missingChecks(expected, checks).map((name) => `${name} (not reported)`);
   const blocked = [...notGreen(checks), ...missing];
@@ -345,7 +345,6 @@ const signers = () =>
   gh(["api", "--paginate", "repos/{owner}/{repo}/collaborators"]).map((c) => c.login);
 
 function gate(n, given) {
-  const config = readConfig();
   const base = defaultBranch();
   const api = (path) => gh(["api", "--paginate", path]);
   const failures = [];
@@ -366,9 +365,9 @@ function gate(n, given) {
   let checkFailure;
   try {
     const sha = headCommit(pr.headRefName, given);
-    const names = config.checks === "none" ? [] : expectedChecks(base);
-    checkFailure =
-      headBlocked(head, sha) ?? checksBlocked(readChecks(sha), names, config.checks);
+    const names = expectedChecks(base);
+    const noCi = names.length === 0 && !hasWorkflows(sha);
+    checkFailure = headBlocked(head, sha) ?? checksBlocked(readChecks(sha), names, noCi);
   } catch (error) {
     checkFailure = `could not read the required checks or the commit: ${error.message}`;
   }
@@ -411,8 +410,9 @@ function gate(n, given) {
   const mergeBase = git(["merge-base", `origin/${base}`, head]);
   const changed = git(["diff", "--name-only", mergeBase, head]).split("\n").filter(Boolean);
   const headDate = git(["show", "-s", "--format=%cI", head]);
-  const protectedPaths = changed.filter((p) => matchesAny(config.protectedPaths ?? [], p));
-  const unsigned = unsignedPaths(protectedPaths, head, headDate, issueComments, who);
+  const fence = protectedPaths(base);
+  const reached = changed.filter((p) => matchesAny(fence, p));
+  const unsigned = unsignedPaths(reached, head, headDate, issueComments, who);
   report(unsigned.length === 0, "the diff reaches no protected path", unsigned.join("\n      "));
 
   const held = unconfirmedDeviations(pr.body, head, headDate, issueComments, who);

@@ -51,8 +51,9 @@ test("checks: with no required name the reported checks stand in; none reported 
   assert.match(checksBlocked([], []), /no check has reported/);
 });
 
-test("checks: an opt-out passes even with nothing reported", () => {
-  assert.equal(checksBlocked([], [], "none"), null);
+test("checks: a repository that runs no checks has nothing to wait on", () => {
+  assert.equal(checksBlocked([], [], true), null);
+  assert.match(checksBlocked([], [], false), /no check has reported/);
 });
 
 test("passes: marked reviews are the passes, and an unmarked pull request falls back to bodied ones", () => {

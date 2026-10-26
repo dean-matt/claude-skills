@@ -6,7 +6,8 @@
  * from the start, inside the longest tool call. Exits 0 once two consecutive polls both show
  * every check green, 1 when a check failed and none is pending, and 2 when the time ran out
  * with a check unreported or pending, or when no commit could be read. Prints the names it
- * was waiting on before it exits. A repository that sets `"checks": "none"` exits 0 at once.
+ * was waiting on before it exits. A repository with no required check and no workflow file
+ * runs no checks, and exits 0 at once.
  *
  * With no required name it waits on the checks that have reported, and on a first one while
  * none has.
@@ -14,7 +15,7 @@
 import { realpathSync } from "node:fs";
 import { setTimeout as sleep } from "node:timers/promises";
 import { capture } from "./capture.mjs";
-import { defaultBranch, readConfig } from "./config.mjs";
+import { defaultBranch, hasWorkflows } from "./repo.mjs";
 import {
   expectedChecks,
   GH_TIMEOUT_MS,
@@ -92,11 +93,6 @@ if (process.argv[1] !== undefined && import.meta.filename === realpathSync(proce
     process.exit(2);
   }
   const started = Date.now();
-  const config = readConfig();
-  if (config.checks === "none") {
-    console.log("this repository opts out of checks; nothing to wait on");
-    process.exit(0);
-  }
   let expected;
   let sha;
   try {
@@ -110,6 +106,10 @@ if (process.argv[1] !== undefined && import.meta.filename === realpathSync(proce
   } catch (error) {
     console.error(`could not read the required checks or the commit: ${error.message}`);
     process.exit(2);
+  }
+  if (expected.length === 0 && !hasWorkflows(sha)) {
+    console.log("this repository runs no checks; nothing to wait on");
+    process.exit(0);
   }
   console.log(`waiting on the checks of ${sha}`);
   const { code, failed, waiting } = await waitChecks({

@@ -21,10 +21,9 @@ The input is an open, non-draft pull request. Anything else stops.
 
 ## Raise the version
 
-Only where `.claude/github-sdlc.json` has `versionBump` ([`setup`](../setup/SKILL.md) records
-it). Without it the script prints `no bump (not enabled)` and there is nothing to do. The bump
-happens at the merge, not in the pull request, so no other open pull request carries a version
-line to redo.
+Only where the repository's CLAUDE.md or CONTRIBUTING.md says the merge raises a version.
+Without that sentence, skip this section. The bump happens at the merge, not in the pull
+request, so no other open pull request carries a version line to redo.
 
 Work in the issue's worktree, opening it on `$b` as
 [`../build/references/claim-and-worktree.md`](../build/references/claim-and-worktree.md) says
@@ -35,9 +34,12 @@ git pull --ff-only && git fetch origin <default-branch> && git merge --no-edit o
 node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/version-bump.mjs" "$n"
 ```
 
-A conflict goes to [`references/conflicts.md`](references/conflicts.md). The script prints
-`no bump` for a pull request that changes only paths the config skips, and the new version
-otherwise; for a version, commit the file and push. A commit hook that fails for missing
+The defaults are the usual convention: `feat` raises the minor, anything else the patch, and
+docs and Markdown alone skip it. Pass a flag only where the repository's sentence names an
+exception: `--file <path>`, `--feat <kind>`, `--other <kind>`, `--skip <glob>`. The script skips a
+pull request a bot opened. It prints `no bump` where nothing changes and the new version
+otherwise; for a version, commit the file and push. A conflict goes to
+[`references/conflicts.md`](references/conflicts.md). A commit hook that fails for missing
 dependencies wants the install command from `setup` run first.
 
 ## Block on the checks
@@ -69,7 +71,7 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/merge-gate.mjs" "$n"
 
 It prints each condition as `pass` or `FAIL` with the detail. Merge where it exits 0 and
 otherwise name each failure and stop. A branch that is behind goes to
-[`references/behind-branch.md`](references/behind-branch.md). A protected path, a blocking
+[`references/behind-branch.md`](references/behind-branch.md). A protected path (one listed in `.github/protected-paths`), a blocking
 decline, an unconfirmed deviation and any review label other than `ai-review:completed` wait on
 the user: name each and hand back. The user clears them by the records in
 [`references/records.md`](references/records.md). Read the pass body the script points at too,

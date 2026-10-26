@@ -1,23 +1,24 @@
 /**
- * Raises a version at the merge, for a repository that opted in. A repository that did not has
- * no `versionBump` in `.claude/github-sdlc.json`, and this prints `no bump (not enabled)`.
+ * Raises a version at the merge. The caller runs this only where the repository says the merge
+ * raises one (its CLAUDE.md or CONTRIBUTING.md), so nothing here asks whether to.
  *
- *   "versionBump": { "file": "package.json", "feat": "minor", "other": "patch",
- *                    "skip": ["docs/**", "**\/*.md"] }
+ *   node version-bump.mjs <pr> [--file package.json] [--feat minor] [--other patch] [--skip <glob>]...
  *
- * A pull request that changes a path outside `skip` raises the version over the default
- * branch's once: a `feat` title raises what `feat` names, every other type what `other` names.
- * A version already above the default branch's is left as it is, so a rerun changes nothing.
+ * The defaults are the usual convention: a `feat` title raises the minor and every other type
+ * the patch, over the default branch's version, once; a pull request changing only docs and
+ * Markdown leaves it alone; a version already above the default branch's is left as it is, so
+ * a rerun changes nothing; and a pull request a bot opened is skipped. Each flag overrides one
+ * default for a repository with unusual rules, and `--skip` repeats.
  *
- * Run `node version-bump.mjs <pr>` in the branch's checkout. It edits `file` and prints the new
- * version; committing and pushing are the caller's. The file must be JSON whose first
- * `"version"` is top-level and reads MAJOR.MINOR.PATCH, and only that line is rewritten. A
- * `Cargo.toml` or `pyproject.toml` is the ceiling,
- * and parsing them is the way out.
+ * Run it in the branch's checkout. It edits `--file` and prints the new version; committing and
+ * pushing are the caller's. The file must be JSON whose first `"version"` is top-level and reads
+ * MAJOR.MINOR.PATCH, and only that line is rewritten. A `Cargo.toml` or `pyproject.toml` is the
+ * ceiling, and parsing them is the way out.
  */
 import { readFileSync, realpathSync, writeFileSync } from "node:fs";
 import { capture } from "./capture.mjs";
-import { defaultBranch, matchesAny, readConfig } from "./config.mjs";
+import { parseArgs } from "node:util";
+import { defaultBranch, matchesAny } from "./repo.mjs";
 
 const SEMVER = /^(\d+)\.(\d+)\.(\d+)$/;
 
@@ -53,27 +54,45 @@ export function bumpedVersion({ changed, title, version, base, rules = {} }) {
   return raise(theirs, /^feat(\(.*\))?!?:/.test(title) ? r.feat : r.other);
 }
 
+/**
+ * A pull request a bot opened carries no change of the maintainers' own to version.
+ *
+ * @param {{ login?: string, is_bot?: boolean } | undefined} author
+ */
+export function isBot(author) {
+  return author?.is_bot === true || /\[bot\]$|^app\//.test(author?.login ?? "");
+}
+
 if (process.argv[1] !== undefined && import.meta.filename === realpathSync(process.argv[1])) {
-  const pr = process.argv[2];
+  const { values, positionals } = parseArgs({
+    allowPositionals: true,
+    options: {
+      file: { type: "string" },
+      feat: { type: "string" },
+      other: { type: "string" },
+      skip: { type: "string", multiple: true },
+    },
+  });
+  const pr = positionals[0];
   if (!/^\d+$/.test(pr ?? "")) {
-    console.error("usage: node version-bump.mjs <pr>");
+    console.error("usage: node version-bump.mjs <pr> [--file f] [--feat kind] [--other kind] [--skip glob]...");
     process.exit(2);
   }
-  const rules = readConfig().versionBump;
-  if (rules === undefined) {
-    console.log("no bump (not enabled)");
+  const rules = Object.fromEntries(Object.entries(values).filter(([, v]) => v !== undefined));
+  const file = rules.file ?? DEFAULTS.file;
+  const meta = JSON.parse(capture("gh", ["pr", "view", pr, "--json", "title,author"]));
+  if (isBot(meta.author)) {
+    console.log("no bump (opened by a bot)");
     process.exit(0);
   }
-  const file = rules.file ?? DEFAULTS.file;
   const base = defaultBranch();
   const git = (...args) => capture("git", args).trim();
   git("fetch", "--quiet", "origin", base);
   const mergeBase = git("merge-base", `origin/${base}`, "HEAD");
   const changed = git("diff", "--name-only", mergeBase, "HEAD").split("\n").filter(Boolean);
-  const title = capture("gh", ["pr", "view", pr, "--json", "title", "--jq", ".title"]).trim();
   const theirs = JSON.parse(git("show", `origin/${base}:${file}`)).version;
   const text = readFileSync(file, "utf8");
-  const next = bumpedVersion({ changed, title, version: JSON.parse(text).version, base: theirs, rules });
+  const next = bumpedVersion({ changed, title: meta.title, version: JSON.parse(text).version, base: theirs, rules });
   if (next === null) console.log("no bump");
   else {
     // Only the first `"version"` line changes, so the file's own formatting survives.

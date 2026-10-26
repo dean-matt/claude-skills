@@ -5,7 +5,7 @@
  *
  * A repository whose rules name no required check is judged on the checks that have
  * reported, so every one must be green; a head with none reported cannot be judged unless the
- * repository's config sets `"checks": "none"`.
+ * repository runs no checks at all, which the caller works out from its workflow files.
  */
 import { capture } from "./capture.mjs";
 

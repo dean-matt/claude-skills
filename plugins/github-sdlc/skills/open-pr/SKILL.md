@@ -13,6 +13,8 @@ first: it names what the body must not repeat.
 - The branch is pushed and the repository's check command has passed on it. Find the command
   as [`setup`](../setup/references/discovery.md#check-command) describes.
 - The working tree is clean. Never open a pull request over uncommitted work.
+- Apply any rule the repository's CLAUDE.md or CONTRIBUTING.md states for pull requests, such as
+  opening as a draft when certain paths change, or a required label.
 
 ## 2. Gather
 

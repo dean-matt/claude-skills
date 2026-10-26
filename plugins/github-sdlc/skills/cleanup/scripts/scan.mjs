@@ -15,6 +15,26 @@ import { capture } from "../../merge-pr/scripts/capture.mjs";
 const CLAIM = /^[a-z]+\/(\d+)-/;
 
 /**
+ * Calls `fn` until it returns, up to `attempts` times, pausing longer after each failure.
+ * GitHub answers a 502 or 504, or an empty body, now and then; the next call usually works.
+ *
+ * @template T
+ * @param {() => T} fn
+ * @param {{ attempts?: number, pause?: (ms: number) => void }} [options]
+ * @returns {T}
+ */
+export function retrying(fn, { attempts = 3, pause = (ms) => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms) } = {}) {
+  for (let i = 1; ; i++) {
+    try {
+      return fn();
+    } catch (error) {
+      if (i >= attempts) throw error;
+      pause(2000 * i);
+    }
+  }
+}
+
+/**
  * @param {{
  *   base: string,
  *   worktrees: { path: string, branch: string | null, dirty: boolean }[],
@@ -69,9 +89,9 @@ export function classify({ base, worktrees, branches, prs, assigned, here }) {
 
 /** The facts, read from git and GitHub. @param {typeof capture} run */
 export function gather(run = capture) {
-  const sh = (file, args, options) => run(file, args, { timeout: 60000, ...options });
-  const json = (file, args) => JSON.parse(sh(file, args));
-  const base = sh("gh", ["repo", "view", "--json", "defaultBranchRef", "--jq", ".defaultBranchRef.name"]).trim();
+  const sh = (file, args, options) => run(file, args, { timeout: 60000, stdio: ["ignore", "pipe", "pipe"], ...options });
+  const json = (file, args) => retrying(() => JSON.parse(sh(file, args)));
+  const base = retrying(() => sh("gh", ["repo", "view", "--json", "defaultBranchRef", "--jq", ".defaultBranchRef.name"])).trim();
   sh("git", ["fetch", "--quiet", "--prune", "origin"]);
 
   const main = sh("git", ["rev-parse", "--show-toplevel"]).trim();
@@ -117,7 +137,14 @@ export function gather(run = capture) {
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
-  const rows = classify(gather());
+  let rows;
+  try {
+    rows = classify(gather());
+  } catch (error) {
+    const reason = String(error.stderr || error.message).trim().split("\n")[0];
+    console.error(`cleanup scan failed: ${reason}`);
+    process.exit(1);
+  }
   for (const r of rows) console.log([r.verdict, r.kind, r.ref, r.reason].join("\t"));
   if (rows.length === 0) console.log("nothing to clean up");
 }

@@ -11,7 +11,6 @@ Read the repository's CLAUDE.md and CONTRIBUTING.md first; they outrank this ski
 
 Ask which of these apply only when the request does not say:
 
-- **Plan first**: write the approach (files, tests, risks), get approval, then build.
 - **Draft**: open the pull request as a draft.
 - **Autonomous**: no questions; stop only on the conditions under *Stop*.
 
@@ -21,12 +20,21 @@ Ask which of these apply only when the request does not say:
 2. **Claim.** Creating the branch is the claim: it derives from the issue, so a second
    session creating it is refused. Never use `gh issue develop`, which succeeds twice.
    Read [`references/claim-and-worktree.md`](references/claim-and-worktree.md).
-3. **Read the issue in full**, acceptance criteria and any out-of-scope list. Out of scope is
-   a fence. Check every number or shape it states against the code or data before designing.
+3. **Check it is ready**, and read it in full: the criteria, Out of scope, and the UI/UX,
+   Technical and Test Design. Out of scope is a fence.
+   ```bash
+   "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/ready.sh" <n>
+   ```
+   On `not ready`, stop and report why. On `not in the pipeline`, ask: run the pipeline from
+   [`issue`](../issue/SKILL.md), or build from the issue as written (write the approach first,
+   get approval, then build). Check every number or shape the issue states against the code.
 4. **Mark it In Progress** on the board when one is configured, as
    [`../setup/references/board.md`](../setup/references/board.md) describes.
-5. **Plan** if asked. Present it, then wait.
-6. **Implement** at the smallest change that meets the criteria. Tests ride with the code.
+5. **Follow the design.** The Technical Design is the plan; the Test Design says which tests
+   to write, by AC.
+6. **Implement** at the smallest change that meets the criteria. Tests ride with the code. When
+   the code makes the design wrong, depart from it and keep a note of each departure and why,
+   for the pull request's Deviations. Never edit the issue.
    Update docs the change made stale in the same commit.
 7. **Run the check command** and fix failures at the cause. Never push past a failure.
 8. **Prose pass** with [`technical-writing`](../technical-writing/SKILL.md) over commit

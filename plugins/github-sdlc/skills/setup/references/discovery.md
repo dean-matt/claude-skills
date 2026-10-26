@@ -16,17 +16,7 @@ the answers in `.claude/github-sdlc.json`; when that file exists, its values win
 
 State which source each fact came from, so a wrong guess is visible.
 
-## Labels the plugin owns
-
-| Label | Meaning |
-|---|---|
-| `ai-review:completed` | The last review pass is posted, `check` is green and nothing waits on a person |
-| `ai-review:changes-requested` | A pass left something for a person to decide |
-
-```bash
-gh label create "ai-review:completed" --color 0E8A16 --description "AI review finished; nothing waits on a person" --force
-gh label create "ai-review:changes-requested" --color D93F0B --description "AI review left something for a person" --force
-```
+Labels the plugin owns are listed in [`labels.md`](labels.md).
 
 ## `.claude/github-sdlc.json`
 
@@ -38,6 +28,7 @@ Optional. Every key is optional.
   "installCommand": "pnpm install --frozen-lockfile",
   "board": { "owner": "dean-matt", "number": 1 },
   "versionBump": { "file": "package.json", "feat": "minor", "other": "patch", "skip": ["docs/**", "**/*.md"] },
-  "protectedPaths": ["docs/mockup/components/"]
+  "protectedPaths": ["docs/mockup/components/"],
+  "severity": { "critical": "Losing a character, or a wrong 5e result in play" }
 }
 ```

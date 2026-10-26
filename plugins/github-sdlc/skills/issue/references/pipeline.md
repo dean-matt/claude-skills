@@ -29,12 +29,18 @@ The labels, their colors and the commands that create them are in
 - A later stage that finds an earlier one wrong removes the earlier `review-passed`, adds its
   `changes-requested`, and says why in a comment. The pipeline then runs from that stage again.
 - A stage that cannot proceed adds an unticked Open question and stops. In **autonomous** mode
-  (the `auto` skill's) it decides instead: the answer the issue, the code and Out of scope best
-  support, and the narrower one where they leave it open. Tick the question and append the
-  answer and its reason on the same line, as `- [x] <question> — Decided (auto): <answer>,
-  because <reason>`. Where the answer changes a criterion, the criteria stage rewrites it and
-  the pipeline runs again from there. Report every such decision. A question only the user can
-  answer, such as a credential, a price or a deadline, stays unticked and stops.
+  (the `auto` skill's) it sorts each question first:
+  - **Low stakes:** naming, wording, or a default for an edge the criteria leave open. Decide it:
+    the answer the issue, the code and Out of scope best support, and the narrower one where they
+    leave it open. Tick it and append the answer and reason on the same line, as
+    `- [x] <question> — Decided (auto): <answer>, because <reason>`.
+  - **Needs a person:** it changes stored data or a migration, behavior a user will notice, or
+    scope beyond the issue's title; or only the user can know the answer, such as a credential, a
+    price or a deadline. Leave it unticked and return it with a recommended answer and the
+    alternatives. The caller asks the user and records the reply as
+    `- [x] <question> — Answered: <answer>`.
+  When in doubt it is a question for a person. Where an answer changes a criterion, the criteria
+  stage rewrites it and the pipeline runs again from there. Report every decision and answer.
 - Review stops after three passes with `changes-requested` still set. The issue is then held
   for the user with the last findings attached.
 

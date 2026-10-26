@@ -69,16 +69,19 @@ issue `<n>`. Ask for `build`'s report. Stop where it:
 **Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md)
 on issue `<n>` in autonomous mode: write each needed stage with its skill and review it with
 [`review-design`](../review-design/SKILL.md), starting at the first stage that lacks
-`review-passed`, and decide an Open question as the pipeline says. It claims the issue and moves
+`review-passed`, and sort each Open question as the pipeline says. It claims the issue and moves
 the card to In Progress before its first edit, and keeps the claim for the build that follows;
-where the pipeline stops it releases the issue. Ask for the issue, the label
-each stage ended on, and every question it decided with its answer. Running `auto` is the user's
+where the pipeline stops it releases the issue, except when it returns questions for a person.
+Ask for the issue, the label each stage ended on, every question it decided with its answer, and
+every question it left for a person with its recommendation and alternatives. Running `auto` is the user's
 word to run the pipeline, never to build an issue as written. Then run `next.sh` for `<n>` once
-more: `ready` goes to step 2b. Stop where:
+more: `ready` goes to step 2b. Where it returned questions for a person, ask them yourself,
+in this conversation: one `AskUserQuestion` for the batch, the recommended answer first. Then
+dispatch a fresh design subagent that gets the issue and the user's answers, quoted as theirs,
+records each as `Answered`, and carries on from where the pipeline stopped. Stop where:
 
-- **a stage ends on an unticked Open question only the user can answer,** or on
-  `changes-requested` after three review passes. Quote the question or the last findings; the
-  issue is the user's to answer
+- **the user declines to answer a question,** or a stage ends on `changes-requested` after three
+  review passes. Quote the question or the last findings; the issue is the user's to answer
 - **`<n>` is not `ready` after the pipeline.** Looping would design it forever. Give the reason
 
 **3. Run the gate.**

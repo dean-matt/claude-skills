@@ -23,8 +23,8 @@
   - a **Narrowing** or **Addition** deviation the user has not confirmed,
   - a second bug filed as its own issue.
 
-  Otherwise leave `ai-review:changes-requested`. The user confirms a deviation in
-  conversation; record it as a pull request comment opening `**Confirmed**` and naming the
-  deviation, so a later session can read it.
+  Otherwise leave `ai-review:changes-requested`. The user clears each of these in
+  conversation, and the record the gate reads is in
+  [`../../merge-pr/references/records.md`](../../merge-pr/references/records.md).
   `gh pr edit <n> --add-label <one> --remove-label <other>` swaps the labels in one call.
 - **Return** the label left and what each pass found.

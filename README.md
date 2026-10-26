@@ -8,6 +8,7 @@ Desktop and the Agent SDK read that format too, so a skill directory works in al
 ## Prerequisites
 
 - [Claude Code](https://docs.claude.com/en/docs/claude-code/overview)
+- For `github-sdlc`: the [GitHub CLI](https://cli.github.com/), authenticated, plus `jq`, and Node 20.11 or newer for its merge scripts
 
 ## Getting started
 
@@ -46,6 +47,10 @@ claude plugin details github-multi-account
 # Check every manifest, or one plugin
 claude plugin validate .
 claude plugin validate plugins/github-multi-account
+
+# Run the github-sdlc script and hook tests
+(cd plugins/github-sdlc/skills/merge-pr/scripts && node --test)
+node --test plugins/github-sdlc/hooks/read-only-bash.test.mjs
 
 # Remove
 claude plugin uninstall github-multi-account

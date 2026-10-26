@@ -81,10 +81,25 @@ word to run the pipeline, never to build an issue as written. Then run `next.sh`
 more: `ready` goes to step 2b. Where it returned questions for a person, ask them yourself,
 in this conversation: one `AskUserQuestion` for the batch, the recommended answer first. Then
 dispatch a fresh design subagent that gets the issue and the user's answers, quoted as theirs,
-records each as `Answered`, and carries on from where the pipeline stopped. Stop where:
+records each as `Answered`, and carries on from where the pipeline stopped.
 
-- **the user declines to answer a question,** or a stage ends on `changes-requested` after three
-  review passes. Quote the question or the last findings; the issue is the user's to answer
+Where a stage ends on `changes-requested` after three review passes, ask rather than stop: one
+`AskUserQuestion` that quotes the last findings and says how many criteria or items the stage
+has grown by, with these options, the first being the default:
+
+- **One more review pass.** Dispatch `review-design` for the stage once, and ask again if it
+  still ends on `changes-requested`. Offer this first where edits since the last pass were never
+  reviewed.
+- **Accept it as it stands.** Offered only when the last pass found no `critical`. Run this
+  yourself, on the user's word in this conversation, never in a subagent: post one comment
+  quoting the findings accepted, then set `<prefix>:review-passed` and remove
+  `<prefix>:changes-requested`. Carry on with the next stage.
+- **Stop here.** The issue stays with the user.
+
+Stop where:
+
+- **the user declines to answer a question, or chooses to stop.** Quote the question or the last
+  findings; the issue is the user's to answer
 - **`<n>` is not `ready` after the pipeline.** Looping would design it forever. Give the reason
 
 Release `<n>` as `claim` says on either stop, since the run ends with nothing continuing the work.

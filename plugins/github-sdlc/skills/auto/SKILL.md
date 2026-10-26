@@ -1,6 +1,6 @@
 ---
 name: auto
-description: Work the repository's ready issues one after another, from open to merged — dispatch build then merge-pr per issue in fresh subagents, and stop on the first issue that does not merge. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
+description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build and merge-pr per issue in fresh subagents, and stop on the first issue that does not merge. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
 ---
 
 # Working the backlog

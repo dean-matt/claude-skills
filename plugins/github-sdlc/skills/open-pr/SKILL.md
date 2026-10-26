@@ -1,7 +1,7 @@
 ---
 name: open-pr
 description: Open a pull request for the current branch with a short structured body — closing link, what, why, screenshots, deviations — and keep that body accurate as the branch changes. Use when a branch is pushed and ready for review, or when a pull request body needs rewriting.
-argument-hint: "[issue-number] [draft]"
+argument-hint: "[issue-number] [--draft]"
 ---
 
 # Opening a pull request
@@ -61,7 +61,7 @@ reader.
 ## Options
 
 Pass an issue number to name the issue it closes, which the branch name would otherwise supply,
-and the word `draft`.
+and `--draft`.
 
 Ask only when the answer is not already known: **draft or ready**, and **whether to attach
 screenshots** when the diff is ambiguous about being visible.

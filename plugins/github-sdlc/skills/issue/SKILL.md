@@ -1,7 +1,7 @@
 ---
 name: issue
 description: Draft a GitHub issue from a rough idea or bug report — pick its type, write the summary, open questions, out of scope and numbered acceptance criteria, ask about gaps, create it with labels, and queue it for criteria review. Use when asked to write, file, draft or create an issue, or to turn feedback into one.
-argument-hint: "[idea] [autonomous]"
+argument-hint: "[idea] [--autonomous]"
 ---
 
 # Writing an issue
@@ -38,7 +38,7 @@ writes the **criteria stage** only: it never writes a design section.
 
 ## Options
 
-Pass the word `autonomous`.
+Pass `--autonomous`.
 
 - **Interactive** (default): show the draft before creating it.
 - **Autonomous**: create without asking, and turn every gap into an Open question.

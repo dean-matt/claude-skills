@@ -1,7 +1,7 @@
 ---
 name: address-feedback
 description: Work through review feedback on a pull request or on an issue's design stage — decide apply or decline for each item, make the changes, reply to every item, and re-review until nothing blocking remains. Use after review-pr or review-design returns findings, or when asked to address review comments.
-argument-hint: "<pr-number | issue-number stage> [autonomous]"
+argument-hint: "<pr-number | issue-number stage> [--autonomous]"
 ---
 
 # Addressing feedback
@@ -25,7 +25,7 @@ The loop is the same; the references hold what differs.
 
 ## Options
 
-Pass the word `autonomous`.
+Pass `--autonomous`.
 
 - **Interactive**: show the decisions before applying and ask on each declined `critical` or
   `warning`.

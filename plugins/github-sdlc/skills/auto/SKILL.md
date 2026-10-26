@@ -1,7 +1,7 @@
 ---
 name: auto
 description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build (which includes the pull request review) and merge-pr per issue in fresh subagents, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
-argument-hint: "[issue=<n>] [count=<n>] [deadline=<2h>]"
+argument-hint: "[--issue <n>] [--count <n>] [--deadline <2h>]"
 ---
 
 # Working the backlog
@@ -15,17 +15,17 @@ to stop. Run every command from the main checkout.
 
 ## Limits
 
-Arguments are `issue=<n>`, `count=<n>` and `deadline=<duration>`, in any order, all optional:
+Arguments are `--issue <n>`, `--count <n>` and `--deadline <duration>`, in any order, all optional:
 
 ```
-/github-sdlc:auto issue=42
-/github-sdlc:auto count=1
-/github-sdlc:auto count=3 deadline=2h
+/github-sdlc:auto --issue 42
+/github-sdlc:auto --count 1
+/github-sdlc:auto --count 3 --deadline 2h
 ```
 
-`issue=<n>` runs the lifecycle on that one issue and skips the ranking, with a count of 1. Step 2
+`--issue <n>` runs the lifecycle on that one issue and skips the ranking, with a count of 1. Step 2
 still checks it: `next.sh --design` on that number alone, and its *Held* rules. An issue that is
-not ready, blocked or held stops the run with the reason. Give `issue` with `count` and the run
+not ready, blocked or held stops the run with the reason. Give `--issue` with `--count` and the run
 stops on the contradiction before it takes anything.
 
 A duration is a number and `m` or `h`. Wall clock is the only budget a skill can measure. Print a
@@ -34,7 +34,7 @@ argument, the run ends when [`pick-issue`](../pick-issue/SKILL.md) returns `none
 starting. Before starting, restate the limits in one line, such as "count 3, deadline 2h".
 
 Free wording ("merge one issue") is read as the same arguments, but an argument that cannot be
-read, such as `count=many` or `deadline=soon`, stops the run before it takes an issue, naming the
+read, such as `--count many` or `--deadline soon`, stops the run before it takes an issue, naming the
 argument and the form above. Never guess a limit: a wrong guess merges the wrong number of
 pull requests.
 

@@ -57,7 +57,8 @@ Open each finding with its severity in bold, then the defect and what it costs:
 ## 5. Post and label
 
 Post one comment per pass, opening with `<!-- design-pass:<stage> -->` so a pass can be told
-from a person's comment, then each finding numbered. Post it with the script, which also hides
+from a person's comment, then each finding numbered. The script adds the visible heading under the
+marker (`### Criteria review — pass 2`), so a reader sees which stage a pass covers. Post it with the script, which also hides
 the earlier passes in the same call, so the issue never carries more than the current pass and
 anything waiting on the user, however long the loop runs or however it ends:
 

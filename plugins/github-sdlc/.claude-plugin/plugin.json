@@ -1,0 +1,12 @@
+{
+  "name": "github-sdlc",
+  "description": "A software delivery workflow for any GitHub repository: set up a project, pick work, build it, open a structured pull request with screenshots, review it and merge it.",
+  "version": "0.8.3",
+  "author": {
+    "name": "Matt Dean",
+    "url": "https://github.com/dean-matt"
+  },
+  "homepage": "https://github.com/dean-matt/claude-skills",
+  "license": "MIT",
+  "keywords": ["sdlc", "pull-request", "code-review", "github", "workflow"]
+}

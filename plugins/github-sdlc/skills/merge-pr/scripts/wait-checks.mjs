@@ -1,0 +1,124 @@
+/**
+ * Waits for one commit of a pull request to finish its checks.
+ *
+ * Input: a pull request number, then optionally the full SHA to judge; without one it judges
+ * the commit `headCommit` names. Polls every `INTERVAL_MS` for up to nine minutes, counted
+ * from the start, inside the longest tool call. Exits 0 once two consecutive polls both show
+ * every check green, 1 when a check failed and none is pending, and 2 when the time ran out
+ * with a check unreported or pending, or when no commit could be read. Prints the names it
+ * was waiting on before it exits. A repository with no required check and no workflow file
+ * runs no checks, and exits 0 at once.
+ *
+ * With no required name it waits on the checks that have reported, and on a first one while
+ * none has.
+ */
+import { realpathSync } from "node:fs";
+import { setTimeout as sleep } from "node:timers/promises";
+import { capture } from "./capture.mjs";
+import { defaultBranch, hasWorkflows } from "./repo.mjs";
+import {
+  expectedChecks,
+  GH_TIMEOUT_MS,
+  headCommit,
+  isGreen,
+  missingChecks,
+  readChecks,
+} from "./required-checks.mjs";
+
+export const TIMEOUT_MS = 9 * 60 * 1000;
+export const INTERVAL_MS = 15 * 1000;
+export const RULESET_RETRY_MS = 3 * 1000;
+
+/** @param {{ name: string, bucket: string }[]} checks */
+export function settle(expected, checks) {
+  const pending = checks.filter((c) => c.bucket === "pending");
+  const failed = checks.filter((c) => !isGreen(c) && c.bucket !== "pending");
+  const missing = missingChecks(expected, checks);
+  if (expected.length === 0 && checks.length === 0) missing.push("a first check to report");
+  return { failed: failed.map((c) => c.name), pending: pending.map((c) => c.name), missing };
+}
+
+/**
+ * Reads the required names, retrying once after `delayMs` before the error stands.
+ *
+ * @param {() => string[]} read
+ * @param {(ms: number) => Promise<void>} [wait]
+ */
+export async function readExpected(read, wait = (ms) => sleep(ms), delayMs = RULESET_RETRY_MS) {
+  try {
+    return read();
+  } catch {
+    await wait(delayMs);
+    return read();
+  }
+}
+
+/**
+ * Polls until the head settles or the next poll would land past `timeoutMs`. `read`, `wait`
+ * and `now` are parameters so a test drives the clock instead of sleeping through it.
+ *
+ * @returns {Promise<{ code: 0 | 1 | 2, failed: string[], waiting: string[] }>}
+ */
+export async function waitChecks({
+  expected,
+  read,
+  wait = (ms) => sleep(ms),
+  now = Date.now,
+  timeoutMs = TIMEOUT_MS,
+  intervalMs = INTERVAL_MS,
+}) {
+  const deadline = now() + timeoutMs;
+  let greens = 0;
+  for (;;) {
+    const { failed, pending, missing } = settle(expected, await read());
+    if (failed.length > 0 && pending.length === 0) return { code: 1, failed, waiting: [] };
+    const waiting = [...missing, ...pending];
+    greens = waiting.length === 0 ? greens + 1 : 0;
+    if (greens >= 2) return { code: 0, failed: [], waiting: [] };
+    if (now() + intervalMs > deadline) {
+      return {
+        code: 2,
+        failed: [],
+        waiting: waiting.length > 0 ? waiting : ["a second green poll"],
+      };
+    }
+    await wait(intervalMs);
+  }
+}
+
+if (process.argv[1] !== undefined && import.meta.filename === realpathSync(process.argv[1])) {
+  const [pr, given] = process.argv.slice(2);
+  if (pr === undefined) {
+    console.error("usage: node wait-checks.mjs <pr> [sha]");
+    process.exit(2);
+  }
+  const started = Date.now();
+  let expected;
+  let sha;
+  try {
+    expected = await readExpected(() => expectedChecks(defaultBranch()));
+    const branch = capture(
+      "gh",
+      ["pr", "view", pr, "--json", "headRefName", "--jq", ".headRefName"],
+      { timeout: GH_TIMEOUT_MS },
+    );
+    sha = headCommit(branch.trim(), given);
+  } catch (error) {
+    console.error(`could not read the required checks or the commit: ${error.message}`);
+    process.exit(2);
+  }
+  if (expected.length === 0 && !hasWorkflows(sha)) {
+    console.log("this repository runs no checks; nothing to wait on");
+    process.exit(0);
+  }
+  console.log(`waiting on the checks of ${sha}`);
+  const { code, failed, waiting } = await waitChecks({
+    expected,
+    read: () => readChecks(sha),
+    timeoutMs: TIMEOUT_MS - (Date.now() - started),
+  });
+  if (code === 1) console.error(`failed: ${failed.join(", ")}`);
+  if (code === 2) console.error(`timed out waiting on: ${waiting.join(", ")}`);
+  if (code === 0) console.log("every check is green");
+  process.exit(code);
+}

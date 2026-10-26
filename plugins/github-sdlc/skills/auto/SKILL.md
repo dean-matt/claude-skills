@@ -15,7 +15,7 @@ to stop. Run every command from the main checkout.
 Take a count of issues to merge, a wall-clock deadline, both, or neither — wall clock is the
 only budget a skill can measure. Print a deadline once with `echo $(( $(date +%s) + <seconds> ))`
 and carry the number. With neither, the run ends when [`pick-issue`](../pick-issue/SKILL.md)
-returns nothing; say so before starting.
+returns `none`; say so before starting.
 
 ## Per issue
 
@@ -28,30 +28,35 @@ if [ "$(date +%s)" -ge <deadline> ]; then echo past; else echo within; fi
 Read them here and nowhere else — abandoning an issue mid-flight leaves a branch and a pull
 request nobody asked for. The deadline stops the next issue from starting, not the one running.
 
-**2. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` in autonomous mode and names no
-issue; its own choosing picks one. Reading the backlog here too would make two readers that can
-disagree. Ask for `build`'s report. Stop where it:
+**2. Choose.** Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, then run
+`next.sh --design` on that list from the main checkout. Drop any issue pick-issue's *Held* rules exclude first. One script reads the backlog, so the
+choice and the dispatches cannot disagree. It ends `take <n>` or `none`. Stop on `none` and give
+each reason it printed; a board with nothing designed is not an empty board.
+
+Where the line for `<n>` reads `needs design`, go to *Design* below and come back with the
+issue designed. Where it reads `ready`, go to step 2b.
+
+**2b. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` in autonomous mode for
+issue `<n>`. Ask for `build`'s report. Stop where it:
 
 - **puts the review pass outside the `pr-auditor` agent.** An agent that reviews its own work
   still earns `ai-review:completed`, and GitHub cannot check the claim, so this catches a failed
   dispatch and not a skipped one
-- **names no issue.** Where the reason is that the first candidates are missing only their design
-  stages, go to *Design* below. Otherwise give the reason it named
 - **names an issue and no pull request.** Give the condition. Looping back either retakes a
   not-ready issue forever or skips a check that failed
 
 **Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md)
-on the first issue `pick-issue` would take but for its stages, in autonomous mode: write each
-needed stage with its skill and review it with [`review-design`](../review-design/SKILL.md),
-starting at the first stage that lacks `review-passed`. Ask for the issue and the label each stage
-ended on. Running `auto` is the user's word to run the pipeline, never to build an issue as
-written. Then repeat step 2, once for that issue. Stop where:
+on issue `<n>` in autonomous mode: write each needed stage with its skill and review it with
+[`review-design`](../review-design/SKILL.md), starting at the first stage that lacks
+`review-passed`, and decide an Open question as the pipeline says. Ask for the issue, the label
+each stage ended on, and every question it decided with its answer. Running `auto` is the user's
+word to run the pipeline, never to build an issue as written. Then run `next.sh` for `<n>` once
+more: `ready` goes to step 2b. Stop where:
 
-- **a stage ends on an unticked Open question,** or on `changes-requested` after three review
-  passes. Quote the question or the last findings; the issue is the user's to answer
-- **step 2 again finds the same issue not ready.** Looping would design it forever
-- **the pipeline names no issue,** because every candidate is blocked, has open questions or is
-  held. Give each reason
+- **a stage ends on an unticked Open question only the user can answer,** or on
+  `changes-requested` after three review passes. Quote the question or the last findings; the
+  issue is the user's to answer
+- **`<n>` is not `ready` after the pipeline.** Looping would design it forever. Give the reason
 
 **3. Run the gate.**
 
@@ -120,7 +125,7 @@ approach written and approved by the run itself.
 **Start itself.** No cron, no workflow trigger, nothing that begins a run without a person
 asking. Nobody reads an unwatched run, and it merges all the same.
 
-**Share a dispatch.** Once step 2 or step 4 sends a subagent off, it is the worktree's only
+**Share a dispatch.** Once step 2b or step 4 sends a subagent off, it is the worktree's only
 writer until it reports back. Resuming it by hand, or dispatching a second one at the same
 issue, gives the worktree two drivers — wait for the report instead.
 

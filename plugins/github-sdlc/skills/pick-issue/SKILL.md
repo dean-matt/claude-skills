@@ -33,14 +33,20 @@ Severity informs and rank decides: never reorder by severity.
 
 ## Ready
 
-Run the readiness check on each candidate, in order:
+Check the candidates in rank order with one command. It runs the readiness check on ten at a
+time and stops at the first batch holding an issue worth taking, so a board of blocked cards
+costs a few calls, not three per card in sequence:
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/ready.sh" <n>
+"${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" <n>...    # or the numbers on stdin
+"${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" --design <n>...
 ```
 
-Skip an issue that prints `not ready` and report the reasons. An issue it calls
-`not in the pipeline` (exit 2) is taken only if the user agrees to build it as written.
+It prints a line per candidate and ends `take <n>` or `none`. Skip an issue that is `not ready`
+and report the reasons. With `--design`, an issue that lacks passed stages, or is not in the
+pipeline at all, is `needs design` and takeable: it is the pipeline's to work, not the build's.
+Without it, an issue `ready.sh` calls `not in the pipeline` (exit 2) is taken only if the user
+agrees to build it as written.
 A parent is never ready, since the check skips an issue with open sub-issues; its children
 are the work.
 
@@ -64,6 +70,7 @@ Any open `severity:critical` bug, even when not picked, and how many issues wait
 - **Named issue**: skip ordering; still run the readiness and held checks.
 - **Interactive** (default when several qualify): show the top five with title, milestone and
   why any were skipped, and ask which to take.
-- **Auto**: take the first without asking; stop with the reason when none qualify.
+- **Auto**: take the first without asking; stop with the reason when none qualify. The `auto`
+  skill passes `--design`.
 
 On "API rate limit exceeded", stop and report; do not retry in a loop.

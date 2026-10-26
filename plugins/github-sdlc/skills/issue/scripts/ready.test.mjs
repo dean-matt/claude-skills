@@ -24,11 +24,11 @@ jq -r "$expr" "$f"
 );
 chmodSync(join(dir, "gh"), 0o755);
 
-function ready({ labels = [], body = "", blockers = [], children = [], state = "open" }) {
+function ready({ labels = [], body = "", blockers = [], children = [], state = "open" }, ...flags) {
   writeFileSync(join(dir, "issue.json"), JSON.stringify({ state, body, labels: labels.map((name) => ({ name })) }));
   writeFileSync(join(dir, "blockers.json"), JSON.stringify(blockers));
   writeFileSync(join(dir, "children.json"), JSON.stringify(children));
-  const r = spawnSync("bash", [SCRIPT, "5", "o/r"], {
+  const r = spawnSync("bash", [SCRIPT, ...flags, "5", "o/r"], {
     encoding: "utf8",
     env: { ...process.env, FX: dir, PATH: `${dir}:${process.env.PATH}` },
   });
@@ -97,4 +97,21 @@ test("only the Open questions section counts, and ticked items are done", () => 
 
 test("a closed issue is not ready", () => {
   assert.match(ready({ labels: PASSED, body: "x", state: "closed" }).out, /issue is closed/);
+});
+
+test("--design reports a stage gap or a missing pipeline as needing design, not as a failure", () => {
+  const partial = ready({ labels: ["type:feat", "criteria-agent:changes-requested"], body: "x" }, "--design");
+  assert.equal(partial.code, 3);
+  assert.match(partial.out, /^needs design: criteria review has findings to address; criteria has not passed review/);
+  assert.equal(ready({ labels: ["type:feat"], body: "x" }, "--design").out, "needs design: not in the pipeline");
+});
+
+test("--design still refuses an issue that is blocked, whatever its stages", () => {
+  const r = ready({ labels: ["type:feat"], body: "x", blockers: [{ number: 9, state: "open" }] }, "--design");
+  assert.equal(r.code, 1);
+  assert.match(r.out, /blocked by #9/);
+});
+
+test("--design on a fully designed issue is ready", () => {
+  assert.deepEqual(ready({ labels: PASSED, body: "x" }, "--design"), { code: 0, out: "ready" });
 });

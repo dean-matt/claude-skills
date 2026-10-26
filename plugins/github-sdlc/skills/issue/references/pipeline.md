@@ -28,7 +28,13 @@ The labels, their colors and the commands that create them are in
   stage's, because what follows was designed against the old text.
 - A later stage that finds an earlier one wrong removes the earlier `review-passed`, adds its
   `changes-requested`, and says why in a comment. The pipeline then runs from that stage again.
-- A stage that cannot proceed adds an unticked Open question and stops.
+- A stage that cannot proceed adds an unticked Open question and stops. In **autonomous** mode
+  (the `auto` skill's) it decides instead: the answer the issue, the code and Out of scope best
+  support, and the narrower one where they leave it open. Tick the question and append the
+  answer and its reason on the same line, as `- [x] <question> — Decided (auto): <answer>,
+  because <reason>`. Where the answer changes a criterion, the criteria stage rewrites it and
+  the pipeline runs again from there. Report every such decision. A question only the user can
+  answer, such as a credential, a price or a deadline, stays unticked and stops.
 - Review stops after three passes with `changes-requested` still set. The issue is then held
   for the user with the last findings attached.
 

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { classify, retrying } from "./scan.mjs";
+import { classify, isOurs, retrying } from "./scan.mjs";
 
 const base = { base: "main", worktrees: [], branches: [], prs: [], assigned: [], here: { branch: null, dirty: false } };
 const branch = (name, extra = {}) => ({ name, local: "aaa", remote: "aaa", ahead: 2, ...extra });
@@ -83,4 +83,17 @@ test("retrying rethrows the last error once the attempts are spent", () => {
     /HTTP 504/,
   );
   assert.equal(calls, 3);
+});
+
+test("a chore branch with no issue number is ours only through its pull request", () => {
+  const heads = new Set(["chore/tidy-docs"]);
+  assert.equal(isOurs("chore/tidy-docs", heads), true);
+  assert.equal(isOurs("chore/tidy-docs", new Set()), false);
+  assert.equal(isOurs("feat/12-x", new Set()), true);
+  assert.equal(isOurs("my-experiment", heads), false);
+});
+
+test("a local-only chore branch whose pull request merged is safe", () => {
+  const b = branch("chore/tidy-docs", { remote: null });
+  assert.equal(one({ branches: [b], prs: [pr("chore/tidy-docs", "MERGED")] }).verdict, "safe");
 });

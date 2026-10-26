@@ -12,9 +12,20 @@ claims it.
 
 Use the first source that exists:
 
-1. **The project board**, when [`setup`](../setup/references/discovery.md) found one: its `Todo`
-   cards, in the board's own order or its `Rank` field.
-2. **Milestones**: the earliest due, else the lowest title, then rank within it.
+1. **The project board**, when [`setup`](../setup/references/discovery.md) found one. Read its
+   `Todo` issue cards that have a milestone and a rank, soonest milestone first (by due date,
+   else by title), then lowest rank:
+
+   ```bash
+   gh project item-list <n> --owner <owner> --limit 2000 --format json --jq '
+     [.items[] | select(.status == "Todo" and .content.type == "Issue"
+                        and .milestone != null and .rank != null)
+      | {number: .content.number, milestone: .milestone.title, due: (.milestone.dueOn // ""), rank}]
+     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number'
+   ```
+
+   A board with no `Rank` field returns nothing here; use the next source.
+2. **Milestones**: the earliest due, else the lowest title, then oldest within it.
 3. **Oldest first.**
 
 An issue with no milestone or no rank is backlog and is not picked; the user ranks it.

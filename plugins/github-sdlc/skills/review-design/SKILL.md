@@ -15,7 +15,7 @@ and lacks `<prefix>:review-passed`. If none qualifies, say so and stop.
 
 ## 2. Dispatch
 
-Send the `design-auditor` agent the issue number and stage only, with no account of how the
+Send the `github-sdlc:design-auditor` agent the issue number and stage only, with no account of how the
 stage was written:
 
 ```

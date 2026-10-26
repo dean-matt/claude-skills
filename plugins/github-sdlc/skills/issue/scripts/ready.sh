@@ -18,20 +18,23 @@ issue=$(gh api "repos/$repo/issues/$n")
 labels=$(jq -r '[.labels[].name] | join("\n")' <<<"$issue")
 body=$(jq -r '.body // ""' <<<"$issue")
 
-has() { printf '%s\n' "$labels" | grep -qx "$1"; }
+# `grep -c` reads all its input. `grep -q` exits at its first match, and under pipefail the
+# `printf` feeding it then dies of SIGPIPE on a large body, which reads as "no match".
+has() { [ "$(printf '%s\n' "$labels" | grep -cxF -- "$1")" -gt 0 ]; }
+body_has() { [ "$(printf '%s\n' "$body" | grep -c -- "$1")" -gt 0 ]; }
 
 pipeline=0
-printf '%s\n' "$labels" | grep -q -- '-agent:' && pipeline=1
+[ "$(printf '%s\n' "$labels" | grep -c -- '-agent:')" -gt 0 ] && pipeline=1
 
 fail=0
 no() { echo "not ready: $1"; fail=1; }
 
-type=$(printf '%s\n' "$labels" | sed -n 's/^type://p' | head -1)
+type=$(printf '%s\n' "$labels" | awk -F: '$1 == "type" && t == "" { t = $2 } END { print t }')
 
 if [ "$pipeline" -eq 1 ]; then
   stages="criteria"
   if [ "$type" != spike ]; then
-    printf '%s\n' "$body" | grep -q '^## UI/UX Design' && stages="$stages ui"
+    body_has '^## UI/UX Design' && stages="$stages ui"
     stages="$stages technical test"
   fi
   for s in $stages; do

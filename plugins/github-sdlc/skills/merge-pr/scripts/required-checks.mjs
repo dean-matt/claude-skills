@@ -3,6 +3,10 @@
  * against them. `merge-gate.mjs` and `wait-checks.mjs` both read this, so the ruleset stays
  * the only place a name is written down.
  *
+ * The ruleset API lists rulesets only. A repository using classic branch protection shows no
+ * required name here, so it is judged on the checks that have reported; a required check that
+ * has not reported yet will not be waited on.
+ *
  * A repository whose rules name no required check is judged on the checks that have
  * reported, so every one must be green; a head with none reported cannot be judged unless the
  * repository runs no checks at all, which the caller works out from its workflow files.

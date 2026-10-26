@@ -1,6 +1,6 @@
 ---
 name: build
-description: Take one GitHub issue from open to a pull request ready for review — claim it, open an isolated worktree, plan if asked, implement, run the checks, take screenshots, commit, push and open the pull request. Use when asked to implement, build, fix or work an issue.
+description: Take one GitHub issue from open to a pull request ready for review — check it is ready, claim it, open an isolated worktree, implement, run the checks, take screenshots, commit, push and open the pull request. Use when asked to implement, build, fix or work an issue.
 ---
 
 # Building an issue
@@ -17,21 +17,23 @@ Ask which of these apply only when the request does not say:
 ## Steps
 
 1. **Choose.** With no issue named, invoke [`pick-issue`](../pick-issue/SKILL.md).
-2. **Claim.** Creating the branch is the claim: it derives from the issue, so a second
-   session creating it is refused. Never use `gh issue develop`, which succeeds twice.
-   Read [`references/claim-and-worktree.md`](references/claim-and-worktree.md).
-3. **Check it is ready**, and read it in full: the criteria, Out of scope, and the UI/UX,
-   Technical and Test Design. Out of scope is a fence.
+2. **Check it is ready before claiming it,** so a stop here leaves nothing to release. Read the
+   issue in full: the criteria, Out of scope, and the UI/UX, Technical and Test Design. Out of
+   scope is a fence.
    ```bash
    "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/ready.sh" <n>
    ```
-   On `not ready`, stop and report why. On `not in the pipeline`, ask: run the pipeline from
-   [`issue`](../issue/SKILL.md), or build from the issue as written (write the approach first,
-   get approval, then build). Check every number or shape the issue states against the code.
+   On `not ready`, stop and report why. On `not in the pipeline`, ask whether to run the
+   pipeline from [`issue`](../issue/SKILL.md) or to build from the issue as written: write the
+   approach first, get approval, then build. In autonomous mode there is nobody to ask, so stop
+   and report that instead. Check every number or shape the issue states against the code.
+3. **Claim.** Creating the branch is the claim: it derives from the issue, so a second
+   session creating it is refused. Never use `gh issue develop`, which succeeds twice.
+   Read [`references/claim-and-worktree.md`](references/claim-and-worktree.md).
 4. **Mark it In Progress** on the board when one is configured, as
    [`../setup/references/board.md`](../setup/references/board.md) describes.
 5. **Follow the design.** The Technical Design is the plan; the Test Design says which tests
-   to write, by AC.
+   to write, by AC. An issue built as written follows the approach approved in step 2.
 6. **Implement** at the smallest change that meets the criteria. Tests ride with the code. When
    the code makes the design wrong, depart from it and keep a note of each departure and why,
    for the pull request's Deviations. Never edit the issue.
@@ -51,7 +53,9 @@ not make (a second driver); the check fails twice for a reason you cannot fix; o
 needs a decision that is the user's. A second bug found on the way becomes its own issue, not
 part of this branch.
 
-Close the worktree when the run ends; the branch and pull request stand.
+A run that stops after the claim and before a pull request opens releases the claim, as
+[`references/claim-and-worktree.md`](references/claim-and-worktree.md) says. Close the worktree
+when the run ends; the branch and any pull request stand.
 
 ## Report
 

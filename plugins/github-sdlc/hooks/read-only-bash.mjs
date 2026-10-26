@@ -3,7 +3,7 @@
  * repository, the remote or GitHub, so a review pass cannot finish the run it reviews.
  *
  * Plugin agents ignore `hooks` in their own frontmatter, so this runs for every Bash call in a
- * session and acts only where the payload's `agent_type` names `pr-auditor` or
+ * session (one short Node process each) and acts only where the payload's `agent_type` names `pr-auditor` or
  * `design-auditor`. Any other caller, and any payload it cannot read, passes: a hook that
  * blocked what it could not identify would break ordinary sessions. That makes this a fence
  * for an agent drifting into the next step, not one for an agent working around it.

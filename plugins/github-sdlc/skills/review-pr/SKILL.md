@@ -10,7 +10,7 @@ change was written reads its intent into the diff instead of the code.
 
 ## 1. Dispatch
 
-Send the `pr-auditor` agent this and nothing about the change — no rationale, no defense:
+Send the `github-sdlc:pr-auditor` agent this and nothing about the change — no rationale, no defense:
 
 ```
 Review pull request <n> with the github-sdlc:review-pr criteria and return findings in the

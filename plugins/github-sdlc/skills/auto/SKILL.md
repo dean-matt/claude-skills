@@ -25,7 +25,7 @@ if [ "$(date +%s)" -ge <deadline> ]; then echo past; else echo within; fi
 Read them here and nowhere else — abandoning an issue mid-flight leaves a branch and a pull
 request nobody asked for. The deadline stops the next issue from starting, not the one running.
 
-**2. Build.** Dispatch a fresh subagent that invokes `build` in autonomous mode and names no
+**2. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` in autonomous mode and names no
 issue; its own choosing picks one. Reading the backlog here too would make two readers that can
 disagree. Ask for `build`'s report. Stop where it:
 
@@ -53,7 +53,7 @@ Then continue at step 5. Any other stop ends the run.
 **4. Merge.** Dispatch a second fresh subagent, since the agent that wrote the code is the worst
 reader of a gate judging its own work. Its prompt is exactly this, with the number substituted:
 
-> Invoke the `merge-pr` skill in autonomous mode for pull request `<pr>`. Report the merge
+> Invoke the `github-sdlc:merge-pr` skill in autonomous mode for pull request `<pr>`. Report the merge
 > commit, or the condition that stopped you.
 
 Add nothing: no review commentary, no earlier denial. Stop where the report names a condition

@@ -12,10 +12,24 @@ lacks it, [`build`](../build/SKILL.md) to a pull request, which `build` hands to
 [`cleanup`](../cleanup/SKILL.md) when the run ends. This calls them in turn and decides only when
 to stop. Run every command from the main checkout.
 
-Take a count of issues to merge, a wall-clock deadline, both, or neither — wall clock is the
-only budget a skill can measure. Print a deadline once with `echo $(( $(date +%s) + <seconds> ))`
-and carry the number. With neither, the run ends when [`pick-issue`](../pick-issue/SKILL.md)
-returns `none`; say so before starting.
+## Limits
+
+Arguments are `count=<n>` and `deadline=<duration>`, in either order, both optional:
+
+```
+/github-sdlc:auto count=1
+/github-sdlc:auto count=3 deadline=2h
+```
+
+A duration is a number and `m` or `h`. Wall clock is the only budget a skill can measure. Print a
+deadline once with `echo $(( $(date +%s) + <seconds> ))` and carry the number. With neither
+argument, the run ends when [`pick-issue`](../pick-issue/SKILL.md) returns `none`; say so before
+starting. Before starting, restate the limits in one line, such as "count 3, deadline 2h".
+
+Free wording ("merge one issue") is read as the same arguments, but an argument that cannot be
+read, such as `count=many` or `deadline=soon`, stops the run before it takes an issue, naming the
+argument and the form above. Never guess a limit: a wrong guess merges the wrong number of
+pull requests.
 
 ## Per issue
 

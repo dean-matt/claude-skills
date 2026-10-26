@@ -57,26 +57,22 @@ Open each finding with its severity in bold, then the defect and what it costs:
 ## 5. Post and label
 
 Post one comment per pass, opening with `<!-- design-pass:<stage> -->` so a pass can be told
-from a person's comment, then each finding numbered.
+from a person's comment, then each finding numbered. Post it with the script, which also hides
+the earlier passes in the same call, so the issue never carries more than the current pass and
+anything waiting on the user, however long the loop runs or however it ends:
 
 ```bash
-gh issue comment <n> --body-file <pass.md>
+node "${CLAUDE_PLUGIN_ROOT}/skills/review-design/scripts/post-pass.mjs" <n> <stage> <pass.md>
 ```
+
+Never post a pass with `gh issue comment`. A failure while hiding is reported and never undoes the
+pass.
 
 - No `critical` or `warning`: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`.
 - Any `critical` or `warning`: add `<prefix>:changes-requested`, remove `<prefix>:review-passed`,
   then run [`address-feedback`](../address-feedback/SKILL.md) in design mode.
 
 A pass with nothing to report still posts its marked comment.
-
-After each pass is posted, hide the earlier ones so the issue never carries more than the current
-pass and anything waiting on the user, however long the loop runs or however it ends. The last pass
-stays visible and nothing a person wrote is touched. A failure here is reported and never undoes
-the review.
-
-```bash
-node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" issue <n> <stage>
-```
 
 ## 6. Repeat
 

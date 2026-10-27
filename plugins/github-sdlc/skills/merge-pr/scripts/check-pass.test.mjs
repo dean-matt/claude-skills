@@ -28,3 +28,15 @@ test("a comment the gate reads as unreadable is named", () => {
 test("a body without the pass marker is named", () => {
   assert.equal(passFaults({ body: "findings" }).length, 1);
 });
+
+test("a finding written into the body is named, so it gets a thread", () => {
+  const faults = passFaults({ body: `${PASS_MARKER}\n1. **warning** — parses 1e3 as 1000` });
+  assert.equal(faults.length, 1);
+  assert.match(faults[0], /post it inline/);
+});
+
+test("REQUEST_CHANGES needs a blocking inline comment", () => {
+  const body = `${PASS_MARKER}\nsummary`;
+  assert.equal(passFaults({ event: "REQUEST_CHANGES", body, comments: [comment("**comment** — nit")] }).length, 1);
+  assert.deepEqual(passFaults({ event: "REQUEST_CHANGES", body, comments: [comment("**warning** — x")] }), []);
+});

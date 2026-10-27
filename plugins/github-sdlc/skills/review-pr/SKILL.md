@@ -47,7 +47,11 @@ diff reaches them. A red CI check is a finding.
 
 ## 3. Finding format
 
-Open with the severity in bold, then the defect and its cost:
+Every finding is an inline comment on a line the diff changed, so it opens a thread that is
+resolved when the fix lands. Give the reviewer `path:line` for each; a finding about the whole
+change (a missing test, a Deviations entry) goes on the nearest changed line of the file it
+concerns. The body holds a one-line summary and no finding. Open with the severity in bold, then
+the defect and its cost:
 
 ```
 **warning** — the retry loop never backs off; a failing upstream gets hammered at full rate.
@@ -60,7 +64,7 @@ Open with the severity in bold, then the defect and its cost:
 | `comment` | A taste call, reported once |
 
 A **Narrowing** or **Addition** deviation is a `warning` stating it needs the user's confirmation.
-A note on a decision worth a reader's attention is a `comment` on the line, never body text.
+A note on a decision worth a reader's attention is a `comment` on the line.
 
 Write `**critical**`, never `` `critical` ``: the merge gate parses the marker.
 
@@ -69,8 +73,12 @@ Write `**critical**`, never `` `critical` ``: the merge gate parses the marker.
 Post one review per pass, before applying anything. The body starts with `<!-- audit-pass -->`
 (invisible; it tells a pass from a person's review). A verify pass opens with
 `<!-- audit-verify -->` instead; the gate does not count it against the cap and never reads it as
-the last word. Use `event: COMMENT`; GitHub refuses an
-approval on your own pull request. A pass with no findings still posts its marked body.
+the last word.
+
+Use `event: REQUEST_CHANGES` while the pass has a `critical` or `warning`, else `COMMENT`. GitHub
+refuses both an approval and a change request on your own pull request: where the post fails for
+that reason, repost the same pass as `COMMENT`, which the label and the gate treat alike. A pass
+with no findings still posts its marked body.
 
 Run the pass through the check first; a posted review cannot be edited to fix a finding the merge
 gate cannot read:

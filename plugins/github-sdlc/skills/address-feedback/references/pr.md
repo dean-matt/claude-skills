@@ -28,4 +28,7 @@
   conversation, and the record the gate reads is in
   [`../../merge-pr/references/records.md`](../../merge-pr/references/records.md).
   `gh pr edit <n> --add-label <one> --remove-label <other>` swaps the labels in one call.
+  Before labelling `ai-review:completed`, dismiss each earlier review still in
+  `CHANGES_REQUESTED`, since only a later approval or a dismissal clears it:
+  `gh api -X PUT repos/{owner}/{repo}/pulls/<n>/reviews/<id>/dismissals -f message='Addressed in the final pass'`.
 - **Return** the label left and what each pass found.

@@ -7,7 +7,9 @@ description: Write or edit any text a developer will read — issues, review com
 
 Terse, clear, concise. Not much narrative. No history. In issues, comments, code and everywhere.
 
-Apply the general rules first, then the technical ones.
+Apply the general rules first, then the technical ones. Load this skill, and
+`writing-clearly-and-concisely` below, once per conversation; a later pass applies them from
+context.
 
 ## 1. General prose
 

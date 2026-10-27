@@ -47,9 +47,9 @@ Read them here and nowhere else — abandoning an issue mid-flight leaves a bran
 request nobody asked for. The deadline stops the next issue from starting, not the one running.
 
 **2. Choose.** Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an
-issue you claimed and left unfinished ahead of new work. Drop what its *Held* rules exclude. Run
-`next.sh --design` on that list. It ends `take <n>` or `none`; on `none`, stop and give each
-reason it printed.
+issue you claimed and left unfinished ahead of new work. Run `next.sh --design` on that list. It
+ends `take <n>` or `none`; on `none`, stop and give each reason it printed. Check its *Held* rules
+on `<n>` only; if held, drop it and run `next.sh --design` on the rest.
 
 **Claim `<n>` before any dispatch,** as [`claim`](../issue/references/claim.md) says. Print the
 issue number once the card has moved. If someone else holds it, drop it and run `next.sh --design`
@@ -66,29 +66,7 @@ issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s repor
 - **names an issue and no pull request.** Give the condition. Looping back either retakes a
   not-ready issue forever or skips a check that failed
 
-**Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md) on
-issue `<n>` in autonomous mode, from the first stage lacking `review-passed`. The issue is already
-claimed. Ask for the label each stage ended on, each question it decided with its answer, and each
-question it left for a person with a recommendation and alternatives. Running `auto` authorizes the
-pipeline, never building an issue as written.
-
-Then run `next.sh` for `<n>`. `ready` goes to step 2b.
-
-- **Questions for a person.** Ask them yourself in one `AskUserQuestion`, recommended answer first.
-  Dispatch a fresh design subagent with the issue and the user's answers, quoted as theirs; it
-  records each as `Answered` and continues.
-- **A stage still lacks `review-passed` after three passes.** Ask in one `AskUserQuestion` that
-  quotes the last findings and the stage's growth in criteria or items. No result label means
-  unreviewed edits; `changes-requested` means findings stand. Options, first is the default:
-  - **One more review pass:** dispatch `review-design` once; ask again if it still fails.
-  - **Accept as it stands:** only when the last pass found no `critical`. Do it yourself on the
-    user's word, never in a subagent: comment quoting the accepted findings, add
-    `<prefix>:review-passed`, remove `<prefix>:changes-requested`, continue.
-  - **Stop here.**
-
-Stop when the user declines a question or chooses to stop (quote the question or findings), or when
-`<n>` is not `ready` after the pipeline (give the reason). On a stop, release `<n>` as `claim`
-says. A design followed by a build keeps the claim; a `build` that stops releases its own.
+**Design.** Run [`references/design.md`](references/design.md), then `ready` goes to step 2b.
 
 **3. Merge.** Dispatch a fresh subagent, since the agent that wrote the code is the worst reader
 of a gate judging its own work. Its prompt is exactly this, with the number substituted:

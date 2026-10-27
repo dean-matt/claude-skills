@@ -15,10 +15,9 @@ The loop is the same; the references hold what differs.
 2. **Decide** each: **apply**, **decline** with a reason, or **ask** the user when it needs a
    person's call (a trade-off, a scope change, a behavior change). A preference waits on nobody.
 3. **Apply** the accepted changes. For a pull request, run the check command, take the prose
-   through [`technical-writing`](../technical-writing/SKILL.md), and push a new commit; never
-   amend, rebase or force-push a pushed branch.
-4. **Reply** to each item last, through [`technical-writing`](../technical-writing/SKILL.md),
-   with a verdict: `**Applied**` or `**Declined** — <reason>`. In design mode the verdict goes
+   through [`technical-writing`](../technical-writing/SKILL.md) (loaded once per conversation),
+   and push a new commit; never amend, rebase or force-push a pushed branch.
+4. **Reply** to each item last, in the same prose rules, with a verdict: `**Applied**` or `**Declined** — <reason>`. In design mode the verdict goes
    into the pass comment itself.
 5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
    In pr mode, repeat fix and **verify** passes until a verify pass returns nothing blocking,

@@ -52,7 +52,7 @@ if [ "$(date +%s)" -ge <deadline> ]; then echo past; else echo within; fi
 Read them here and nowhere else — abandoning an issue mid-flight leaves a branch and a pull
 request nobody asked for. The deadline stops the next issue from starting, not the one running.
 
-**2. Choose.** Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an
+**2. Choose.** Say what you are doing in plain words, as [`pick-issue`](../pick-issue/SKILL.md#what-to-tell-the-user) says. Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an
 issue you claimed and left unfinished ahead of new work. Run `next.sh --design` on that list. It
 ends `take <n>` or `none`; on `none`, stop and give each reason it printed. Check its *Held* rules
 on `<n>` only; if held, drop it and run `next.sh --design` on the rest.

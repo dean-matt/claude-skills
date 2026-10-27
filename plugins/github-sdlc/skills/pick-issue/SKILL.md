@@ -9,6 +9,18 @@ argument-hint: "[issue-number] [--auto]"
 Say which issue you are taking and which you skipped and why, then stop; [`build`](../build/SKILL.md)
 claims it.
 
+## What to tell the user
+
+Progress lines name the issue by number and title, say what is being checked in plain words, and
+report the result. Keep the skill's terms (*Held*, `needs design`, `next.sh`) out of them:
+
+- `Checking #854 "Add dice history" is free to take (no other assignee, open PR or branch)…`
+- `#854 is free. Claiming it.`
+- `#854 is taken: PR #901 closes it. Trying the next issue.`
+
+The same holds for other terms a user sees: say "second review pass" or "fix check", not "verify
+pass 2 of 2", and "part of the issue is deferred", not "Narrowing".
+
 ## Order
 
 **Resume first.** An issue you claimed and left unfinished comes before new work: `In Progress` on

@@ -67,7 +67,7 @@ test("passes: marked reviews are the passes, and an unmarked pull request falls 
 test("review: no pass blocks, a clean last pass converges, a blocking one asks again until the cap", () => {
   assert.match(reviewBlocked([], []), /nothing has reviewed/);
   assert.equal(reviewBlocked([pass(1)], [finding(1, "comment")]), null);
-  assert.match(reviewBlocked([pass(1)], [finding(1)]), /pass 1 of 3 returned a blocking finding/);
+  assert.match(reviewBlocked([pass(1)], [finding(1)]), /pass 1 of 2 returned a blocking finding/);
   const capped = Array.from({ length: PASS_CAP }, (_, i) => pass(i));
   assert.equal(reviewBlocked(capped, [finding(9)]), null);
 });

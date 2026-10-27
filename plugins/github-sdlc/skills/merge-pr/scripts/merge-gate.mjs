@@ -98,7 +98,7 @@ export function blockingFindings(comments) {
  * The full-diff passes a run spends before this condition stops asking for a clean one.
  * `address-feedback` loops against this number rather than carrying one of its own.
  */
-export const PASS_CAP = 3;
+export const PASS_CAP = 2;
 
 const plural = (n, noun) => `${n} ${noun}${n === 1 ? "" : "s"}`;
 

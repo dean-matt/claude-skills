@@ -63,6 +63,10 @@ the defect and its cost:
 | `warning` | Contradicts the repository's stated rules, or a departure from the issue that Deviations does not record |
 | `comment` | A taste call, reported once |
 
+Calibrate: a `warning` names the rule, criterion or test it breaks, and a finding that cannot is
+a `comment`. Report a defect once: skip one an earlier pass raised and a reply answered, and in a
+verify or final pass raise nothing the diff did not already hold unless a fix introduced it.
+
 A **Narrowing** or **Addition** deviation is a `warning` stating it needs the user's confirmation.
 A note on a decision worth a reader's attention is a `comment` on the line.
 

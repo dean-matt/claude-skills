@@ -3,8 +3,10 @@
 - **Source of items:** the pass reviews and their line comments
   (`gh api repos/{owner}/{repo}/pulls/<n>/reviews`, `.../comments`) plus unresolved human
   threads.
-- **Replying:** `gh api repos/{owner}/{repo}/pulls/<n>/comments/<id>/replies -f body=...`.
-  A fix that moves a line outdates its thread; the reply still posts.
+- **Replying:** write `[{"id": <comment id>, "body": "**Applied** — ..."}]` and post every reply
+  as one review: `node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/reply.mjs" <n> replies.json`.
+  A reply posted singly through `.../comments/<id>/replies` becomes a review of its own, so the
+  script is the way. A fix that moves a line outdates its thread; the reply still posts.
 - **Resolving:** resolve each thread once it carries its verdict and the fix is pushed. A
   declined thread stays unresolved until the user agrees. `tidy.mjs pr <n>` does this (loop step 6); run it after each pass
   is answered and again before setting the label.

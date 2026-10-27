@@ -17,11 +17,12 @@ The loop is the same; the references hold what differs.
 3. **Apply** the accepted changes. For a pull request, run the check command, take the prose
    through [`technical-writing`](../technical-writing/SKILL.md) (loaded once per conversation),
    and push a new commit; never amend, rebase or force-push a pushed branch.
-4. **Reply** to each item last, in the same prose rules, with a verdict: `**Applied**` or `**Declined** — <reason>`. In design mode the verdict goes
+4. **Reply** to each item last, in the same prose rules (in pr mode all in one review, through
+   `scripts/reply.mjs`), with a verdict: `**Applied**` or `**Declined** — <reason>`. In design mode the verdict goes
    into the pass comment itself.
 5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
    In pr mode, repeat fix and **verify** passes until a verify pass returns nothing blocking,
-   then run one **full** pass. If it finds more, loop again. Stop after three full passes and let
+   then run one **full** pass. If it finds more, loop again. Stop after two full passes and let
    the replies carry what remains. In design mode, every pass is a full pass of the stage.
 6. **Tidy** in pr mode after each pass is answered and pushed. It hides earlier passes and
    verdict-only reviews, and resolves each thread whose last reply is `**Applied**` or

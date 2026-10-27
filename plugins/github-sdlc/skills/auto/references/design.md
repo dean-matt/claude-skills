@@ -12,7 +12,7 @@ Then run `next.sh` for `<n>`. `ready` goes to step 2b.
 
 - **Questions for a person.** Ask them yourself in one `AskUserQuestion`, recommended answer first.
   Dispatch a fresh design subagent with the issue and the user's answers, quoted as theirs; it
-  records each as `Answered` and continues.
+  records each as `Answered`, edits any criterion the answer changes, and continues.
 - **A stage still lacks `review-passed` after three passes.** Ask in one `AskUserQuestion` that
   quotes the last findings and the stage's growth in criteria or items. No result label means
   unreviewed edits; `changes-requested` means findings stand. Options, first is the default:

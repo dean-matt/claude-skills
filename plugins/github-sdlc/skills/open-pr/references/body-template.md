@@ -71,7 +71,7 @@ Each line starts with its kind:
 | Kind | Means | Waits on the user? |
 |---|---|---|
 | **Correction** | The issue's premise was wrong, and the change follows the real behavior | No |
-| **Narrowing** | Part of what the issue asked is deferred. Link the issue that takes the rest | Yes |
+| **Narrowing** | Part of what the issue asked is deferred, and work remains. Link the issue that takes the rest. A criterion changed on the user's word is amended by [`signoff`](../../signoff/SKILL.md), never filed as an issue | Yes |
 | **Addition** | Something the issue did not authorize, such as a new dependency or wider scope | Yes |
 | **Technical Design**, **UI/UX Design**, **Test Design** | The build differed from that design section | No |
 

@@ -28,6 +28,8 @@ gh api "repos/{owner}/{repo}/collaborators/$me" --silent 2>/dev/null || {
    gives for that stop. Never write a record the user has not given.
 3. **Before confirming a Narrowing deviation,** check that the line names an open issue
    (`gh issue view <n> --json state --jq .state`). If it names none, say so and do not record.
+   Where nothing is deferred and the build departs from a criterion, offer
+   [*Amend the criterion*](#amend-the-criterion) instead of an issue that would close on arrival.
 4. **Run again** `merge-pr`'s *Block on the checks* and *The gate*. Every condition must now
    pass except, possibly, the review label.
 5. **Merge past the label and nothing else,** through `merge-pr`'s *Merge, then clean up*. A
@@ -35,6 +37,20 @@ gh api "repos/{owner}/{repo}/collaborators/$me" --silent 2>/dev/null || {
    take: stop and say which.
 
 Never relabel on the answer; a dispatched run would read the new label as an approval.
+
+## Amend the criterion
+
+For a deviation that is really a changed criterion, on the user's word and their wording:
+
+1. Re-read the issue, replace only that criterion's line (numbers unchanged), and write the body
+   back. Leave the stage labels as they are; the build is done.
+2. Comment on the issue, through [`technical-writing`](../technical-writing/SKILL.md): the old
+   line, the new line, and that the user changed it.
+3. Remove the deviation's line from the pull request body with `gh pr edit <n> --body-file`; the
+   body now matches the issue, so the gate holds nothing for it.
+
+Never amend a criterion the user has not approved word for word. A behavior change is theirs to
+weigh even when the build already contains it.
 
 ## Report
 

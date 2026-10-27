@@ -38,8 +38,9 @@ The labels, their colors and the commands that create them are in
     it unticked and return it with a recommended answer and alternatives. The caller asks the
     user and writes `- [x] <question> — Answered: <answer>`.
 
-  When unsure, it needs a person. An answer that changes a criterion sends the pipeline back to
-  the criteria stage. When the last question is ticked and its answer is in the sections that
+  When unsure, it needs a person. An answer that changes a criterion is written into that criterion in the
+  same step, so none keeps stating what the user rejected, and the pipeline returns to the criteria
+  stage. When the last question is ticked and its answer is in the sections that
   carry it, post one comment, through [`technical-writing`](../../technical-writing/SKILL.md), listing each question and answer
   tagged `Decided (auto)` or `Answered`, then delete the `## Open questions` section
   ([`shape.md`](shape.md)). Report every decision.

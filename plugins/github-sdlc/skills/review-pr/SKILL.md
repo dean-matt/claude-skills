@@ -35,7 +35,7 @@ closes. Skip what the check command and formatters assert. Four lenses run on ev
 - **Tester**: non-trivial logic leaves a check that fails if it breaks; a test asserting the
   implementation back to itself counts as none.
 - **QA**: acceptance criteria met, out of scope respected, edges exercised — empty, absent,
-  zero, negative, concurrent.
+  zero, negative, concurrent; a visible change carries screenshots.
 - **Editor**: the prose the change writes, through [`technical-writing`](../technical-writing/SKILL.md).
 
 Read the pull request's **Deviations** first and judge each: justified, and the right kind? Then

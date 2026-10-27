@@ -2,7 +2,7 @@
 
 Stage: technical. Reads the `## Technical Design` section against the criteria and the code.
 
-- The files, symbols and conventions it cites exist. Check them in the code; an invented one is
+- The files, symbols, tools, collections and conventions it cites exist. Check them in the code; an invented one is
   a `critical`.
 - The approach meets **every** criterion. Name any it does not.
 - **Bug:** the root cause is where and why it fails, not where it shows, and the reasoning

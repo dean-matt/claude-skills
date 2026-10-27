@@ -38,7 +38,8 @@ results. The body holds only what neither can know, and links instead of restati
   restates the issue's goal, lists files, or describes the diff.
 - **Why** holds only the reason that belongs to this pull request, such as why this approach beat
   the alternative. If the issue says why, link it and stop.
-- **Screenshots** appear only when a user can see the change. See below.
+- **Screenshots** appear only when a user can see the change. See below. A visible change
+  without them is a finding for `review-pr`; the body never explains the absence.
 - **Deviations** appear only when the build differed from the issue. Never write "None".
 - **No Verification section.** A missed acceptance criterion is a finding for
   [`review-pr`](../../review-pr/SKILL.md), and CI reports the checks.
@@ -74,4 +75,6 @@ Each line starts with its kind:
 | **Addition** | Something the issue did not authorize, such as a new dependency or wider scope | Yes |
 | **Technical Design**, **UI/UX Design**, **Test Design** | The build differed from that design section | No |
 
-A line for a section that did not change is never written.
+A change to behavior an acceptance criterion states is never a design deviation: it is a
+**Correction** only where the issue's premise was wrong, otherwise an **Addition**, which waits on
+the user. A line for a section that did not change is never written.

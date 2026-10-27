@@ -22,19 +22,31 @@ gh api "repos/{owner}/{repo}/collaborators/$me" --silent 2>/dev/null || {
 
 ## Steps
 
-1. **Ask about each stop by name,** with what the change does, and wait for an answer to that
+1. **Raise the version first** where the repository raises one at the merge: run `merge-pr`'s
+   *Raise the version* and push, so every record lands on the head that will merge. A push after
+   a record invalidates it.
+2. **Ask about each stop by name,** with what the change does, and wait for an answer to that
    stop.
-2. **Record each yes** in the exact form [`merge-pr/references/records.md`](../merge-pr/references/records.md)
+3. **Record each yes** in the exact form [`merge-pr/references/records.md`](../merge-pr/references/records.md)
    gives for that stop. Never write a record the user has not given.
-3. **Before confirming a Narrowing deviation,** check that the line names an open issue
+4. **Before confirming a Narrowing deviation,** check that the line names an open issue
    (`gh issue view <n> --json state --jq .state`). If it names none, say so and do not record.
    Where nothing is deferred and the build departs from a criterion, offer
    [*Amend the criterion*](#amend-the-criterion) instead of an issue that would close on arrival.
-4. **Run again** `merge-pr`'s *Block on the checks* and *The gate*. Every condition must now
+5. **Run again** `merge-pr`'s *Block on the checks* and *The gate*. Every condition must now
    pass except, possibly, the review label.
-5. **Merge past the label and nothing else,** through `merge-pr`'s *Merge, then clean up*. A
+6. **Merge past the label and nothing else,** through `merge-pr`'s *Merge, then clean up*. A
    protected path, decline or deviation still failing after its record means the record did not
    take: stop and say which.
+
+**A record left stale by a version bump** may be recorded again at the new head without asking
+again, only when the commits since the recorded head change nothing but the version line. Print
+the proof, and ask again if it shows anything else:
+
+```bash
+git diff --name-only <recorded-sha> HEAD     # only the version file
+git diff -U0 <recorded-sha> HEAD -- <file>   # one removed and one added "version" line
+```
 
 Never relabel on the answer; a dispatched run would read the new label as an approval.
 

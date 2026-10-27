@@ -2,7 +2,7 @@
 
 Step 2 sends an issue that `next.sh` calls `needs design` here, then returns to step 2b.
 
-Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md) on
+Dispatch a fresh subagent that runs the [pipeline](../../issue/references/pipeline.md) on
 issue `<n>` in autonomous mode, from the first stage lacking `review-passed`. The issue is already
 claimed. Ask for the label each stage ended on, each question it decided with its answer, and each
 question it left for a person with a recommendation and alternatives. Running `auto` authorizes the

@@ -26,11 +26,17 @@ needs nothing more.
 
 ## Release
 
-When the run's work on the issue ends and nothing in the run continues it (the pipeline stopped on
-a question, or the stage ran on its own), unassign and move the card back to **Todo**:
+Release when the run's work on the issue ends and nothing continues it: a stage that ran on its
+own and finished, or the user chose to stop. Unassign and move the card back to **Todo**
+([`board.md`](../../setup/references/board.md#move-a-card)):
 
 ```bash
 gh issue edit <n> --remove-assignee @me
 ```
 
-Keep the claim when `build` follows in the run; `build` adds its branch.
+Then run the board move with status `Todo`.
+
+**Keep the claim** when the run stops waiting on the user: the design cap stop, an Open question
+awaiting an answer. The work is in flight, so the issue stays assigned and **In Progress**, and
+[`pick-issue`](../../pick-issue/SKILL.md) resumes it. Also keep it when `build` follows in the
+run; `build` adds its branch.

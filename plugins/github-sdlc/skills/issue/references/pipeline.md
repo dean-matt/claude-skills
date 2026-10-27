@@ -51,7 +51,7 @@ The labels, their colors and the commands that create them are in
 ## Claiming
 
 A skill that writes or edits a stage claims the issue first and releases it when nothing in the
-run continues the work: [`claim.md`](claim.md). Review passes claim nothing.
+run continues the work, keeping it while the run waits on the user: [`claim.md`](claim.md). Review passes claim nothing.
 
 ## Ready to build
 

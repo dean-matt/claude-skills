@@ -56,6 +56,10 @@ Open each finding with its severity in bold, then the defect and what it costs:
 | `warning` | Breaks a rule in the shape, or leaves a gap a builder would have to guess at |
 | `comment` | A taste call, reported once |
 
+Calibrate: a `warning` names the criterion, rule or decision a builder could not make without
+guessing; a finding that cannot is a `comment`. Report a defect once, and raise nothing in a later
+pass that the stage already held unless an edit introduced it.
+
 ## 5. Post and label
 
 Take the findings through [`technical-writing`](../technical-writing/SKILL.md) first: one line per defect and its cost, no narrative. Post one comment per pass, opening with `<!-- design-pass:<stage> -->` so a pass can be told
@@ -77,7 +81,7 @@ A pass with nothing to report still posts its marked comment.
 ## 6. Repeat
 
 `address-feedback` returns here for a fresh pass while the last returned a `critical` or
-`warning`. After three passes in one loop, stop. The last findings are applied and unreviewed, so
+`warning`. After two passes in one loop, stop. The last findings are applied and unreviewed, so
 the stage carries `designed` and no result label. The next stage does not start. Tell the user
 what the last pass found, then give the [cap message](#the-cap-message).
 

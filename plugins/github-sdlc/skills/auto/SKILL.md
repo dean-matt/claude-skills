@@ -13,6 +13,12 @@ it, [`build`](../build/SKILL.md) (which hands the pull request to
 when the run ends. This skill calls them in turn and decides when to stop. Run every command from
 the main checkout.
 
+## Cost
+
+A long conversation is the main cost: every turn re-reads all of it. Run each issue through this
+skill, whose `build` and `merge-pr` subagents start fresh, rather than driving the stages by hand
+in one conversation. If you do drive them by hand, start a new session between stages.
+
 ## Limits
 
 Optional arguments, in any order:

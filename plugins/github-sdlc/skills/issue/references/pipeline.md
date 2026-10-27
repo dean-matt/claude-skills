@@ -44,7 +44,7 @@ The labels, their colors and the commands that create them are in
   carry it, post one comment, through [`technical-writing`](../../technical-writing/SKILL.md), listing each question and answer
   tagged `Decided (auto)` or `Answered`, then delete the `## Open questions` section
   ([`shape.md`](shape.md)). Report every decision.
-- Review stops after three passes in one loop. The last findings are applied and unreviewed, so
+- Review stops after two passes in one loop. The last findings are applied and unreviewed, so
   the stage ends with `designed` and no result label, and the issue is held for the user with
   those findings and the [cap message](../../review-design/SKILL.md#the-cap-message).
   `review-design` reviews the edits next.

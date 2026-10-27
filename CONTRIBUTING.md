@@ -1,22 +1,20 @@
 # Contributing
 
-Conventions for working in `claude-skills`. What the repo is and how to install from it are in
-[`README.md`](README.md).
+Conventions for working in `claude-skills`. What the repo is and how to install it: [`README.md`](README.md).
 
 ## Adding a skill
 
-1. Decide whether it belongs in an existing plugin or a new one. A plugin is a distribution unit,
-   not a category: group skills someone would install together, split ones they would not.
+1. Choose an existing plugin or a new one. A plugin is a distribution unit, not a category: group
+   skills someone would install together, split ones they would not.
 2. For a new plugin, create `plugins/<plugin>/.claude-plugin/plugin.json` with `name`,
-   `description`, `version`, `author`, `homepage`, `license` and `keywords` — copy the shape from
+   `description`, `version`, `author`, `homepage`, `license` and `keywords`, in the shape of
    [`github-multi-account`](plugins/github-multi-account/.claude-plugin/plugin.json).
-3. Create `plugins/<plugin>/skills/<skill>/SKILL.md`. Anything else the skill needs — reference
-   documents, scripts, templates — sits beside it and is reached by relative path from `SKILL.md`.
-   The prevailing convention puts supporting documents in a `references/` directory, one file per
-   concern, named for its topic — see `setup` for the shape.
-4. For a new plugin, add an entry to [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json)
-   with `name`, `source` and `description`. Claude Code shows that description and the one in
-   `plugin.json` in different places, so keep the two saying the same thing.
+3. Create `plugins/<plugin>/skills/<skill>/SKILL.md`. Reference documents, scripts and templates
+   sit beside it, reached by relative path. Supporting documents go in `references/`, one file per
+   concern, named for its topic (see `setup`).
+4. For a new plugin, add an entry with `name`, `source` and `description` to
+   [`.claude-plugin/marketplace.json`](.claude-plugin/marketplace.json). Claude Code shows it and
+   the `plugin.json` description in different places, so keep them identical.
 5. Before opening a pull request, validate, install from a local marketplace, and invoke the
    skill. Installing proves the manifests; only invoking proves the skill:
 
@@ -28,20 +26,21 @@ Conventions for working in `claude-skills`. What the repo is and how to install 
 
 ## Skill authoring conventions
 
-- **The description is the trigger, not a summary.** Claude decides whether to load a skill from
-  its frontmatter `description` alone. Write it in the third person, state what the skill does,
-  then state when to use it, in the words a user would actually say. A description that only
-  describes leaves the skill unloaded at the moment it is needed.
-- **`SKILL.md` short, supporting files deep.** Claude loads `SKILL.md` whenever the skill
-  triggers, so every line costs tokens on every use. Keep it to when-to-use, the shape of the
-  work, and pointers; detail needed only sometimes belongs in a supporting file, read only when
-  the work calls for it.
-- **`name:` matches the directory**, for the plugin and the skill alike. A mismatch is the most
-  common reason a skill silently fails to load, and nothing in the tooling flags it.
-- **Name skills for the action, not the domain.** The plugin already supplies the namespace, so
-  `/github-multi-account:setup` reads well while `/github-multi-account:github-setup` stutters.
-- **Instructions, not prose.** Claude reads a skill; a person browsing does not. Prefer
-  imperatives, concrete commands and file paths to explanations of concepts.
+- **The description is the trigger, not a summary.** Claude loads a skill from its frontmatter
+  `description` alone. Write it in the third person: what the skill does, then when to use it, in
+  the words a user would say. A description that only describes leaves the skill unloaded when
+  needed.
+- **`SKILL.md` short, supporting files deep.** Every line of `SKILL.md` costs tokens on every use.
+  Keep when-to-use, the shape of the work and pointers; detail needed only sometimes goes in a
+  supporting file.
+- **`name:` matches the directory**, for plugin and skill alike. A mismatch silently stops the
+  skill loading, and nothing in the tooling flags it.
+- **Name skills for the action, not the domain.** The plugin supplies the namespace:
+  `/github-multi-account:setup`, not `/github-multi-account:github-setup`.
+- **Instructions, not prose.** Prefer imperatives, concrete commands and file paths to
+  explanations of concepts.
+- **Prose follows [`technical-writing`](plugins/github-sdlc/skills/technical-writing/SKILL.md):**
+  terse, clear, concise, not much narrative, no history.
 
 ## What `validate` does not cover
 
@@ -53,7 +52,7 @@ Conventions for working in `claude-skills`. What the repo is and how to install 
 - `claude plugin validate plugins/<plugin>` parses that `plugin.json`, then walks
   `skills/*/SKILL.md` and warns on frontmatter with no `description`.
 
-Run both. Neither catches the following, each confirmed by breaking it deliberately:
+Run both. Neither catches the following:
 
 | Broken thing | What `validate` says |
 |---|---|
@@ -64,14 +63,13 @@ Run both. Neither catches the following, each confirmed by breaking it deliberat
 | `SKILL.md` frontmatter `name` differs from its directory | passes |
 | A `description` present but too vague to trigger on | passes |
 
-A green run says nothing about whether the skill loads, or fires once loaded. That is what step 5
-of **Adding a skill** is for.
+A green run does not show that the skill loads or fires. Step 5 of **Adding a skill** does.
 
 ## Versioning and releases
 
-`plugin.json` carries a semver `version`, bumped in the same commit as the change it describes:
-patch for a wording or fix, minor for new capability, major for a rename or a removed skill.
-Installed copies only move when the version does.
+`plugin.json` carries a semver `version`, bumped in the commit it describes: patch for a wording
+or fix, minor for new capability, major for a rename or removed skill. Installed copies move only
+when the version does.
 
 Tag a release once the bump is on `main`:
 
@@ -80,28 +78,28 @@ claude plugin tag plugins/github-multi-account --dry-run
 claude plugin tag plugins/github-multi-account --push
 ```
 
-The tag is `{name}--v{version}`, taken from `plugin.json`, and the dry run prints the marketplace
-entry it resolved through the `source` path. Treat it as a convenience, not a gate: pointing
-`plugin.json` at a different plugin than the marketplace entry did not stop it.
+The tag is `{name}--v{version}`, taken from `plugin.json`; the dry run prints the marketplace
+entry it resolved through `source`. It is a convenience, not a gate: it does not stop a
+`plugin.json` that names a different plugin than the marketplace entry.
 
 ## Maintaining the README
 
 `README.md` is onboarding only — what this repo is, how to install, how to find everything else.
 
-- **The section order is the contract.** Title, Prerequisites, Getting started, Common commands,
-  Project structure, Troubleshooting, Further reading, Contributing, License — no additions.
-  Nothing enforces it, so check by eye.
-- **Content that tells you how to do something goes to the skill that needs it, or here, and gets
-  a Further reading row.** The README links to depth rather than holding it.
-- **Content that tells you what used to be true gets deleted.** Git is the record of what changed.
-- **The README lists no skills.** Adding one should touch no file outside its own plugin, so the
-  README points at `plugins/` and lets the directory be the catalog. `SKILL.md` frontmatter is the
-  canonical description; `plugin.json` and `marketplace.json` carry it verbatim to each other.
+- **The section order is the contract:** Title, Prerequisites, Getting started, Common commands,
+  Project structure, Troubleshooting, Further reading, Contributing, License. No additions;
+  nothing enforces it, so check by eye.
+- **How-to content goes to the skill that needs it, or here, with a Further reading row.** The
+  README links to depth.
+- **Delete what used to be true.** Git records what changed.
+- **The README lists no skills.** Adding one touches no file outside its plugin; the README points
+  at `plugins/`. `SKILL.md` frontmatter is the canonical description; `plugin.json` and
+  `marketplace.json` carry it verbatim.
 
 ## Git branching
 
-**Branch from `main`.** Nothing deploys from here, so there are no `release/*` branches. Merge as
-soon as review clears.
+**Branch from `main`.** Nothing deploys from here, so there are no `release/*` branches. Merge when
+review clears.
 
 Branch names are lowercase and hyphenated, describing the change:
 
@@ -110,9 +108,8 @@ add-gpg-signing-skill
 fix-includeif-path-quoting
 ```
 
-Commit subjects follow the existing log: lowercase, imperative, no type prefix, no ticket key —
-`shorten the skill name to setup`, `correct which command shows the unrewritten remote URL`. Say
-what the commit does to the repo.
+Commit subjects follow the log: lowercase, imperative, no type prefix, no ticket key, saying what
+the commit does: `shorten the skill name to setup`.
 
 ## Pull request standards
 

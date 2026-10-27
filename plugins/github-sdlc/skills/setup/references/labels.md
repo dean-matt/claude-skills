@@ -1,8 +1,7 @@
 # Labels
 
-Prefixed so they are recognizable and cannot collide with a repository's own. `setup` creates
-whichever are missing and touches none that exist, apart from the rename it offers below.
-Re-running is safe.
+Prefixed to avoid colliding with a repository's own. `setup` creates the missing ones and touches
+none that exist, apart from the rename below. Re-running is safe.
 
 | Label | Meaning |
 |---|---|
@@ -40,9 +39,9 @@ A label that already exists is skipped, so a repository's own color or descripti
 
 ## Retiring old names
 
-If a repository has `review:approved` or `review:changes-requested`, offer to rename them so
-open pull requests follow. A `blocked` label repeats the native dependency; offer to remove it
-after checking that no board view depends on it.
+If a repository has `review:approved` or `review:changes-requested`, offer to rename them so open
+pull requests follow. A `blocked` label repeats the native dependency; offer to remove it once no
+board view depends on it.
 
 ```bash
 gh label edit "review:approved" --name "ai-review:completed"

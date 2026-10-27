@@ -1,13 +1,12 @@
 # GitHub CLI
 
 Config directories, `GH_CONFIG_DIR`, and the shell hook that picks one. Read
-[`layout.md`](./layout.md) first: it defines the account trees these paths refer
-to.
+[`layout.md`](./layout.md) first: it defines the account trees these paths refer to.
 
-gh reaches the API over HTTPS with an OAuth token and reads one active account
-from a single config file, so an account is identified here by a config directory
-rather than a key — the keys in [`git.md`](./git.md) serve git alone. Give each
-account its own config directory, then select the directory by path.
+gh reaches the API over HTTPS with an OAuth token and reads one active account from a single
+config file, so an account is a config directory here, not a key (the keys in
+[`git.md`](./git.md) serve git alone). Give each account its own config directory, then select
+the directory by path.
 
 ## Log in once per account
 
@@ -28,31 +27,25 @@ $env:GH_CONFIG_DIR = "$env:AppData\gh-account2"
 gh auth login --git-protocol https
 ```
 
-Scopes live on the token, so they differ freely by account: grant one only where
-the work needs it. `gh auth refresh -h github.com -s <scope>` adds a scope
-without disturbing those already there.
+Scopes live on the token and differ by account: grant one only where the work needs it. `gh auth
+refresh -h github.com -s <scope>` adds a scope and keeps the others.
 
-Each token goes to the system credential store, filed under its account username,
-which keeps the config directories independent, and `gh auth status` names the
-store holding each one. Run [Verification](#verification) before trusting the
-result: an account with no entry of its own falls back to a shared one, and gh
-then calls the API as whichever account logged in last.
+Each token goes to the system credential store under its account username, which keeps the
+config directories independent; `gh auth status` names the store holding each. Run
+[Verification](#verification) before trusting the result: an account with no entry of its own
+falls back to a shared one, and gh then calls the API as whichever account logged in last.
 
-PowerShell has no `VAR=value command` prefix, so the variable is set on its own
-line and stays set for the rest of the session. The shell hook below takes that
-over once configured.
+PowerShell has no `VAR=value command` prefix, so the variable is set on its own line and stays
+set for the session. The shell hook below takes over once configured.
 
 ## Point the default at your fallback account
 
-gh reads its default config directory whenever `GH_CONFIG_DIR` is unset:
-`$XDG_CONFIG_HOME/gh` if that variable is set, and otherwise
-`%AppData%\GitHub CLI` on Windows or `~/.config/gh` elsewhere. Linking it to one
-account gives that account the fallback role and keeps a single token on disk
-rather than a copy.
+gh reads its default config directory whenever `GH_CONFIG_DIR` is unset: `$XDG_CONFIG_HOME/gh`
+if set, otherwise `%AppData%\GitHub CLI` on Windows or `~/.config/gh` elsewhere. Linking it to one
+account makes that account the fallback and keeps a single token on disk, not a copy.
 
-If you have used gh before, that directory already exists and the link command
-refuses to overwrite it. Move it aside first — it also makes a ready-made config
-directory for whichever account it currently holds:
+If you have used gh before, that directory exists and the link command refuses to overwrite it.
+Move it aside first; it becomes the config directory for whichever account it holds:
 
 ### macOS / Linux
 
@@ -90,16 +83,14 @@ autoload -U add-zsh-hook 2>/dev/null && add-zsh-hook chpwd _gh_ctx
 _gh_ctx
 ```
 
-`.zshenv` loads for non-interactive shells, so scripts and coding agents get the
-variable; `.zshrc` would reach interactive shells alone. The `chpwd` hook
-re-evaluates on every directory change, so a shell that starts in one account
-tree and moves to another follows along. The trailing slash in `"$PWD/"` matches
-the account tree root itself, not just the paths beneath it.
+`.zshenv` loads for non-interactive shells, so scripts and coding agents get the variable;
+`.zshrc` reaches interactive shells alone. The `chpwd` hook re-evaluates on every directory
+change, so a shell moving between account trees follows along. The trailing slash in `"$PWD/"`
+matches the account tree root itself, not just the paths beneath it.
 
-Under bash, put the same function in `~/.bashrc` and set
-`PROMPT_COMMAND=_gh_ctx` in place of the `chpwd` hook. bash has no `.zshenv`
-equivalent, so that reaches interactive shells alone — the same limit the Windows
-profile carries below.
+Under bash, put the same function in `~/.bashrc` and set `PROMPT_COMMAND=_gh_ctx` in place of the
+`chpwd` hook. bash has no `.zshenv` equivalent, so that reaches interactive shells alone, the same
+limit as the Windows profile below.
 
 ### Windows
 
@@ -120,30 +111,26 @@ function prompt { Set-GhContext; & $__basePrompt }
 Set-GhContext
 ```
 
-PowerShell re-renders the prompt after every command, so wrapping `prompt` is the
-closest analog to the `chpwd` hook: the variable follows every directory change.
-The bare `Set-GhContext` on the last line mirrors the `_gh_ctx` call at the foot
-of `.zshenv`, setting the variable once as the profile loads.
+PowerShell re-renders the prompt after every command, so wrapping `prompt` is the analog of the
+`chpwd` hook: the variable follows every directory change. The bare `Set-GhContext` on the last
+line mirrors the `_gh_ctx` call at the foot of `.zshenv`, setting the variable once as the profile
+loads.
 
-Appending `'\'` to `$PWD.Path` matches the account tree root itself, not just the
-paths beneath it. The `$__basePrompt` guard keeps a re-sourced profile from
-wrapping the wrapper.
+Appending `'\'` to `$PWD.Path` matches the account tree root itself, not just the paths beneath
+it. The `$__basePrompt` guard keeps a re-sourced profile from wrapping the wrapper.
 
-**The `prompt` hook is interactive-only.** A script launched with `pwsh -File`
-does load `$PROFILE`, so it starts in the right account. But PowerShell calls
-`prompt` from the REPL alone, so a script that changes directory mid-run keeps
-the value it started with; call `Set-GhContext` after any such `cd`.
+**The `prompt` hook is interactive-only.** A script launched with `pwsh -File` loads `$PROFILE`
+and starts in the right account, but PowerShell calls `prompt` from the REPL alone, so a script
+that changes directory mid-run keeps its starting value; call `Set-GhContext` after any such `cd`.
 
-A profile skipped altogether — `pwsh -NoProfile`, a remote session, or a
-`Restricted` execution policy — leaves `GH_CONFIG_DIR` unset and falls through to
-the default directory, so make that default the account whose work is
-most often automated.
+A skipped profile (`pwsh -NoProfile`, a remote session, a `Restricted` execution policy) leaves
+`GH_CONFIG_DIR` unset and falls through to the default directory, so make that default the account
+whose work is most often automated.
 
-> Export a path, never a token. `GH_TOKEN=$(gh auth token -u <user>)` fails twice
-> over: gh hands back the active account's token whatever `-u` says, and an
-> exported token then outranks every config directory, pinning one account across
-> all of them. A plaintext `oauth_token` in a `hosts.yml` wins the same way — gh
-> reads the environment first, the config file second, and the credential store
+> Export a path, never a token. `GH_TOKEN=$(gh auth token -u <user>)` fails twice: gh returns the
+> active account's token whatever `-u` says, and an exported token outranks every config
+> directory, pinning one account across all of them. A plaintext `oauth_token` in a `hosts.yml`
+> wins the same way: gh reads the environment first, the config file second, the credential store
 > last.
 
 ## Verification
@@ -168,8 +155,8 @@ cd "$HOME\Repos\account2"
 gh api user --jq .login          # -> <username2>
 ```
 
-Then confirm isolation with a private repo each account owns. The other account's
-`gh repo view` must fail — shared access proves nothing.
+Then confirm isolation with a private repo each account owns: the other account's `gh repo view`
+must fail. Shared access proves nothing.
 
 ## Troubleshooting
 

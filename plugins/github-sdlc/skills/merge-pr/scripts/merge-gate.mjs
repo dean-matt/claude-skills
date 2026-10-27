@@ -62,29 +62,40 @@ export function headBlocked(shown, sha) {
     : `GitHub shows ${shown} as the head, not ${sha} — wait for the push to show, or bring the local branch level with origin`;
 }
 
-/** The line `review-pr` opens a pass body with. It renders as nothing on GitHub. */
+/** The line `review-pr` opens a full-diff pass body with. It renders as nothing on GitHub. */
 export const PASS_MARKER = "<!-- audit-pass -->";
 
+/** The line a verify pass opens with: it reads the fixes since the last pass, not the diff. */
+export const VERIFY_MARKER = "<!-- audit-verify -->";
+
+const isVerify = (r) => r.body.includes(VERIFY_MARKER);
+
 /**
- * The review passes, oldest first. A pass carries `PASS_MARKER`; verdict replies land as
- * reviews with no body, and a person's review carries neither, so neither spends one of
- * `PASS_CAP` nor stands in as the last pass whose findings this reads.
+ * The review passes, oldest first. A pass carries `PASS_MARKER` or `VERIFY_MARKER`; verdict
+ * replies land as reviews with no body, and a person's review carries neither, so neither
+ * stands in as the last pass whose findings this reads.
  *
  * Where no review carries the marker the bodied ones are the passes, which is how a pull
  * request reviewed before the marker existed still reaches the gate.
  */
 export function passes(reviews) {
   const bodied = reviews.filter((r) => r.body !== "");
-  const marked = bodied.filter((r) => r.body.includes(PASS_MARKER));
+  const marked = bodied.filter((r) => r.body.includes(PASS_MARKER) || isVerify(r));
   return marked.length === 0 ? bodied : marked;
 }
+
+/**
+ * The passes that read the whole diff. Only these spend `PASS_CAP`: a verify pass is a
+ * fix round, and the final full pass after it is what the gate reads.
+ */
+export const fullPasses = (reviews) => passes(reviews).filter((r) => !isVerify(r));
 
 export function blockingFindings(comments) {
   return comments.filter((c) => severity(c.body) !== "comment").map((c) => c.html_url);
 }
 
 /**
- * The passes a run spends before this condition stops asking for a clean one.
+ * The full-diff passes a run spends before this condition stops asking for a clean one.
  * `address-feedback` loops against this number rather than carrying one of its own.
  */
 export const PASS_CAP = 3;
@@ -110,16 +121,25 @@ export function staleNote(sha, head, behind, base) {
 }
 
 /**
- * The pass that reads a fix is what answers the finding, so this wants a last pass whose
- * findings are all `comment`. A pass that found nothing satisfies it by posting a body and no
- * comments. At `PASS_CAP` it stops asking: the thread verdicts already hold the fix, and
- * demanding a pass the run may not take leaves a hand merge as the only way out.
+ * The pass that reads a fix is what answers the finding, so this wants a last pass that read
+ * the whole diff and whose findings are all `comment`. A verify pass never satisfies it: it
+ * read the fixes alone, so a regression elsewhere would pass unread. A pass that found nothing
+ * satisfies it by posting a body and no comments. At `PASS_CAP` full passes it stops asking:
+ * the thread verdicts already hold the fix, and demanding a pass the run may not take leaves
+ * a hand merge as the only way out.
  */
 export function reviewBlocked(reviews, findings) {
-  const count = passes(reviews).length;
-  if (count === 0) return "no review pass found — nothing has reviewed this";
+  const all = passes(reviews);
+  if (all.length === 0) return "no review pass found — nothing has reviewed this";
+  const count = fullPasses(reviews).length;
+  if (count >= PASS_CAP) return null;
   const blocking = blockingFindings(findings);
-  if (blocking.length === 0 || count >= PASS_CAP) return null;
+  if (isVerify(all.at(-1)))
+    return [
+      "the last pass was a verify pass — fix what it found, then run the final full-diff pass",
+      ...blocking,
+    ].join("\n      ");
+  if (blocking.length === 0) return null;
   return [`pass ${count} of ${PASS_CAP} returned a blocking finding — review again`, ...blocking].join(
     "\n      ",
   );
@@ -132,7 +152,7 @@ export function reviewBlocked(reviews, findings) {
  * counts, a person's "LGTM" included, so a block there is one nothing clears.
  */
 export function capNote(reviews, findings) {
-  const count = passes(reviews).length;
+  const count = fullPasses(reviews).length;
   if (count > PASS_CAP)
     return `${count} passes, past the cap of ${PASS_CAP} — read the extra passes before merging`;
   if (count === PASS_CAP && blockingFindings(findings).length > 0)

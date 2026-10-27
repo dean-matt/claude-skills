@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { PASS_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
+import { PASS_MARKER, VERIFY_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
 import { doneThreads, staleDesign, staleReviews, tidy } from "./tidy.mjs";
 
 const c = (node_id, body) => ({ node_id, body });
@@ -86,4 +86,11 @@ test("tidy minimizes through GraphQL and reports the count", () => {
 
 test("tidy refuses a call it does not understand", () => {
   assert.throws(() => tidy(["issue", "7"]), /usage/);
+});
+
+test("a verify pass is hidden once a later pass exists, and counts as the last pass", () => {
+  const r = (node_id, body) => ({ node_id, body });
+  const reviews = [r("a", `${PASS_MARKER}\nfull`), r("b", `${VERIFY_MARKER}\nfixes`), r("c", `${PASS_MARKER}\nfinal`)];
+  assert.deepEqual(staleReviews(reviews), ["a", "b"]);
+  assert.deepEqual(staleReviews(reviews.slice(0, 2)), ["a"]);
 });

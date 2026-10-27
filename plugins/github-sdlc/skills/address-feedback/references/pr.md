@@ -17,7 +17,7 @@
 - **After the fixes,** rewrite the body sections the fixes changed with `gh pr edit <n>
   --body-file`, as [`open-pr`](../../open-pr/SKILL.md) describes. A body describing code the
   review rejected misleads the next reader.
-- **Finish:** set `ai-review:completed` only when the last pass's review has posted, the
+- **Finish:** set `ai-review:completed` only when the last pass was a full pass, its review has posted, the
   check command is green and nothing still waits on the user:
   - a declined `critical` or `warning`,
   - a point a pass asked the user to confirm,

@@ -25,6 +25,7 @@ Ask only if the request does not say:
    ```bash
    "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/ready.sh" <n>
    ```
+   Skip the script when the caller says `next.sh` just returned `take <n>`.
    On `not ready`, stop and report why. On `not in the pipeline`, ask whether to run the
    pipeline from [`issue`](../issue/SKILL.md) or build as written (write the approach, get
    approval, then build); in autonomous mode stop and report. Check every number or shape the

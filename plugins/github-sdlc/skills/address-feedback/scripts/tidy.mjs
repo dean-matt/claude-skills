@@ -9,7 +9,7 @@
  * stay in the API. Needs `gh`. The exported functions are pure so they can be tested.
  */
 import { capture } from "../../merge-pr/scripts/capture.mjs";
-import { PASS_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
+import { PASS_MARKER, VERIFY_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
 
 export const designMarker = (stage) => `<!-- design-pass:${stage} -->`;
 
@@ -63,9 +63,10 @@ export function staleDesign(comments, stage) {
  * @returns {string[]}
  */
 export function staleReviews(reviews) {
-  const last = reviews.findLastIndex((r) => r.body.includes(PASS_MARKER));
+  const isPass = (r) => r.body.includes(PASS_MARKER) || r.body.includes(VERIFY_MARKER);
+  const last = reviews.findLastIndex(isPass);
   return reviews
-    .filter((r, i) => i < last && (r.body.includes(PASS_MARKER) || r.body === ""))
+    .filter((r, i) => i < last && (isPass(r) || r.body === ""))
     .map((r) => r.node_id);
 }
 

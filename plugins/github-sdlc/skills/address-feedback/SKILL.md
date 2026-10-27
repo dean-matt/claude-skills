@@ -21,7 +21,9 @@ The loop is the same; the references hold what differs.
    with a verdict: `**Applied**` or `**Declined** — <reason>`. In design mode the verdict goes
    into the pass comment itself.
 5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
-   Stop after three passes and let the replies carry what remains.
+   In pr mode, repeat fix and **verify** passes until a verify pass returns nothing blocking,
+   then run one **full** pass. If it finds more, loop again. Stop after three full passes and let
+   the replies carry what remains. In design mode, every pass is a full pass of the stage.
 6. **Tidy** in pr mode after each pass is answered and pushed. It hides earlier passes and
    verdict-only reviews, and resolves each thread whose last reply is `**Applied**` or
    `**Accepted**`. A `**Declined**` thread stays open until the user agrees. The last pass stays

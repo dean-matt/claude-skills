@@ -11,6 +11,8 @@ import {
   mergeBlocked,
   PASS_CAP,
   PASS_MARKER,
+  VERIFY_MARKER,
+  fullPasses,
   passes,
   reviewBlocked,
   severity,
@@ -68,6 +70,20 @@ test("review: no pass blocks, a clean last pass converges, a blocking one asks a
   assert.match(reviewBlocked([pass(1)], [finding(1)]), /pass 1 of 3 returned a blocking finding/);
   const capped = Array.from({ length: PASS_CAP }, (_, i) => pass(i));
   assert.equal(reviewBlocked(capped, [finding(9)]), null);
+});
+
+const verify = (id) => ({ id, body: `${VERIFY_MARKER}\nfixes` });
+
+test("verify passes: marked as passes, never counted against the cap, never the last word", () => {
+  const reviews = [pass(1), verify(2), pass(3)];
+  assert.deepEqual(passes(reviews).map((r) => r.id), [1, 2, 3]);
+  assert.deepEqual(fullPasses(reviews).map((r) => r.id), [1, 3]);
+  assert.equal(reviewBlocked(reviews, []), null);
+  assert.match(reviewBlocked([pass(1), verify(2)], []), /last pass was a verify pass/);
+  assert.match(reviewBlocked([pass(1), verify(2)], [finding(1)]), /final full-diff pass/);
+  const capped = [...Array.from({ length: PASS_CAP }, (_, i) => pass(i)), verify(9)];
+  assert.equal(reviewBlocked(capped, []), null);
+  assert.equal(capNote([pass(1), verify(2), verify(3), pass(4)], []), null);
 });
 
 test("cap note names the waiver and the overage, and is silent otherwise", () => {

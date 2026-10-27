@@ -14,6 +14,10 @@ Label names: [`../setup/references/labels.md`](../setup/references/labels.md).
 Use the stage named. Otherwise take the first needed stage that carries `<prefix>:designed`
 and lacks `<prefix>:review-passed`. If none qualifies, say so and stop.
 
+A technical or test stage whose section is the single line `n/a — <reason>` has nothing to
+review: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`, post nothing, dispatch
+nothing, and take the next stage. Never skip criteria or ui.
+
 ## 2. Dispatch
 
 Send the `github-sdlc:design-auditor` agent the issue number and stage only:

@@ -8,7 +8,7 @@
  * Usage: node check-pass.mjs <pass.json>; exits 1 and names each fault.
  */
 import { readFileSync, realpathSync } from "node:fs";
-import { PASS_MARKER, severity } from "./merge-gate.mjs";
+import { PASS_MARKER, VERIFY_MARKER, severity } from "./merge-gate.mjs";
 
 /**
  * @param {{ body?: string, comments?: { path?: string, line?: number, body?: string }[] }} pass
@@ -16,8 +16,9 @@ import { PASS_MARKER, severity } from "./merge-gate.mjs";
  */
 export function passFaults(pass) {
   const faults = [];
-  if (!(pass.body ?? "").startsWith(PASS_MARKER))
-    faults.push(`the body does not open with ${PASS_MARKER}`);
+  const body = pass.body ?? "";
+  if (!body.startsWith(PASS_MARKER) && !body.startsWith(VERIFY_MARKER))
+    faults.push(`the body does not open with ${PASS_MARKER} or ${VERIFY_MARKER}`);
   for (const c of pass.comments ?? []) {
     if (severity(c.body) === "unreadable")
       faults.push(

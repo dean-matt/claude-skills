@@ -18,7 +18,7 @@ The labels, their colors and the commands that create them are in
 - **ui** only when the body has a `## UI/UX Design` heading. `issue` adds the heading only for
   a change a user can see, so no heading means no stage.
 - **technical** and **test** for every type except a spike. A docs or trivial issue writes
-  `n/a — <reason>` and still passes review.
+  `n/a — <reason>`, which `review-design` passes without a review pass.
 - A **spike** needs the criteria stage alone.
 
 ## Gates

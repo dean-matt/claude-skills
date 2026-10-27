@@ -58,7 +58,7 @@ on the rest.
 `needs design` goes to *Design*, then back here. `ready` goes to step 2b.
 
 **2b. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` in autonomous mode for
-issue `<n>`. Ask for `build`'s report. Stop where it:
+issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s report. Stop where it:
 
 - **puts the review pass outside the `pr-auditor` agent.** An agent that reviews its own work
   still earns `ai-review:completed`, and GitHub cannot check the claim, so this catches a failed
@@ -90,28 +90,19 @@ Stop when the user declines a question or chooses to stop (quote the question or
 `<n>` is not `ready` after the pipeline (give the reason). On a stop, release `<n>` as `claim`
 says. A design followed by a build keeps the claim; a `build` that stops releases its own.
 
-**3. Run the gate.**
-
-```bash
-node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/merge-gate.mjs" <pr>
-```
-
-Continue where it exits 0. Stop the run on a failure and quote each `FAIL` line, or the usage
-line on exit 2. Where the stop is a protected path, a blocking decline, an unconfirmed deviation
-or the label, and the user answers it in this conversation, run [`signoff`](../signoff/SKILL.md)
-yourself; never relabel and dispatch step 4, whose subagent would merge on a relayed answer.
-Then continue at step 5. Any other stop ends the run.
-
-**4. Merge.** Dispatch a second fresh subagent, since the agent that wrote the code is the worst
-reader of a gate judging its own work. Its prompt is exactly this, with the number substituted:
+**3. Merge.** Dispatch a fresh subagent, since the agent that wrote the code is the worst reader
+of a gate judging its own work. Its prompt is exactly this, with the number substituted:
 
 > Invoke the `github-sdlc:merge-pr` skill in autonomous mode for pull request `<pr>`. Report the merge
 > commit, or the condition that stopped you.
 
-Add nothing: no review commentary, no earlier denial. Stop where the report names a condition
-instead of a merge commit.
+Add nothing: no review commentary, no earlier denial. `merge-pr` runs the gate; nothing here runs
+it first. Where the report names a protected path, a blocking decline, an unconfirmed deviation or
+the label, and the user answers it in this conversation, run [`signoff`](../signoff/SKILL.md)
+yourself; never relabel and dispatch again, whose subagent would merge on a relayed answer. Then
+continue at step 4. Any other condition ends the run.
 
-**5. Count the merge and loop.** `gh pr view <pr> --json state,mergeCommit` settles whether it
+**4. Count the merge and loop.** `gh pr view <pr> --json state,mergeCommit` settles whether it
 merged; a subagent's report does not. A `state` other than `MERGED` stops the run. The count is
 of merges, not attempts.
 
@@ -158,7 +149,7 @@ approach written and approved by the run itself.
 **Start itself.** No cron, no workflow trigger, nothing that begins a run without a person
 asking. Nobody reads an unwatched run, and it merges all the same.
 
-**Share a dispatch.** Once step 2b or step 4 sends a subagent off, it is the worktree's only
+**Share a dispatch.** Once step 2b or step 3 sends a subagent off, it is the worktree's only
 writer until it reports back. Resuming it by hand, or dispatching a second one at the same
 issue, gives the worktree two drivers — wait for the report instead.
 

@@ -18,7 +18,12 @@ Review pull request <n> with the github-sdlc:review-pr criteria and return findi
 required format. Do not post, label, merge, edit a tracked file, commit or push.
 ```
 
-Use a fresh agent for every pass.
+Use a fresh agent for every pass. Two kinds:
+
+- **Full** reads the whole diff. The first pass, and the final one, are full.
+- **Verify** follows a round of fixes. Add the previous pass's findings and the range
+  `<last pass commit>..<head>` to the prompt. It confirms each finding is fixed and flags what the
+  fixes broke, and reads nothing else. Never use it as the first or last pass.
 
 ## 2. The reviewer's criteria
 
@@ -62,7 +67,9 @@ Write `**critical**`, never `` `critical` ``: the merge gate parses the marker.
 ## 4. Post
 
 Post one review per pass, before applying anything. The body starts with `<!-- audit-pass -->`
-(invisible; it tells a pass from a person's review). Use `event: COMMENT`; GitHub refuses an
+(invisible; it tells a pass from a person's review). A verify pass opens with
+`<!-- audit-verify -->` instead; the gate does not count it against the cap and never reads it as
+the last word. Use `event: COMMENT`; GitHub refuses an
 approval on your own pull request. A pass with no findings still posts its marked body.
 
 Run the pass through the check first; a posted review cannot be edited to fix a finding the merge
@@ -81,5 +88,6 @@ On exit 1, fix the faults it names and do not post.
 ## 5. Label and hand off
 
 Set `ai-review:changes-requested` while findings stand. Then run
-[`address-feedback`](../address-feedback/SKILL.md), which loops back here until a pass returns
-nothing blocking and sets `ai-review:completed`. This skill never merges.
+[`address-feedback`](../address-feedback/SKILL.md), which loops back here: verify passes until
+nothing blocking stands, then one final full pass. It sets `ai-review:completed` once that
+final pass returns nothing blocking. This skill never merges.

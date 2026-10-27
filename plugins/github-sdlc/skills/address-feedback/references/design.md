@@ -29,4 +29,5 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
   `review-passed` or `changes-requested`.
 - **Finish:** hand back to [`review-design`](../../review-design/SKILL.md) for a fresh pass, which
   sets the result label. After three passes stop without another: the last findings are applied and
-  unreviewed, and the issue is held for the user. The next stage waits for `review-passed`.
+  unreviewed, and the issue is held for the user with the
+  [cap message](../../review-design/SKILL.md#the-cap-message). The next stage waits for `review-passed`.

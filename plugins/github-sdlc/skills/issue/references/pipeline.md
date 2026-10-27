@@ -45,7 +45,8 @@ The labels, their colors and the commands that create them are in
   ([`shape.md`](shape.md)). Report every decision.
 - Review stops after three passes in one loop. The last findings are applied and unreviewed, so
   the stage ends with `designed` and no result label, and the issue is held for the user with
-  those findings. `review-design` reviews the edits next.
+  those findings and the [cap message](../../review-design/SKILL.md#the-cap-message).
+  `review-design` reviews the edits next.
 
 ## Claiming
 

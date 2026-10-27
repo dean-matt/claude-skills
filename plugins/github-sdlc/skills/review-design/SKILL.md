@@ -78,8 +78,17 @@ A pass with nothing to report still posts its marked comment.
 
 `address-feedback` returns here for a fresh pass while the last returned a `critical` or
 `warning`. After three passes in one loop, stop. The last findings are applied and unreviewed, so
-the stage carries `designed` and no result label. Tell the user what the last pass found. The next
-stage does not start.
+the stage carries `designed` and no result label. The next stage does not start. Tell the user
+what the last pass found, then give the [cap message](#the-cap-message).
+
+## The cap message
+
+End the stop with a recommendation, never a bare choice:
+
+- Whether the last pass found a `critical`. Accepting the stage is open only if it found none.
+- The recommended action, first, with one clause why. A fourth pass costs about 30 seconds; prefer
+  it when the findings are real gaps, and accepting when they are taste.
+- Each other option with its cost, and the exact words to continue, such as `review-design 42 ui`.
 
 ## Will not do
 

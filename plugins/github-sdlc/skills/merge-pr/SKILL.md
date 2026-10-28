@@ -35,7 +35,18 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/version-bump.mjs" "$n"
 Defaults: `feat` raises the minor, anything else the patch; docs and Markdown alone skip it.
 Pass a flag only where the repository's sentence names an exception: `--file <path>`,
 `--feat <kind>`, `--other <kind>`, `--skip <glob>`. It skips a bot's pull request. It prints
-`no bump`, or the new version, which you commit and push. A conflict goes to
+`no bump`, or the new version, which you commit as `chore: release <version>` and push.
+
+Add ` [skip ci]` to that message when the merge above printed `Already up to date` and the
+default branch's rules require no check:
+
+```bash
+gh api "repos/{owner}/{repo}/rules/branches/<default-branch>" \
+  --jq '[.[] | select(.type == "required_status_checks")] | length'   # 0
+```
+
+CI then skips a run that would test the version line alone, and the scripts below judge the
+commit before it. A merge that brought commits in, or a required check, needs the full run. A conflict goes to
 [`references/conflicts.md`](references/conflicts.md). A commit hook failing on missing
 dependencies needs the install command from `setup` first.
 

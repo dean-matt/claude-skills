@@ -17,6 +17,7 @@ import { setTimeout as sleep } from "node:timers/promises";
 import { capture } from "./capture.mjs";
 import { defaultBranch, hasWorkflows } from "./repo.mjs";
 import {
+  checkedCommit,
   expectedChecks,
   GH_TIMEOUT_MS,
   headCommit,
@@ -111,10 +112,15 @@ if (process.argv[1] !== undefined && import.meta.filename === realpathSync(proce
     console.log("this repository runs no checks; nothing to wait on");
     process.exit(0);
   }
-  console.log(`waiting on the checks of ${sha}`);
+  const checked = checkedCommit(sha);
+  console.log(
+    checked === sha
+      ? `waiting on the checks of ${sha}`
+      : `waiting on the checks of ${checked}, which stand for the version commit ${sha}`,
+  );
   const { code, failed, waiting } = await waitChecks({
     expected,
-    read: () => readChecks(sha),
+    read: () => readChecks(checked),
     timeoutMs: TIMEOUT_MS - (Date.now() - started),
   });
   if (code === 1) console.error(`failed: ${failed.join(", ")}`);

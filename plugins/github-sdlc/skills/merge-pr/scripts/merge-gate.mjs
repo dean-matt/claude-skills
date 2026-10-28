@@ -13,6 +13,7 @@ import { realpathSync } from "node:fs";
 import { capture } from "./capture.mjs";
 import { defaultBranch, hasWorkflows, matchesAny, protectedPaths } from "./repo.mjs";
 import {
+  checkedCommit,
   expectedChecks,
   headCommit,
   isGreen,
@@ -401,7 +402,7 @@ function gate(n, given) {
     const sha = headCommit(pr.headRefName, given);
     const names = expectedChecks(base);
     const noCi = names.length === 0 && !hasWorkflows(sha);
-    checkFailure = headBlocked(head, sha) ?? checksBlocked(readChecks(sha), names, noCi);
+    checkFailure = headBlocked(head, sha) ?? checksBlocked(readChecks(checkedCommit(sha)), names, noCi);
   } catch (error) {
     checkFailure = `could not read the required checks or the commit: ${error.message}`;
   }

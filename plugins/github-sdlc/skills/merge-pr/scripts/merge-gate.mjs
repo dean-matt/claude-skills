@@ -192,11 +192,17 @@ const VERDICT = /^\*\*(Applied|Declined)\*\*/;
  */
 const isFinding = (c) => c.in_reply_to_id === undefined || c.in_reply_to_id === null;
 
+/**
+ * A blocking finding with no verdict reply. A `low` or `info` needs none: a pass that finds
+ * nothing blocking ends the review without `address-feedback`, which writes the verdicts.
+ */
 export function unanswered(comments) {
   const answered = new Set(
     comments.filter((c) => VERDICT.test(c.body)).map((c) => String(c.in_reply_to_id)),
   );
-  return comments.filter((c) => isFinding(c) && !answered.has(String(c.id))).map((c) => c.html_url);
+  return comments
+    .filter((c) => isFinding(c) && blocks(c.body) && !answered.has(String(c.id)))
+    .map((c) => c.html_url);
 }
 
 const DECLINED = /^\*\*Declined\*\*/;
@@ -424,7 +430,7 @@ function gate(n, given) {
   const issueComments = api(`repos/{owner}/{repo}/issues/${n}/comments`);
   const who = signers();
   const open = unanswered(comments);
-  report(open.length === 0, "every thread carries a verdict", open.join("\n      "));
+  report(open.length === 0, "every blocking finding carries a verdict", open.join("\n      "));
   const declined = [
     ...blockingDeclines(comments, who),
     ...blockingBodyDeclines(issueComments, who),

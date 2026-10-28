@@ -107,9 +107,13 @@ test("label: exactly ai-review:completed passes", () => {
   assert.match(labelBlocked(["ai-review:completed", "ai-review:changes-requested"]), /waits on the user/);
 });
 
-test("threads: a finding with no verdict reply is unanswered", () => {
+test("threads: a blocking finding with no verdict reply is unanswered", () => {
   const comments = [finding(1), finding(2), reply(3, 1, "**Applied** in abc")];
   assert.deepEqual(unanswered(comments), ["u2"]);
+});
+
+test("threads: a low or info finding needs no verdict", () => {
+  assert.deepEqual(unanswered([finding(1, "low"), finding(2, "info")]), []);
 });
 
 test("declines: critical, high and medium block unless a signer accepted in the same thread", () => {

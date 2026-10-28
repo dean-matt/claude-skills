@@ -104,7 +104,8 @@ On exit 1, fix the faults it names and do not post.
 
 ## 5. Label and hand off
 
-Set `ai-review:changes-requested` while findings stand. Then run
+Set `ai-review:changes-requested` while a `critical`, `high` or `medium` stands. Then run
 [`address-feedback`](../address-feedback/SKILL.md), which loops back here: verify passes until
 nothing blocking stands, then one final full pass. It sets `ai-review:completed` once that
-final pass returns nothing blocking. This skill never merges.
+final pass returns nothing blocking. A first pass with nothing blocking sets `ai-review:completed`
+itself; its `low` and `info` findings stand as advice and need no reply. This skill never merges.

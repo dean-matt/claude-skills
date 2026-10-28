@@ -15,7 +15,8 @@ the main checkout.
 
 ## Cost
 
-A long conversation is the main cost: every turn re-reads all of it. Run each issue through this
+Spend few tokens and finish fast: those are the plugin's [goals](../../README.md#goals). A long
+conversation is the main cost: every turn re-reads all of it. Run each issue through this
 skill, whose `build` and `merge-pr` subagents start fresh, rather than driving the stages by hand
 in one conversation. If you do drive them by hand, start a new session between stages.
 

@@ -7,11 +7,14 @@ each time; nothing is hard-coded.
 |---|---|
 | Triage | `triage`, on a new issue |
 | Todo | `triage`, when the issue is ready to pick |
-| In Progress | a design stage or `build`, on claim |
+| In Design | a design stage, on claim |
+| In Development | `build`, on claim |
 | In Review | `open-pr` |
 | Done | `merge-pr` |
 
 A board lacking a status skips that move and says so; `setup` offers to add the missing option.
+A board with `In Progress` and neither `In Design` nor `In Development` uses `In Progress` for both,
+and `setup` offers to replace it with the two.
 
 ## Find the project
 

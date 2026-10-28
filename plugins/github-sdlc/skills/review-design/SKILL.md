@@ -120,7 +120,7 @@ End the stop with a recommendation, never a bare choice:
 - The recommended action, first, with one clause why. Another verify pass costs about two minutes;
   prefer it when the findings are real gaps, and accepting when they are taste.
 - Each other option with its cost, and the exact words to continue, such as `review-design 42 ui`.
-- The claim and the In Progress card stay until the user answers ([`claim`](../issue/references/claim.md)).
+- The claim and the In Design card stay until the user answers ([`claim`](../issue/references/claim.md)).
 
 ## Will not do
 

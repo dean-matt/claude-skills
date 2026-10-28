@@ -23,14 +23,14 @@ pass 2 of 2", and "part of the issue is deferred", not "Narrowing".
 
 ## Order
 
-**Resume first.** An issue you claimed and left unfinished comes before new work: `In Progress` on
-the board, assigned to you, no open pull request. The board query below reads `Todo` only, and a
+**Resume first.** An issue you claimed and left unfinished comes before new work: `In Design`,
+`In Development` or `In Progress` on the board, assigned to you, no open pull request. The board query below reads `Todo` only, and a
 claim moves the card out of `Todo`.
 
 ```bash
 me=$(gh api user --jq .login)
 gh project item-list <n> --owner <owner> --limit 2000 --format json --jq "
-  .items[] | select(.status == \"In Progress\" and .content.type == \"Issue\"
+  .items[] | select((.status | IN(\"In Design\", \"In Development\", \"In Progress\")) and .content.type == \"Issue\"
                     and ((.assignees // []) | index(\"$me\"))) | .content.number"
 ```
 

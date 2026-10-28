@@ -19,7 +19,6 @@ export const STAGES = [
 
 const at = (e) => Date.parse(e.created_at);
 const minutes = (ms) => Math.round(ms / 60000);
-const labeled = (events, name) => events.filter((e) => e.event === "labeled" && e.label?.name === name);
 
 export const WAITING = "needs-user";
 
@@ -47,12 +46,29 @@ export function waits(events, now) {
 const overlap = (from, to, spans) =>
   spans.reduce((sum, [a, b]) => sum + Math.max(0, Math.min(to, b) - Math.max(from, a)), 0);
 
+const PREFIX = Object.fromEntries(STAGES.map(([stage, prefix]) => [prefix, stage]));
+
 /**
- * Each row's minutes leave out the time `needs-user` was set; a `waiting` row before the total
- * holds that time, and the total is wall clock.
+ * The stage an issue event is work on: a design pass comment or a stage label.
+ *
+ * @param {{ event: string, label?: { name: string }, body?: string }} e
+ */
+function stageOf(e) {
+  if (e.event === "commented") return /^<!-- design-pass:(\w+) -->/.exec(e.body ?? "")?.[1] ?? null;
+  if (e.event === "labeled" || e.event === "unlabeled") return PREFIX[e.label?.name?.split(":")[0]] ?? null;
+  return null;
+}
+
+/**
+ * Splits the time from the latest claim into intervals between events, and credits each to
+ * the stage of the event that ends it: a design pass or stage label to its stage, the pull
+ * request's opening to build, a review pass or review label to review, the merge to merge. A
+ * stage reopened while the pull request is open is credited again, so no row runs backwards
+ * and the rows sum to the total. Time with `needs-user` set leaves every row for a `waiting`
+ * row; the total is wall clock.
  *
  * @param {{ event: string, created_at: string, label?: { name: string }, body?: string }[]} issueEvents oldest first
- * @param {{ createdAt: string, mergedAt?: string | null, reviews: { body?: string }[] } | null} pr
+ * @param {{ createdAt: string, mergedAt?: string | null, reviews: { body?: string, submittedAt?: string }[] } | null} pr
  * @param {{ event: string, created_at: string, label?: { name: string } }[]} prEvents oldest first
  * @param {number} now
  * @returns {{ stage: string, minutes: number, passes?: number }[]}
@@ -63,34 +79,40 @@ export function timing(issueEvents, pr, prEvents, now) {
   const claim = at(claims.at(-1));
   const after = issueEvents.filter((e) => at(e) >= claim);
   const waiting = waits([...after, ...prEvents.filter((e) => at(e) >= claim)], now);
-  const rows = [];
-  const row = (stage, from, to, passes) =>
-    rows.push({
-      stage,
-      minutes: minutes(to - from - overlap(from, to, waiting)),
-      ...(passes === undefined ? {} : { passes }),
-    });
-  let mark = claim;
-  for (const [stage, prefix] of STAGES) {
-    const passes = after.filter(
-      (e) => e.event === "commented" && (e.body ?? "").startsWith(`<!-- design-pass:${stage} -->`),
-    ).length;
-    const passed = labeled(after, `${prefix}:review-passed`).at(-1);
-    if (passes === 0 && !passed) continue;
-    const end = passed ? at(passed) : now;
-    row(stage, mark, end, passes);
-    mark = end;
-  }
-  const opened = pr ? Date.parse(pr.createdAt) : now;
-  row("build", mark, opened);
-  const end = pr?.mergedAt ? Date.parse(pr.mergedAt) : now;
+  const isPass = (r) => /^<!-- audit-(pass|verify) -->/.test(r.body ?? "");
+
+  const marks = after.map((e) => [at(e), stageOf(e)]).filter(([, stage]) => stage !== null);
   if (pr) {
-    const completed = labeled(prEvents, "ai-review:completed").at(-1);
-    const reviewed = completed ? at(completed) : end;
-    const passes = pr.reviews.filter((r) => /^<!-- audit-(pass|verify) -->/.test(r.body ?? "")).length;
-    row("review", opened, reviewed, passes);
-    if (pr.mergedAt) row("merge", reviewed, end);
+    marks.push([Date.parse(pr.createdAt), "build"]);
+    for (const r of pr.reviews.filter((r) => isPass(r) && r.submittedAt)) marks.push([Date.parse(r.submittedAt), "review"]);
+    for (const e of prEvents.filter((e) => e.label?.name?.startsWith("ai-review:"))) marks.push([at(e), "review"]);
+    if (pr.mergedAt) marks.push([Date.parse(pr.mergedAt), "merge"]);
   }
+  marks.sort((x, y) => x[0] - y[0]);
+  const end = pr?.mergedAt ? Date.parse(pr.mergedAt) : now;
+  if (!pr?.mergedAt) {
+    const last = marks.at(-1)?.[1];
+    const designing = last && last !== "build" && !after.some((e) => at(e) === marks.at(-1)[0] && e.label?.name?.endsWith(":review-passed"));
+    marks.push([now, pr ? "review" : designing ? last : "build"]);
+  }
+
+  const spent = new Map();
+  let from = claim;
+  for (const [t, stage] of marks) {
+    if (t <= from) continue;
+    spent.set(stage, (spent.get(stage) ?? 0) + (t - from) - overlap(from, t, waiting));
+    from = t;
+  }
+
+  const rows = [];
+  for (const [stage] of STAGES) {
+    const passes = after.filter((e) => e.event === "commented" && stageOf(e) === stage).length;
+    if (passes === 0 && !spent.has(stage)) continue;
+    rows.push({ stage, minutes: minutes(spent.get(stage) ?? 0), passes });
+  }
+  rows.push({ stage: "build", minutes: minutes(spent.get("build") ?? 0) });
+  if (pr) rows.push({ stage: "review", minutes: minutes(spent.get("review") ?? 0), passes: pr.reviews.filter(isPass).length });
+  if (pr?.mergedAt) rows.push({ stage: "merge", minutes: minutes(spent.get("merge") ?? 0) });
   const waited = minutes(overlap(claim, end, waiting));
   if (waited > 0) rows.push({ stage: "waiting", minutes: waited });
   if (pr) rows.push({ stage: "total", minutes: minutes(end - claim) });

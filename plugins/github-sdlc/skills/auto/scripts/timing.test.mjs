@@ -62,6 +62,26 @@ test("a needs-user label still set runs to now", () => {
   assert.deepEqual(waits([label("15:30", "needs-user")], NOW), [[Date.parse(t("15:30")), NOW]]);
 });
 
+test("a stage reopened after the pull request opened is credited again, never negative", () => {
+  const events = [
+    ev("10:00", "assigned"),
+    pass("10:10", "test"),
+    label("10:10", "test-agent:review-passed"),
+    unlabel("10:30", "test-agent:review-passed"),
+    pass("10:40", "test"),
+    label("10:40", "test-agent:review-passed"),
+  ];
+  const open = { createdAt: t("10:20"), mergedAt: t("11:00"), reviews: [] };
+  const rows = timing(events, open, [label("10:50", "ai-review:completed")], NOW);
+  assert.deepEqual(rows, [
+    { stage: "test", minutes: 30, passes: 2 },
+    { stage: "build", minutes: 10 },
+    { stage: "review", minutes: 10, passes: 0 },
+    { stage: "merge", minutes: 10 },
+    { stage: "total", minutes: 60 },
+  ]);
+});
+
 test("an issue nobody claimed has no timing", () => {
   assert.deepEqual(timing([pass("10:00", "test")], null, [], NOW), []);
 });

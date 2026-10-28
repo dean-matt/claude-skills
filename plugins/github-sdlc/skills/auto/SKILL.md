@@ -83,7 +83,8 @@ of a gate judging its own work. Its prompt is exactly this, with the number subs
 
 Add nothing: no review commentary, no earlier denial. `merge-pr` runs the gate; nothing here runs
 it first. Where the report names a protected path, a blocking decline, an unconfirmed deviation or
-the label, and the user answers it in this conversation, run [`signoff`](../signoff/SKILL.md)
+the label, add `needs-user` to the issue while you ask, and remove it once the user answers
+([`claim`](../issue/references/claim.md#waiting-on-the-user)). When the user answers in this conversation, run [`signoff`](../signoff/SKILL.md)
 yourself; never relabel and dispatch again, whose subagent would merge on a relayed answer. Then
 continue at step 4. Any other condition ends the run.
 

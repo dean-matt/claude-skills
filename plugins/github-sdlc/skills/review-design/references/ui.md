@@ -8,6 +8,9 @@ Stage: ui. Reads the `## UI/UX Design` section against the criteria and the exis
 - **Dismiss and return paths:** for each new surface, Escape, a backdrop click, Back and Close
   are stated, with where focus lands after each, including when it opens over another surface.
   A missing one is a `medium`.
+- **Reach:** every screen, card, picker and filter that shows or chooses the data the criteria
+  change, found by searching the code for its components, hooks and endpoints, is named with what
+  it shows. A consumer the design misses is a `medium`; a builder ships it unchanged.
 - **Save and failure paths:** what the user sees while saving, after success and on each
   failure a criterion or the API allows. A missing one is a `medium`.
 - Every new string is given exactly.

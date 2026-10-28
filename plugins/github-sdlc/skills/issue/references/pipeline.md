@@ -35,8 +35,8 @@ The labels, their colors and the commands that create them are in
   - **Low stakes** (naming, wording, a default for an edge the criteria leave open): decide it
     from the issue, the code and Out of scope, taking the narrower answer where they leave it open.
     Write `- [x] <question> — Decided (auto): <answer>, because <reason>`.
-  - **Needs a person** (changes stored data or a migration, behavior a user will notice, or scope
-    beyond the title; or only the user can know it, such as a credential, price or deadline): leave
+  - **Needs a person** (changes stored data or a migration, behavior a user will notice, scope
+    beyond the title, or a split into more issues; or only the user can know it, such as a credential, price or deadline): leave
     it unticked and return it with a recommended answer and alternatives. The caller asks the
     user and writes `- [x] <question> — Answered: <answer>`.
 
@@ -46,7 +46,7 @@ The labels, their colors and the commands that create them are in
   carry it, post one comment, through [`technical-writing`](../../technical-writing/SKILL.md), listing each question and answer
   tagged `Decided (auto)` or `Answered`, then delete the `## Open questions` section
   ([`shape.md`](shape.md)). Report every decision.
-- Review stops after two passes in one loop. The last findings are applied and unreviewed, so
+- Review stops after one full pass and three verify passes. The last findings are applied and unreviewed, so
   the stage ends with `designed` and no result label, and the issue is held for the user with
   those findings and the [cap message](../../review-design/SKILL.md#the-cap-message).
   `review-design` reviews the edits next.

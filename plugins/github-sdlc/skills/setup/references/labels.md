@@ -8,6 +8,7 @@ none that exist, apart from the rename below. Re-running is safe.
 | `type:feat`, `type:fix`, `type:chore`, `type:docs`, `type:spike` | The kind of issue |
 | `severity:critical`, `severity:high`, `severity:medium`, `severity:low`, `severity:info` | How bad a bug is, on the plugin's [scale](severity.md). Bugs only. `triage` proposes and the user confirms |
 | `ai-review:completed`, `ai-review:changes-requested` | The state of a pull request's review |
+| `needs-user` | The issue waits on the user's answer. [`claim`](../../issue/references/claim.md#waiting-on-the-user) sets and clears it |
 | `<agent>:designed` | The stage's section is written. Accumulates |
 | `<agent>:review-passed`, `<agent>:changes-requested` | The review result for the stage's current text. Only one is set. Editing the stage clears both, so `designed` alone means written and not yet reviewed |
 
@@ -27,6 +28,7 @@ mk severity:high D93F0B "Broken with no reasonable workaround"
 mk severity:medium FBCA04 "Broken, with a workaround"
 mk severity:low 0E8A16 "Cosmetic or rare"
 mk severity:info BFD4F2 "Not a defect: works as designed, or a note"
+mk needs-user D876E3 "Waits on the user's answer"
 mk ai-review:completed 0E8A16 "AI review finished; nothing waits on a person"
 mk ai-review:changes-requested D93F0B "AI review left something for a person"
 for a in criteria ui technical test; do

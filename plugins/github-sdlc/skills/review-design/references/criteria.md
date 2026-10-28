@@ -8,6 +8,10 @@ Stage: criteria. Covers Summary, Reproduction, Open questions, Out of scope and 
   write it could check it.
 - Criteria are numbered `AC1`, `AC2`, … with no gaps or duplicates.
 - Together they cover the Summary's goal. For a bug, `AC1` is the **Expected** behavior.
+- **Size:** the issue is one slice that ships alone. Where its criteria fall into two or more
+  groups that each ship, and pass their own checks, without the others, and the issue has more
+  than three criteria or a group changes stored data, it is a `medium`. Propose the split: each
+  group's criterion numbers, a title, and the order they ship in.
 - No two criteria contradict each other, and none contradicts Out of scope.
 - No design detail hides in a criterion: a keying scheme, file name or algorithm.
 - Out of scope exists. `Nothing` is acceptable.

@@ -19,7 +19,7 @@ Each line is `verdict`, kind, ref and reason:
 - **safe**: merged, or an empty claim whose issue is closed. Removing loses nothing.
 - **ask**: a branch whose pull request closed unmerged, a copy with commits the merge lacks,
   a worktree on an unrecognised branch, or your own claim on an open issue. Removing a claim gives
-  the issue up ([`claim.md`](../issue/references/claim.md#release)).
+  the issue up ([`claim.md`](../issue/references/claim.md#give-up)).
 - **keep**: an open pull request, uncommitted changes (including in the checkout you are on),
   commits with no pull request, or someone else's claim on an open issue.
 

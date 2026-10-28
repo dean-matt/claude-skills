@@ -22,7 +22,7 @@ others
 Output now means a rival also assigned: run `gh issue edit <n> --remove-assignee @me`, stop and
 name them. Otherwise move the card to **In Progress**
 ([`board.md`](../../setup/references/board.md#move-a-card)). An issue this login already holds
-needs nothing more.
+needs nothing more than removing `needs-user` where set.
 
 ## Release
 
@@ -31,6 +31,20 @@ A claim holds until the issue moves on: [`open-pr`](../../open-pr/SKILL.md) move
 a failure, a review cap, an Open question, a declined question, or the user choosing to stop. The
 issue stays assigned and **In Progress**, so no one else can take it while the holder is slow to
 answer, and [`pick-issue`](../../pick-issue/SKILL.md) resumes it for the holder.
+
+## Waiting on the user
+
+A stop that waits on the user's answer (a review cap, an Open question for a person, a merge
+condition only the user clears) adds `needs-user` to the issue. Whoever acts on the issue next
+removes it: the caller once the user answers, or the next skill to claim it. `auto`'s
+[`timing.mjs`](../../auto/scripts/timing.mjs) reports the time it is set as waiting.
+
+```bash
+gh issue edit <n> --add-label needs-user      # on the stop
+gh issue edit <n> --remove-label needs-user   # on the answer or the next claim
+```
+
+## Give up
 
 Release only when the holder says to give the issue up. Unassign and move the card back to
 **Todo** ([`board.md`](../../setup/references/board.md#move-a-card)):

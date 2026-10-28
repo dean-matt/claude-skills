@@ -15,6 +15,13 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
 - **Never add a criterion to answer a finding.** Reword, tighten or merge existing ones, or move a
   detail to the stage that owns it. A finding only a new criterion can meet is not applied: reply
   `**Held for the user**` and add an unticked Open question proposing it.
+- **A split finding** is the user's call and is not applied here: reply `**Held for the user**` and
+  add an unticked Open question proposing the split. On the user's yes, keep the first group here,
+  create each other group as its own issue through [`issue`](../../issue/SKILL.md) in autonomous
+  mode, carrying its criteria, the Summary's part that motivates them and any Out of scope line
+  they need, and set *blocked by* where a group needs an earlier one
+  ([`relationships.md`](../../issue/references/relationships.md)). Then remove the moved criteria
+  here and renumber from `AC1`. The criteria stage reviews the issue again.
 - **A finding that needs another stage changed** is not applied here. Record it as a reply and
   follow the pipeline's rule for sending an earlier stage back.
 - **Replying:** edit the stage's latest `<!-- design-pass:<stage> -->` comment in place. Under
@@ -30,6 +37,6 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
   `designed` with no result label means written and not yet reviewed. This mode never adds
   `review-passed` or `changes-requested`.
 - **Finish:** hand back to [`review-design`](../../review-design/SKILL.md) for a fresh pass, which
-  sets the result label. After two passes stop without another: the last findings are applied and
+  sets the result label. After a full pass and three verify passes, stop without another: the last findings are applied and
   unreviewed, and the issue is held for the user with the
   [cap message](../../review-design/SKILL.md#the-cap-message). The next stage waits for `review-passed`.

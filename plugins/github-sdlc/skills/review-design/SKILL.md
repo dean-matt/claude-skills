@@ -26,7 +26,7 @@ result labels from that pass.
 
 Use a fresh `github-sdlc:design-auditor` agent for every pass.
 
-**Full pass:** the first pass of a loop, or any pass with no saved edit for the stage. Send the
+**Full pass:** the stage's first pass, or any pass with no saved edit for the stage. Send the
 issue number and stage only:
 
 ```
@@ -108,7 +108,7 @@ A pass with nothing to report still posts its marked comment.
 ## 6. Repeat
 
 `address-feedback` returns here for a fresh pass while the last returned a `critical`, `high` or
-`medium`. After two passes in one loop, stop. The last findings are applied and unreviewed, so the
+`medium`. A loop is one full pass and up to three verify passes; after the third verify pass, stop. The last findings are applied and unreviewed, so the
 stage carries `designed` and no result label. The next stage does not start. Tell the user
 what the last pass found, then give the [cap message](#the-cap-message).
 
@@ -117,8 +117,8 @@ what the last pass found, then give the [cap message](#the-cap-message).
 End the stop with a recommendation, never a bare choice:
 
 - Whether the last pass found a `critical`. Accepting the stage is open only if it found none.
-- The recommended action, first, with one clause why. A fourth pass costs about 30 seconds; prefer
-  it when the findings are real gaps, and accepting when they are taste.
+- The recommended action, first, with one clause why. Another verify pass costs about two minutes;
+  prefer it when the findings are real gaps, and accepting when they are taste.
 - Each other option with its cost, and the exact words to continue, such as `review-design 42 ui`.
 - The claim and the In Progress card stay until the user answers ([`claim`](../issue/references/claim.md)).
 

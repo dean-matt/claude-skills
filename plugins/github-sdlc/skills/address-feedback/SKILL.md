@@ -20,7 +20,8 @@ The loop is the same; the references hold what differs.
 4. **Reply** to each item last, in the same prose rules (in pr mode all in one review, through
    `scripts/reply.mjs`), with a verdict: `**Applied**` or `**Declined** — <reason>`. In design mode the verdict goes
    into the pass comment itself.
-5. **Re-review** with a fresh reviewer while the last pass returned a `critical` or `warning`.
+5. **Re-review** with a fresh reviewer while the last pass returned a `critical`, `high`
+   or `medium`.
    In pr mode, repeat fix and **verify** passes until a verify pass returns nothing blocking,
    then run one **full** pass. If it finds more, loop again. Stop after two full passes and let
    the replies carry what remains. In design mode, every pass is a full pass of the stage.
@@ -39,8 +40,8 @@ The loop is the same; the references hold what differs.
 
 Pass `--autonomous`.
 
-- **Interactive**: show the decisions before applying and ask on each declined `critical` or
-  `warning`.
+- **Interactive**: show the decisions before applying and ask on each declined `critical`,
+  `high` or `medium`.
 - **Autonomous**: decide without asking, except where step 2 says ask.
 
 ## Modes
@@ -50,4 +51,4 @@ Pass `--autonomous`.
 
 ## Will not do
 
-Merge, start the next design stage, or decline a `critical` or `warning` without telling the user.
+Merge, start the next design stage, or decline a `critical`, `high` or `medium` without telling the user.

@@ -54,21 +54,24 @@ concerns. The body holds a one-line summary and no finding. Open with the severi
 the defect and its cost:
 
 ```
-**warning** — the retry loop never backs off; a failing upstream gets hammered at full rate.
+**high** — the retry loop never backs off; a failing upstream gets hammered at full rate.
 ```
 
-| Severity | Means |
-|---|---|
-| `critical` | Wrong at runtime, misleading about what the code does, or an acceptance criterion the change does not meet |
-| `warning` | Contradicts the repository's stated rules, or a departure from the issue that Deviations does not record |
-| `comment` | A taste call, reported once |
+| Severity | Means | Blocks |
+|---|---|---|
+| `critical` | Wrong in the main path, loses data, opens a security hole, or an acceptance criterion the change does not meet | Yes |
+| `high` | Wrong in an edge path, misleading about what the code does, breaks a rule a check enforces, or a departure from the issue that Deviations does not record | Yes |
+| `medium` | A changed behavior with no test, duplicated code, or a stated repository rule no check enforces | Yes |
+| `low` | Naming or a small clarity issue | No |
+| `info` | A note or taste call, reported once | No |
 
-Calibrate: a `warning` names the rule, criterion or test it breaks, and a finding that cannot is
-a `comment`. Report a defect once: skip one an earlier pass raised and a reply answered, and in a
-verify or final pass raise nothing the diff did not already hold unless a fix introduced it.
+Calibrate: a blocking finding names the bug, rule, criterion or test it concerns; a finding that
+cannot is `low` or `info`. Report a defect once: skip one an earlier pass raised and a reply
+answered, and in a verify or final pass raise nothing the diff did not already hold unless a fix
+introduced it.
 
-A **Narrowing** or **Addition** deviation is a `warning` stating it needs the user's confirmation.
-A note on a decision worth a reader's attention is a `comment` on the line.
+A **Narrowing** or **Addition** deviation is a `high` stating it needs the user's confirmation.
+A note on a decision worth a reader's attention is an `info` on the line.
 
 Write `**critical**`, never `` `critical` ``: the merge gate parses the marker.
 
@@ -79,7 +82,7 @@ Post one review per pass, before applying anything. The body starts with `<!-- a
 `<!-- audit-verify -->` instead; the gate does not count it against the cap and never reads it as
 the last word.
 
-Use `event: REQUEST_CHANGES` while the pass has a `critical` or `warning`, else `COMMENT`. GitHub
+Use `event: REQUEST_CHANGES` while the pass has a `critical`, `high` or `medium`, else `COMMENT`. GitHub
 refuses both an approval and a change request on your own pull request: where the post fails for
 that reason, repost the same pass as `COMMENT`, which the label and the gate treat alike. A pass
 with no findings still posts its marked body.

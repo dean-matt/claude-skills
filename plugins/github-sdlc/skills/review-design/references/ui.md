@@ -4,7 +4,7 @@ Stage: ui. Reads the `## UI/UX Design` section against the criteria and the exis
 
 - The flow is stated step by step from the user's side.
 - Every state is covered: default, empty, loading, error, disabled or locked, and any a
-  criterion implies. A missing state a builder would have to invent is a `warning`.
+  criterion implies. A missing state a builder would have to invent is a `medium`.
 - Every new string is given exactly.
 - Keyboard order and keys, screen-reader labels and announcements, focus handling, and
   contrast are stated for each new control.

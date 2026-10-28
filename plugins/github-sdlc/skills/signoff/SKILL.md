@@ -1,6 +1,6 @@
 ---
 name: signoff
-description: Clear a merge that waits on the user — a protected path, a declined critical or warning, an unconfirmed Narrowing or Addition deviation, or a review label other than ai-review:completed — on the user's word heard in this conversation, then land it through merge-pr. Use when merge-pr or auto stops on one of those and the user answers. Only the session holding the conversation runs it; a dispatched subagent never does.
+description: Clear a merge that waits on the user — a protected path, a declined critical, high or medium finding, an unconfirmed Narrowing or Addition deviation, or a review label other than ai-review:completed — on the user's word heard in this conversation, then land it through merge-pr. Use when merge-pr or auto stops on one of those and the user answers. Only the session holding the conversation runs it; a dispatched subagent never does.
 ---
 
 # The user's direct sign-off

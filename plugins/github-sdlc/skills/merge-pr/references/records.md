@@ -8,7 +8,7 @@ relaying it.
 
 | Waits on the user | Record | Form |
 |---|---|---|
-| A declined `critical` or `warning` on a line | An `**Accepted**` reply in that thread | `gh api "repos/{owner}/{repo}/pulls/$n/comments/<id>/replies" -f body='**Accepted** — <what was approved>'` |
+| A declined `critical`, `high` or `medium` on a line | An `**Accepted**` reply in that thread | `gh api "repos/{owner}/{repo}/pulls/$n/comments/<id>/replies" -f body='**Accepted** — <what was approved>'` |
 | A declined finding no line anchors | A later plain comment opening `**Accepted**`; it clears every body decline posted before it | `gh pr comment "$n" --body '**Accepted** — <what was approved>'` |
 | A protected path | A comment naming the head you read and every protected path | `gh pr comment "$n" --body "**Accepted protected** $(gh pr view "$n" --json headRefOid --jq .headRefOid) — <path>, <path>: <what was approved>"` |
 | A **Narrowing** or **Addition** deviation | A comment naming the head you read; it covers every held deviation at that head | `gh pr comment "$n" --body "**Confirmed** $(gh pr view "$n" --json headRefOid --jq .headRefOid) — <what was confirmed>"` |

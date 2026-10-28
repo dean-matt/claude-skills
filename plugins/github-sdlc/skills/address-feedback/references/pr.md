@@ -21,7 +21,7 @@
   review rejected misleads the next reader.
 - **Finish:** set `ai-review:completed` only when the last pass was a full pass, its review has posted, the
   check command is green and nothing still waits on the user:
-  - a declined `critical` or `warning`,
+  - a declined `critical`, `high` or `medium`,
   - a point a pass asked the user to confirm,
   - a **Narrowing** or **Addition** deviation the user has not confirmed,
   - a second bug filed as its own issue.

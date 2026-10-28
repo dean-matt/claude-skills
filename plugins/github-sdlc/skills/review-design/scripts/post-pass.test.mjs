@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { test } from "node:test";
 import { postPass, withHeading } from "./post-pass.mjs";
 
-const pass = "<!-- design-pass:ui -->\n1. **warning** — x\n";
+const pass = "<!-- design-pass:ui -->\n1. **high** — x\n";
 
 function fake({ failTidy = false } = {}) {
   const calls = [];
@@ -43,8 +43,8 @@ test("needs all three arguments", () => {
 
 test("the heading names the stage and counts the earlier passes, hidden ones included", () => {
   assert.equal(
-    withHeading("<!-- design-pass:criteria -->\n1. **warning** — x\n", "criteria", 3),
-    "<!-- design-pass:criteria -->\n### Criteria review — pass 3\n\n1. **warning** — x\n",
+    withHeading("<!-- design-pass:criteria -->\n1. **high** — x\n", "criteria", 3),
+    "<!-- design-pass:criteria -->\n### Criteria review — pass 3\n\n1. **high** — x\n",
   );
   assert.match(withHeading("<!-- design-pass:ui -->\nx", "ui", 1), /### UI\/UX design review — pass 1/);
 });

@@ -47,18 +47,20 @@ Every stage is also held to one rule: repeat nothing another section or a link s
 Open each finding with its severity in bold, then the defect and what it costs:
 
 ```
-**warning** — AC3 says "works correctly" and names no observable result, so it cannot be tested.
+**high** — Step 3 imports the editor statically into the detail, so every detail loads CodeMirror.
 ```
 
-| Severity | Means |
-|---|---|
-| `critical` | The stage cannot be built or tested as written, or contradicts another section |
-| `warning` | Breaks a rule in the shape, or leaves a gap a builder would have to guess at |
-| `comment` | A taste call, reported once |
+| Severity | Means | Blocks |
+|---|---|---|
+| `critical` | The stage cannot be built or tested as written, contradicts another section, or would ship the core feature broken | Yes |
+| `high` | Would cause a bug, a regression or a failed check in the build | Yes |
+| `medium` | Would cause rework or duplicated code, breaks a rule in the shape, or leaves a decision a builder would have to guess | Yes |
+| `low` | Tidiness: wording, an incomplete list, an order that misleads nobody | No |
+| `info` | A note or taste call, reported once | No |
 
-Calibrate: a `warning` names the criterion, rule or decision a builder could not make without
-guessing; a finding that cannot is a `comment`. Report a defect once, and raise nothing in a later
-pass that the stage already held unless an edit introduced it.
+Calibrate: a blocking finding names the bug, failed check, rework, rule or guessed decision it
+causes; a finding that cannot is `low` or `info`. Report a defect once, and raise nothing in a
+later pass that the stage already held unless an edit introduced it.
 
 ## 5. Post and label
 
@@ -72,17 +74,17 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/review-design/scripts/post-pass.mjs" <n> <sta
 
 Never post a pass with `gh issue comment`. A hiding failure is reported and never undoes the pass.
 
-- No `critical` or `warning`: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`.
-- Any `critical` or `warning`: add `<prefix>:changes-requested`, remove `<prefix>:review-passed`,
+- No `critical`, `high` or `medium`: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`.
+- Any `critical`, `high` or `medium`: add `<prefix>:changes-requested`, remove `<prefix>:review-passed`,
   then run [`address-feedback`](../address-feedback/SKILL.md) in design mode.
 
 A pass with nothing to report still posts its marked comment.
 
 ## 6. Repeat
 
-`address-feedback` returns here for a fresh pass while the last returned a `critical` or
-`warning`. After two passes in one loop, stop. The last findings are applied and unreviewed, so
-the stage carries `designed` and no result label. The next stage does not start. Tell the user
+`address-feedback` returns here for a fresh pass while the last returned a `critical`, `high` or
+`medium`. After two passes in one loop, stop. The last findings are applied and unreviewed, so the
+stage carries `designed` and no result label. The next stage does not start. Tell the user
 what the last pass found, then give the [cap message](#the-cap-message).
 
 ## The cap message

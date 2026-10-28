@@ -25,11 +25,19 @@ import {
  * read is `unreadable`, which blocks: a finding the gate cannot classify is the one it must
  * not wave through.
  */
-const MARKER = /^\*\*(critical|warning|comment)\*\*/;
+export const SEVERITIES = ["critical", "high", "medium", "low", "info"];
+
+/** The severities that send a finding back for a fix and a fresh pass. */
+export const BLOCKING = ["critical", "high", "medium"];
+
+const MARKER = new RegExp(`^\\*\\*(${SEVERITIES.join("|")})\\*\\*`);
 
 export function severity(body) {
   return MARKER.exec(body ?? "")?.[1] ?? "unreadable";
 }
+
+/** Whether a finding blocks. An `unreadable` one does, so the gate never waves it through. */
+export const blocks = (body) => !["low", "info"].includes(severity(body));
 
 export function notGreen(checks) {
   return checks.filter((c) => !isGreen(c)).map((c) => c.name);
@@ -91,7 +99,7 @@ export function passes(reviews) {
 export const fullPasses = (reviews) => passes(reviews).filter((r) => !isVerify(r));
 
 export function blockingFindings(comments) {
-  return comments.filter((c) => severity(c.body) !== "comment").map((c) => c.html_url);
+  return comments.filter((c) => blocks(c.body)).map((c) => c.html_url);
 }
 
 /**
@@ -122,7 +130,7 @@ export function staleNote(sha, head, behind, base) {
 
 /**
  * The pass that reads a fix is what answers the finding, so this wants a last pass that read
- * the whole diff and whose findings are all `comment`. A verify pass never satisfies it: it
+ * the whole diff and whose findings are all `low` or `info`. A verify pass never satisfies it: it
  * read the fixes alone, so a regression elsewhere would pass unread. A pass that found nothing
  * satisfies it by posting a body and no comments. At `PASS_CAP` full passes it stops asking:
  * the thread verdicts already hold the fix, and demanding a pass the run may not take leaves
@@ -206,7 +214,7 @@ const ACCEPTED = /^\*\*Accepted\*\*/;
 const isAccepted = (c, who) => ACCEPTED.test(c.body ?? "") && who.includes(c.user?.login ?? "");
 
 /**
- * A declined `comment` is a taste call refused and ends a healthy review; anything else is a
+ * A declined `low` or `info` is a taste call refused and ends a healthy review; anything else is a
  * judgment the user has not seen — unless a signer's `**Accepted**` reply in the same thread
  * records that they have.
  */
@@ -217,16 +225,16 @@ export function blockingDeclines(comments, who) {
   );
   return comments
     .filter((c) => DECLINED.test(c.body))
-    .filter((c) => severity(findings.get(String(c.in_reply_to_id))) !== "comment")
+    .filter((c) => blocks(findings.get(String(c.in_reply_to_id))))
     .filter((c) => !accepted.has(String(c.in_reply_to_id)))
     .map((c) => c.html_url);
 }
 
-const BODY_DECLINED = /^\*\*Declined\*\* (critical|warning)\b/;
+const BODY_DECLINED = new RegExp(`^\\*\\*Declined\\*\\* (${BLOCKING.join("|")})\\b`);
 
 /**
  * A finding the pass could not anchor to a line has no thread, so its verdict is a plain pull
- * request comment opening `**Declined** critical` or `**Declined** warning`, and a signer's
+ * request comment opening `**Declined** <severity>` for a blocking severity, and a signer's
  * `**Accepted**` is a later plain comment. GitHub gives such comments no reply link, so an
  * acceptance clears every body decline posted before it, never one posted after.
  * `comments` must run oldest first, as the API returns them.
@@ -423,7 +431,7 @@ function gate(n, given) {
   ];
   report(
     declined.length === 0,
-    "no declined finding is critical or warning",
+    "no declined finding is critical, high or medium",
     declined.join("\n      "),
   );
 

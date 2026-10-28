@@ -65,5 +65,5 @@ End with:
 - the issue taken, or the reason none was
 - the pull request number, or the condition that stopped the run before one opened
 - the label left on it, and where its review pass ran (the `pr-auditor` agent, or not)
-- what waits on the user: a held deviation, a declined `critical` or `warning`, a protected
+- what waits on the user: a held deviation, a declined `critical`, `high` or `medium`, a protected
   path, a second issue this run filed. Write "nothing" when there is none.

@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import {
+  blocks,
   blockingBodyDeclines,
   blockingDeclines,
   capNote,
@@ -33,10 +34,16 @@ const reply = (id, to, body, login = "me") => ({
 });
 
 test("severity reads the bold marker and nothing else", () => {
-  assert.equal(severity("**warning** — a"), "warning");
+  assert.equal(severity("**high** — a"), "high");
   assert.equal(severity("`critical` — a"), "unreadable");
-  assert.equal(severity(" **comment** a"), "unreadable");
+  assert.equal(severity(" **low** a"), "unreadable");
   assert.equal(severity(undefined), "unreadable");
+});
+
+test("critical, high, medium and an unreadable marker block; low and info do not", () => {
+  for (const s of ["critical", "high", "medium"]) assert.equal(blocks(`**${s}** — x`), true);
+  for (const s of ["low", "info"]) assert.equal(blocks(`**${s}** — x`), false);
+  assert.equal(blocks("**warning** — x"), true);
 });
 
 test("checks: a green head passes, red, missing and silent heads block", () => {
@@ -66,7 +73,7 @@ test("passes: marked reviews are the passes, and an unmarked pull request falls 
 
 test("review: no pass blocks, a clean last pass converges, a blocking one asks again until the cap", () => {
   assert.match(reviewBlocked([], []), /nothing has reviewed/);
-  assert.equal(reviewBlocked([pass(1)], [finding(1, "comment")]), null);
+  assert.equal(reviewBlocked([pass(1)], [finding(1, "low")]), null);
   assert.match(reviewBlocked([pass(1)], [finding(1)]), /pass 1 of 2 returned a blocking finding/);
   const capped = Array.from({ length: PASS_CAP }, (_, i) => pass(i));
   assert.equal(reviewBlocked(capped, [finding(9)]), null);
@@ -105,8 +112,8 @@ test("threads: a finding with no verdict reply is unanswered", () => {
   assert.deepEqual(unanswered(comments), ["u2"]);
 });
 
-test("declines: critical and warning block unless a signer accepted in the same thread", () => {
-  const comments = [finding(1), finding(2, "comment"), reply(3, 1, "**Declined** — no"), reply(4, 2, "**Declined** — taste")];
+test("declines: critical, high and medium block unless a signer accepted in the same thread", () => {
+  const comments = [finding(1), finding(2, "low"), reply(3, 1, "**Declined** — no"), reply(4, 2, "**Declined** — taste")];
   assert.deepEqual(blockingDeclines(comments, ["me"]), ["u3"]);
   const accepted = [...comments, reply(5, 1, "**Accepted** — ok", "me")];
   assert.deepEqual(blockingDeclines(accepted, ["me"]), []);

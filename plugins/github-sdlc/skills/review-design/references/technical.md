@@ -13,5 +13,5 @@ Stage: technical. Reads the `## Technical Design` section against the criteria a
 - It stays within Out of scope.
 - It repeats no criterion and no UI/UX detail; it refers to them by number or section.
 - It is the smallest design that meets the criteria. An abstraction nothing yet needs is a
-  `warning`.
+  `medium`.
 - `n/a — <reason>` is acceptable only for a change that touches no code.

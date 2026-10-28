@@ -123,8 +123,18 @@ test("--design hands an unticked open question to the pipeline; without it the q
   assert.equal(ready({ labels: PASSED, body }).code, 1);
 });
 
+test("a folded UI/UX Design heading makes the ui stage required", () => {
+  const body = "<details open>\n<summary><h2>UI/UX Design</h2></summary>\n\nsketch\n\n</details>\n";
+  assert.match(ready({ labels: PASSED, body }).out, /ui has not passed review/);
+});
+
+test("open questions end at a folded heading", () => {
+  const body = "## Open questions\n- [x] done\n\n<details open>\n<summary><h2>Test Design</h2></summary>\n\n- [ ] AC1 check\n\n</details>\n";
+  assert.deepEqual(ready({ labels: PASSED, body }), { code: 0, out: "ready" });
+});
+
 test("an unclosed <details> blocks, and a balanced pair does not", () => {
-  const open = "## Acceptance criteria\n\n<details open>\n<summary>Show or hide</summary>\n\n- AC1\n";
+  const open = "<details open>\n<summary><h2>Acceptance criteria</h2></summary>\n\n- AC1\n";
   const r = ready({ labels: PASSED, body: open });
   assert.equal(r.code, 1);
   assert.match(r.out, /1 <details> opened and 0 closed/);

@@ -1,6 +1,6 @@
 # Checklist: test design
 
-Stage: test. Reads the `## Test Design` list against the criteria and the technical design.
+Stage: test. Reads the Test Design list against the criteria and the technical design.
 
 - Every `AC` appears in at least one line. An uncovered criterion is a `critical`.
 - Every line names an AC. A line naming none points to a missing criterion or an unneeded test.

@@ -16,24 +16,29 @@ sub-issues) and are never repeated in the body. Pull request links belong to the
 | Technical Design | How it is built | Any code change |
 | Test Design | A list; each line names its AC | Any non-spike |
 
-The headings are exactly these, `##` level, so tooling can find them.
+The headings are exactly these, at `h2` level, so tooling can find them: `## <name>` for a plain
+section, `<summary><h2><name></h2></summary>` for a foldable one.
 
 ## Foldable sections
 
-Acceptance criteria, UI/UX Design, Technical Design and Test Design are wrapped so they can fold,
-and start open. The `##` heading stays outside, where tooling finds it. Keep a blank line after
-`<summary>` and before `</details>`, or the Markdown inside does not render:
+Acceptance criteria, UI/UX Design, Technical Design and Test Design fold under their own
+heading, and start open. The heading is the `<summary>`, written as HTML because Markdown does
+not render there; GitHub shows it beside the fold arrow. Keep a blank line after `<summary>` and
+before `</details>`, or the Markdown inside does not render:
 
 ````markdown
-## Acceptance criteria
-
 <details open>
-<summary>Show or hide</summary>
+<summary><h2>Acceptance criteria</h2></summary>
 
 - **AC1.** ...
 
 </details>
 ````
+
+An unwritten UI/UX Design section is the bare heading `## UI/UX Design`, which marks the change
+as visual; `ui-design` replaces it with the foldable form. A section in the older form, a `##`
+heading over a `Show or hide` summary, is rewritten to this form whenever its stage edits it, and
+a reviewer raises nothing about it otherwise.
 
 Summary, Out of scope and Open questions are never wrapped. A section reading `n/a — <reason>`
 needs no wrapper. Keep the wrapper when rewriting a section.

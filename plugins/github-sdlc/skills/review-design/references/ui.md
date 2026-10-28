@@ -1,6 +1,6 @@
 # Checklist: UI/UX design
 
-Stage: ui. Reads the `## UI/UX Design` section against the criteria and the existing interface.
+Stage: ui. Reads the UI/UX Design section against the criteria and the existing interface.
 
 - The flow is stated step by step from the user's side.
 - Every state is covered: default, empty, loading, error, disabled or locked, and any a

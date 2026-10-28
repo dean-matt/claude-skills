@@ -20,8 +20,8 @@ Stage: criteria. Covers Summary, Reproduction, Open questions, Out of scope and 
 - `## Open questions` is present only while one item is unticked. A section of ticked items is a
   `medium`: the answers belong in the sections that carry them.
 - A section a stage wrote is wrapped as `shape.md` says: `<details open>` and `</details>`
-  paired, a blank line after `<summary>`. A broken wrapper is a `medium`; a missing one on a
+  paired, the heading as `<summary><h2>…</h2></summary>`, a blank line after `<summary>`. A broken wrapper is a `medium`; a missing one on a
   section the stage just rewrote is a `low`.
-- A `## UI/UX Design` heading is present exactly when a user can see the change.
+- A UI/UX Design heading is present exactly when a user can see the change.
 - The issue's type matches its content, and a bug has a `type:fix` label.
 - No relationship (blocked by, part of) is written in the body.

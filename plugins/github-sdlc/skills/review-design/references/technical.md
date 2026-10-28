@@ -1,6 +1,6 @@
 # Checklist: technical design
 
-Stage: technical. Reads the `## Technical Design` section against the criteria and the code.
+Stage: technical. Reads the Technical Design section against the criteria and the code.
 
 The section opens with a `**Risk:**` line on the [scale](../../setup/references/severity.md).
 A missing one is a `medium`; one below what the design touches is a `high`. At `medium` or

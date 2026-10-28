@@ -42,7 +42,7 @@ type=$(printf '%s\n' "$labels" | awk -F: '$1 == "type" && t == "" { t = $2 } END
 if [ "$pipeline" -eq 1 ]; then
   stages="criteria"
   if [ "$type" != spike ]; then
-    body_has '^## UI/UX Design' && stages="$stages ui"
+    body_has '^## UI/UX Design\|<summary><h2>UI/UX Design</h2>' && stages="$stages ui"
     stages="$stages technical test"
   fi
   for s in $stages; do
@@ -52,7 +52,7 @@ if [ "$pipeline" -eq 1 ]; then
 fi
 
 open_questions=$(printf '%s\n' "$body" | awk '
-  /^## /{inq = ($0 == "## Open questions"); next}
+  /^## |<summary><h2>/{inq = ($0 == "## Open questions"); next}
   inq && /^- \[ \]/{n++}
   END{print n+0}')
 if [ "$open_questions" -ne 0 ]; then

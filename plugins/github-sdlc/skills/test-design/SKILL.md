@@ -40,7 +40,7 @@ name the missing stage.
    writes `n/a — <reason>`.
 5. If a criterion cannot be tested as written, add an unticked Open question; do not edit it.
 6. Take the section through [`technical-writing`](../technical-writing/SKILL.md). Then replace
-   only the `## Test Design` section (re-read first), set `test-agent:designed`, and clear this
+   only the Test Design section (re-read first), set `test-agent:designed`, and clear this
    stage's `review-passed` and `changes-requested`.
 7. Hand off to [`review-design`](../review-design/SKILL.md) for the test stage.
 

@@ -6,16 +6,16 @@ An issue passes four stages in order. Each stage is written by one skill, then r
 | Stage | Written by | Writes | Agent label prefix |
 |---|---|---|---|
 | criteria | [`issue`](../SKILL.md) | Summary, Open questions, Out of scope, Acceptance criteria, and Reproduction for a bug | `criteria-agent` |
-| ui | [`ui-design`](../../ui-design/SKILL.md) | `## UI/UX Design` | `ui-agent` |
-| technical | [`technical-design`](../../technical-design/SKILL.md) | `## Technical Design` | `technical-agent` |
-| test | [`test-design`](../../test-design/SKILL.md) | `## Test Design` | `test-agent` |
+| ui | [`ui-design`](../../ui-design/SKILL.md) | UI/UX Design | `ui-agent` |
+| technical | [`technical-design`](../../technical-design/SKILL.md) | Technical Design | `technical-agent` |
+| test | [`test-design`](../../test-design/SKILL.md) | Test Design | `test-agent` |
 
 The labels, their colors and the commands that create them are in
 [`../../setup/references/labels.md`](../../setup/references/labels.md).
 
 ## Which stages an issue needs
 
-- **ui** only when the body has a `## UI/UX Design` heading. `issue` adds the heading only for
+- **ui** only when the body has a UI/UX Design heading. `issue` adds the heading only for
   a change a user can see, so no heading means no stage.
 - **technical** and **test** for every type except a spike. A docs or trivial issue writes
   `n/a — <reason>`, which `review-design` passes without a review pass.

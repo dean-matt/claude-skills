@@ -23,7 +23,7 @@ Read [`references/shape.md`](references/shape.md) (shape, types, rules) and
 4. **Ask about gaps** in one batch with AskUserQuestion, instead of inventing: a missing
    reproduction, an ambiguous expected result, a scope boundary. Anything left unanswered becomes an
    unticked Open question.
-5. **Decide whether it is visual.** If a user can see the change, add an empty
+5. **Decide whether it is visual.** If a user can see the change, add the bare
    `## UI/UX Design` heading; otherwise add none. For a UI bug, offer a screenshot through
    [`screenshots`](../screenshots/SKILL.md) under Actual.
 6. **Prose pass** with [`technical-writing`](../technical-writing/SKILL.md).

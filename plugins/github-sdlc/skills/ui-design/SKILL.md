@@ -14,7 +14,7 @@ Claim the issue first ([`claim`](../issue/references/claim.md)).
 
 - The issue carries `criteria-agent:review-passed`, and no open Open question changes a
   criterion. Otherwise stop and say which is missing.
-- The body has a `## UI/UX Design` heading. Without it the change is not visual, so there is
+- The body has a UI/UX Design heading. Without it the change is not visual, so there is
   nothing to do; say so.
 
 ## Steps
@@ -32,7 +32,7 @@ Claim the issue first ([`claim`](../issue/references/claim.md)).
 3. **Add no requirement.** If the design needs behavior no criterion covers, add an unticked
    Open question proposing the criterion, and stop. Never edit the criteria.
 4. Take the section through [`technical-writing`](../technical-writing/SKILL.md). Then replace
-   only the `## UI/UX Design` section: re-read the issue, edit that section, then
+   only the UI/UX Design section: re-read the issue, edit that section, then
    write the body back, so a concurrent edit elsewhere survives.
 5. Set `ui-agent:designed` and remove `ui-agent:review-passed` and `ui-agent:changes-requested`.
 6. Hand off to [`review-design`](../review-design/SKILL.md) for the ui stage.

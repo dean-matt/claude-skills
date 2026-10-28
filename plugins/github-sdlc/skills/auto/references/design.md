@@ -23,5 +23,5 @@ Then run `next.sh` for `<n>`. `ready` goes to step 2b.
   - **Stop here.**
 
 Stop when the user declines a question or chooses to stop (quote the question or findings), or when
-`<n>` is not `ready` after the pipeline (give the reason). On a stop, release `<n>` as `claim`
-says. A design followed by a build keeps the claim; a `build` that stops releases its own.
+`<n>` is not `ready` after the pipeline (give the reason). A stop keeps the claim on `<n>`, as
+[`claim`](../../issue/references/claim.md#release) says.

@@ -79,8 +79,8 @@ A parent is never ready (it has open sub-issues); its children are the work.
 
 Check *Held* on the issue `next.sh` takes, not on every candidate. If it is held, drop it and run
 `next.sh` on the rest. An issue is held when someone other than you is assigned, an open pull
-request closes it, or a branch named for it (`*/<number>-*`) exists with no open pull request. A
-branch of yours with an open pull request is not held: taking it resumes that work.
+request closes it, or a branch named for it (`*/<number>-*`) exists with no open pull request. An
+issue assigned only to you is not held by its branch: taking it resumes that work.
 
 ```bash
 gh issue view <n> --json assignees,closedByPullRequestsReferences

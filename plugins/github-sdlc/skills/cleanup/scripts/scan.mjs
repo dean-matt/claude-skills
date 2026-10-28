@@ -53,11 +53,12 @@ export function retrying(fn, { attempts = 3, pause = (ms) => Atomics.wait(new In
  *   branches: { name: string, local: string | null, remote: string | null, ahead: number }[],
  *   prs: { number: number, state: string, head: string, sha: string, closes: number[] }[],
  *   assigned: number[],
+ *   open: number[],
  *   here: { branch: string | null, dirty: boolean },
  * }} facts
  * @returns {{ verdict: "safe" | "ask" | "keep", kind: string, ref: string, reason: string }[]}
  */
-export function classify({ base, worktrees, branches, prs, assigned, here }) {
+export function classify({ base, worktrees, branches, prs, assigned, open, here }) {
   const prFor = (name) => prs.find((p) => p.head === name);
 
   const branchVerdict = (b) => {
@@ -76,9 +77,11 @@ export function classify({ base, worktrees, branches, prs, assigned, here }) {
         : ["ask", `merged in #${pr.number}, but a copy has commits the merge lacks`];
     }
     if (pr) return ["ask", `pull request #${pr.number} closed without merging`];
-    return b.ahead === 0
-      ? ["safe", `no commits beyond ${base}, an abandoned claim`]
-      : ["keep", `${b.ahead} commit(s) beyond ${base} and no pull request`];
+    if (b.ahead > 0) return ["keep", `${b.ahead} commit(s) beyond ${base} and no pull request`];
+    const n = Number(b.name.match(CLAIM)?.[1]);
+    if (assigned.includes(n)) return ["ask", `your claim on open issue #${n}; removing gives the issue up`];
+    if (open.includes(n)) return ["keep", `a claim on open issue #${n}`];
+    return ["safe", `no commits beyond ${base}, and no open issue`];
   };
 
   const out = [];
@@ -94,7 +97,7 @@ export function classify({ base, worktrees, branches, prs, assigned, here }) {
   }
   for (const n of assigned) {
     const held = branches.some((b) => b.name.match(CLAIM)?.[1] === String(n)) || prs.some((p) => p.state === "OPEN" && p.closes.includes(n));
-    if (!held) out.push({ verdict: "ask", kind: "assignment", ref: `#${n}`, reason: "assigned to you with no branch or open pull request" });
+    if (!held) out.push({ verdict: "ask", kind: "assignment", ref: `#${n}`, reason: "your claim, with no branch or open pull request; removing gives the issue up" });
   }
   return out;
 }
@@ -151,11 +154,12 @@ export function gather(run = capture) {
       ahead: Math.max(...[b.local, b.remote].filter(Boolean).map((sha) => Number(sh("git", ["rev-list", "--count", `origin/${base}..${sha}`]).trim()))),
     }));
   const assigned = json("gh", ["issue", "list", "--assignee", "@me", "--state", "open", "--limit", "200", "--json", "number"]).map((i) => i.number);
+  const open = json("gh", ["issue", "list", "--state", "open", "--limit", "1000", "--json", "number"]).map((i) => i.number);
   const here = {
     branch: sh("git", ["branch", "--show-current"], { cwd: main }).trim() || null,
     dirty: sh("git", ["status", "--porcelain"], { cwd: main }).trim() !== "",
   };
-  return { base, worktrees, branches, prs, assigned, here };
+  return { base, worktrees, branches, prs, assigned, open, here };
 }
 
 if (process.argv[1] === fileURLToPath(import.meta.url)) {

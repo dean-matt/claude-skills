@@ -7,7 +7,11 @@ the same ref and GitHub refuses it with `Reference already exists (HTTP 422)`.
 
 ```bash
 n=<n>; base=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
-if git ls-remote --exit-code --heads origin "*/$n-*" >/dev/null; then echo held; else
+me=$(gh api user --jq .login)
+b=$(git ls-remote --heads origin "*/$n-*" | sed 's|.*refs/heads/||' | head -1)
+if [ -n "$b" ]; then
+  gh issue view "$n" --json assignees --jq '[.assignees[].login] | join(", ")'
+else
   slug=$(gh issue view "$n" --json title --jq '.title | ascii_downcase | [scan("[a-z0-9]+")][0:5] | join("-")')
   b="${type:-feat}/$n-${slug:-issue}"
   sha=$(gh api "repos/{owner}/{repo}/git/ref/heads/$base" --jq .object.sha)
@@ -16,8 +20,10 @@ if git ls-remote --exit-code --heads origin "*/$n-*" >/dev/null; then echo held;
 fi
 ```
 
-`type` is `fix`, `feat`, `chore` or the repository's own prefix. `held` or a 422 means someone
-holds it: take the next issue, or stop and name the holder.
+`type` is `fix`, `feat`, `chore` or the repository's own prefix. A 422 means another session
+created the branch first: someone holds it. An existing branch prints the assignees. Only `$me`
+means the claim is yours from a run that stopped: resume on `$b`. Anyone else means they hold it:
+take the next issue, or stop and name the holder.
 
 ## Open the worktree
 
@@ -32,9 +38,11 @@ command from `setup` inside the worktree. Link untracked local state the build n
 data directory, `.env`) with `ln -sfn`; never link a database two agents would write. Enter with
 `cd`, not a harness worktree tool.
 
-## Release a claim no pull request followed
+## Give up a claim
 
-Delete the branch only if neither copy is ahead of the base; assign yourself off the issue.
+Only when the user says to give the issue up; a stopped run keeps its claim
+([`claim.md`](../../issue/references/claim.md#release)). Delete the branch only if neither copy
+is ahead of the base, unassign yourself, then move the card back to **Todo**.
 
 ```bash
 [ "$(gh api "repos/{owner}/{repo}/compare/$base...$b" --jq .ahead_by)" = 0 ] &&

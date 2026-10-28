@@ -26,17 +26,18 @@ needs nothing more.
 
 ## Release
 
-Release when the run's work on the issue ends and nothing continues it: a stage that ran on its
-own and finished, or the user chose to stop. Unassign and move the card back to **Todo**
-([`board.md`](../../setup/references/board.md#move-a-card)):
+A claim holds until the issue moves on: [`open-pr`](../../open-pr/SKILL.md) moves the card to
+**In Review** and [`merge-pr`](../../merge-pr/SKILL.md) to **Done**. A stop never releases it: not
+a failure, a review cap, an Open question, a declined question, or the user choosing to stop. The
+issue stays assigned and **In Progress**, so no one else can take it while the holder is slow to
+answer, and [`pick-issue`](../../pick-issue/SKILL.md) resumes it for the holder.
+
+Release only when the holder says to give the issue up. Unassign and move the card back to
+**Todo** ([`board.md`](../../setup/references/board.md#move-a-card)):
 
 ```bash
 gh issue edit <n> --remove-assignee @me
 ```
 
-Then run the board move with status `Todo`.
-
-**Keep the claim** when the run stops waiting on the user: the design cap stop, an Open question
-awaiting an answer. The work is in flight, so the issue stays assigned and **In Progress**, and
-[`pick-issue`](../../pick-issue/SKILL.md) resumes it. Also keep it when `build` follows in the
-run; `build` adds its branch.
+Then run the board move with status `Todo`. A `build` claim also deletes its empty branch:
+[`claim-and-worktree.md`](../../build/references/claim-and-worktree.md#give-up-a-claim).

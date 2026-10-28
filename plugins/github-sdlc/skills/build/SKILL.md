@@ -30,8 +30,8 @@ Ask only if the request does not say:
    pipeline from [`issue`](../issue/SKILL.md) or build as written (write the approach, get
    approval, then build); in autonomous mode stop and report. Check every number or shape the
    issue states against the code.
-3. **Claim** by creating the branch, which a second session cannot. Never use
-   `gh issue develop`, which succeeds twice.
+3. **Claim** by creating the branch, which a second session cannot, or resume your own from a
+   stopped run. Never use `gh issue develop`, which succeeds twice.
    See [`references/claim-and-worktree.md`](references/claim-and-worktree.md).
 4. **Mark it In Progress** on the board ([`board.md`](../setup/references/board.md)), if configured.
 5. **Follow the design.** The Technical Design is the plan; the Test Design lists the tests, by
@@ -54,9 +54,9 @@ Stop and report, never forcing, when the issue is held, an edit appears that thi
 make (a second driver), the check fails twice for a reason you cannot fix, or the issue needs the
 user's decision. A second bug found on the way becomes its own issue.
 
-A run that stops after the claim and before a pull request opens releases the claim
-([`references/claim-and-worktree.md`](references/claim-and-worktree.md)). Close the worktree when
-the run ends; the branch and any pull request stand.
+A stop keeps the claim: the branch, the assignment and the **In Progress** card stand, so the
+issue stays yours ([`claim.md`](../issue/references/claim.md#release)). Close the worktree when
+the run ends; push any commits first.
 
 ## Report
 

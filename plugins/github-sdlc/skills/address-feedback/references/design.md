@@ -6,10 +6,10 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
 - **Source of items:** the numbered findings in the stage's latest `<!-- design-pass:<stage> -->`
   comment.
 - **Claim first,** per [`claim`](../../issue/references/claim.md), before the first edit.
-- **Applying:** edit only that stage's section, inside its `<details open>` wrapper with the blank
-  lines kept. Re-read the issue first and write the whole body back, so a concurrent edit
-  elsewhere survives. Editing a section clears that stage's `review-passed` and every later
-  stage's. Save the section as it stood and as written to
+- **Applying:** edit only that stage's section, or both sections for a combined technical stage,
+  inside its `<details open>` wrapper with the blank lines kept. Re-read the issue first and write
+  the whole body back, so a concurrent edit elsewhere survives. Editing a section clears that stage's `review-passed` and every later
+  stage's. Save what you edit as it stood and as written to
   `$(git rev-parse --git-common-dir)/github-sdlc/<n>-<stage>.before.md` and `.after.md`, so the
   next pass verifies the edits alone.
 - **Never add a criterion to answer a finding.** Reword, tighten or merge existing ones, or move a

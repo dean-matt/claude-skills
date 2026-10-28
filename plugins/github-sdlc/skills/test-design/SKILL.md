@@ -17,8 +17,9 @@ name the missing stage.
 
 ## Steps
 
-1. Read the criteria and the Technical Design. For a `**Size:** small` design, write one case per
-   criterion unless a boundary or failure path needs its own.
+1. Read the criteria and the Technical Design. At `medium` or `low` risk,
+   [`technical-design`](../technical-design/SKILL.md) wrote this section and its review covered
+   it: stop. Steps 2–5 are what it followed.
 2. Write one line per case, starting with the AC it covers, wrapped per
    [`shape.md`](../issue/references/shape.md#foldable-sections):
 

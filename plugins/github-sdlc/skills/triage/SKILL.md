@@ -19,8 +19,9 @@ Shape, types and the pipeline: [`../issue/references/shape.md`](../issue/referen
 3. **Fill gaps** without rewriting the reporter's words, taking what you write through
    [`technical-writing`](../technical-writing/SKILL.md): ask for a missing reproduction, and add
    an unticked Open question where a root cause or decision is unknown.
-4. **Bug:** propose a `severity:` label from the repository's rule for critical
-   ([`setup`](../setup/SKILL.md) records it) and confirm it with the user. Severity never
+4. **Bug:** propose a `severity:` label on the [scale](../setup/references/severity.md), using the
+   repository's rule for critical ([`setup`](../setup/SKILL.md) records it), and confirm it with
+   the user. `severity:info` means it is not a defect. Severity never
    reorders the queue.
 5. **Area:** apply an existing `area:*` label that fits. Never invent one.
 6. **Milestone and rank:** propose a milestone; the user chooses. An issue with no milestone is

@@ -19,6 +19,8 @@ The labels, their colors and the commands that create them are in
   a change a user can see, so no heading means no stage.
 - **technical** and **test** for every type except a spike. A docs or trivial issue writes
   `n/a — <reason>`, which `review-design` passes without a review pass.
+- At `medium` or `low` change [risk](../../setup/references/severity.md), `technical-design` writes
+  the test section too, and one technical review covers both and sets both stages' labels.
 - A **spike** needs the criteria stage alone.
 
 ## Gates

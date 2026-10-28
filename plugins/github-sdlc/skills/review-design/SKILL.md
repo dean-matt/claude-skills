@@ -18,6 +18,10 @@ A technical or test stage whose section is the single line `n/a — <reason>` ha
 review: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`, post nothing, dispatch
 nothing, and take the next stage. Never skip criteria or ui.
 
+A technical section whose `**Risk:**` line reads `medium` or `low` carries the test section with
+it. Review both in one pass, with both checklists, as the technical stage, and set both stages'
+result labels from that pass.
+
 ## 2. Dispatch
 
 Use a fresh `github-sdlc:design-auditor` agent for every pass.
@@ -76,6 +80,8 @@ Open each finding with its severity in bold, then the defect and what it costs:
 | `medium` | Would cause rework or duplicated code, breaks a rule in the shape, or leaves a decision a builder would have to guess | Yes |
 | `low` | Tidiness: wording, an incomplete list, an order that misleads nobody | No |
 | `info` | A note or taste call, reported once | No |
+
+The levels are the plugin's [scale](../setup/references/severity.md); this table applies it to a pass.
 
 Calibrate: a blocking finding names the bug, failed check, rework, rule or guessed decision it
 causes; a finding that cannot is `low` or `info`. Report a defect once, and raise nothing in a

@@ -65,6 +65,8 @@ the defect and its cost:
 | `low` | Naming or a small clarity issue | No |
 | `info` | A note or taste call, reported once | No |
 
+The levels are the plugin's [scale](../setup/references/severity.md); this table applies it to a pass.
+
 Calibrate: a blocking finding names the bug, rule, criterion or test it concerns; a finding that
 cannot is `low` or `info`. Report a defect once: skip one an earlier pass raised and a reply
 answered, and in a verify or final pass raise nothing the diff did not already hold unless a fix

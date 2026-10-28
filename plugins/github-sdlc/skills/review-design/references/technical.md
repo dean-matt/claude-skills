@@ -2,9 +2,10 @@
 
 Stage: technical. Reads the `## Technical Design` section against the criteria and the code.
 
-A section opening `**Size:** small` is held to the size rule in
-[`technical-design`](../../technical-design/SKILL.md): one the change outgrows is a `medium`.
-Review only the files it names and their callers; skip alternatives and risks it need not state.
+The section opens with a `**Risk:**` line on the [scale](../../setup/references/severity.md).
+A missing one is a `medium`; one below what the design touches is a `high`. At `medium` or
+`low`, run every check on the files it names and their callers, and review the test section
+with [`test.md`](test.md) in the same pass.
 
 - The files, symbols, tools, collections and conventions it cites exist. Check them in the code; an invented one is
   a `critical`.

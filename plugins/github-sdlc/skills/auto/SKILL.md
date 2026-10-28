@@ -1,6 +1,6 @@
 ---
 name: auto
-description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build (which includes the pull request review) and merge-pr per issue in fresh subagents, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
+description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build (which includes the pull request review) and merge-pr's gate per issue in fresh subagents and merge in this session, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
 argument-hint: "[--issue <n>] [--count <n>] [--deadline <2h>]"
 ---
 
@@ -78,11 +78,14 @@ issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s repor
 **3. Merge.** Dispatch a fresh subagent, since the agent that wrote the code is the worst reader
 of a gate judging its own work. Its prompt is exactly this, with the number substituted:
 
-> Invoke the `github-sdlc:merge-pr` skill in autonomous mode for pull request `<pr>`. Report the merge
-> commit, or the condition that stopped you.
+> Invoke the `github-sdlc:merge-pr` skill with `--gate-only` for pull request `<pr>`. Report
+> `gate passed at <sha>`, or the condition that stopped you.
 
 Add nothing: no review commentary, no earlier denial. `merge-pr` runs the gate; nothing here runs
-it first. Where the report names a protected path, a blocking decline, an unconfirmed deviation or
+it first. On `gate passed at <sha>`, run `merge-pr`'s *Merge, then clean up* yourself with that
+`<sha>`: the merge belongs to the session whose user ran `auto`, never to a subagent.
+
+Where the report names a protected path, a blocking decline, an unconfirmed deviation or
 the label, add `needs-user` to the issue while you ask, and remove it once the user answers
 ([`claim`](../issue/references/claim.md#waiting-on-the-user)). When the user answers in this conversation, run [`signoff`](../signoff/SKILL.md)
 yourself; never relabel and dispatch again, whose subagent would merge on a relayed answer. Then

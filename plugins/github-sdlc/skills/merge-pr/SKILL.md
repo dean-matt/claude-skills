@@ -1,7 +1,7 @@
 ---
 name: merge-pr
 description: Carry one reviewed pull request to the default branch — raise the version if the repository opted in, wait on the checks, run the merge gate, squash-merge, delete the branch and its worktree, move the board to Done, and leave the checkout current. Use when asked to merge, land or ship a pull request. Stops and names the condition where the gate fails.
-argument-hint: "<pr-number> [--autonomous]"
+argument-hint: "<pr-number> [--autonomous | --gate-only]"
 ---
 
 # Merging a pull request
@@ -67,7 +67,8 @@ A rerun keeps the head and its red checks; the sleep lets it show pending first.
 node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/merge-gate.mjs" "$n"
 ```
 
-It prints each condition as `pass` or `FAIL` with detail. Exit 0: merge. Otherwise name each
+It prints each condition as `pass` or `FAIL` with detail. Exit 0: merge the head it judged,
+`<sha>` (`git rev-parse HEAD` in the worktree, or `gh pr view "$n" --json headRefOid`). Otherwise name each
 failure and stop.
 
 - Behind the base: [`references/behind-branch.md`](references/behind-branch.md).
@@ -88,7 +89,7 @@ discard uncommitted work; stop on that refusal and never force it.
 
 ```bash
 git worktree remove .claude/worktrees/<issue> && git worktree prune
-gh pr merge "$n" --squash --delete-branch
+gh pr merge "$n" --squash --delete-branch --match-head-commit <sha>
 git checkout <default-branch> && git pull --ff-only
 ```
 
@@ -104,6 +105,9 @@ Pass `--autonomous`.
 
 - **Interactive** (default): confirm once before `gh pr merge`, since it cannot be undone from here.
 - **Autonomous**: merge when the gate exits 0, and stop on the first condition it names.
+- **Gate only**: everything before *Merge, then clean up*, then stop. Report `gate passed at
+  <sha>` or the condition that stopped it. `auto` uses this from a subagent and merges in the
+  session the user started, whose request authorizes the merge.
 
 On "API rate limit exceeded" stop and wait for the reset; never retry in a loop.
 

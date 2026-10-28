@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { PASS_MARKER, VERIFY_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
-import { doneThreads, staleDesign, staleReviews, tidy } from "./tidy.mjs";
+import { doneThreads, passedDesign, staleDesign, staleReviews, tidy } from "./tidy.mjs";
 
 const c = (node_id, body) => ({ node_id, body });
 
@@ -82,6 +82,23 @@ test("tidy minimizes through GraphQL and reports the count", () => {
   assert.equal(tidy(["issue", "7", "ui"], run), "issue #7 ui: minimized 1 earlier comment(s)");
   assert.ok(calls.some((l) => l.includes("minimizeComment") && l.includes("id=p1")));
   assert.ok(!calls.some((l) => l.includes("id=p2")));
+});
+
+test("design: a passed stage hides every pass, declines too, but not one held for the user", () => {
+  const comments = [
+    c("p1", "<!-- design-pass:criteria -->\n1. **medium** — x\n   **Declined** — no"),
+    c("p2", "<!-- design-pass:criteria -->\n1. **high** — y\n   **Held for the user** — new criterion"),
+    c("human", "looks right"),
+    c("ui", "<!-- design-pass:ui -->\n1. **low** — z"),
+    c("p3", "<!-- design-pass:criteria -->\n"),
+  ];
+  assert.deepEqual(passedDesign(comments, "criteria"), ["p1", "p3"]);
+});
+
+test("tidy --passed minimizes the last pass too", () => {
+  const run = (file, args) =>
+    args.includes("--slurp") ? JSON.stringify([[c("p1", "<!-- design-pass:ui -->"), c("p2", "<!-- design-pass:ui -->")]]) : "{}";
+  assert.equal(tidy(["issue", "7", "ui", "--passed"], run), "issue #7 ui: minimized 2 passed comment(s)");
 });
 
 test("tidy refuses a call it does not understand", () => {

@@ -25,7 +25,8 @@ Add `needs-user` to `<n>` before each `AskUserQuestion` below and remove it once
     again if it still fails.
   - **Accept as it stands:** only when the last pass found no `critical`. Do it yourself on the
     user's word, never in a subagent: comment quoting the accepted findings, add
-    `<prefix>:review-passed`, remove `<prefix>:changes-requested`, continue.
+    `<prefix>:review-passed`, remove `<prefix>:changes-requested`, hide the passes as
+    [`review-design`](../../review-design/SKILL.md#5-post-and-label) does, continue.
   - **Stop here.**
 
 Stop when the user declines a question or chooses to stop (quote the question or findings), or when

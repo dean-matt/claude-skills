@@ -99,7 +99,12 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/review-design/scripts/post-pass.mjs" <n> <sta
 
 Never post a pass with `gh issue comment`. A hiding failure is reported and never undoes the pass.
 
-- No `critical`, `high` or `medium`: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`.
+- No `critical`, `high` or `medium`: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`,
+  then hide the stage's passes; one holding a finding for the user stays:
+
+  ```bash
+  node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" issue <n> <stage> --passed
+  ```
 - Any `critical`, `high` or `medium`: add `<prefix>:changes-requested`, remove `<prefix>:review-passed`,
   then run [`address-feedback`](../address-feedback/SKILL.md) in design mode.
 

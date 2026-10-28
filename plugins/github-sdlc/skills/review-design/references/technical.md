@@ -2,6 +2,10 @@
 
 Stage: technical. Reads the `## Technical Design` section against the criteria and the code.
 
+A section opening `**Size:** small` is held to the size rule in
+[`technical-design`](../../technical-design/SKILL.md): one the change outgrows is a `medium`.
+Review only the files it names and their callers; skip alternatives and risks it need not state.
+
 - The files, symbols, tools, collections and conventions it cites exist. Check them in the code; an invented one is
   a `critical`.
 - The approach meets **every** criterion. Name any it does not.

@@ -26,6 +26,10 @@ heading. Otherwise stop and name the missing stage.
    - **Bug:** the **root cause** (where and why it fails, not where it shows, confirmed by
      reproducing it), the **fix** and why it removes the cause, and the **blast radius**:
      every caller of the broken code, found with a search, and what else could change.
+   - **Small:** at most three source files in one area, no stored-data change, no new
+     dependency, and no change to a shared component's or module's interface. Open the section
+     with `**Size:** small`, then the files and the approach in at most five bullets. Name a risk
+     or a rejected alternative only where one exists. A bug still states its root cause.
    - **Docs or trivial:** `n/a — <reason>`.
 3. **Add no requirement and restate nothing.** Refer to criteria by number. If the approach
    needs a decision that is the user's, or the root cause cannot be found, add an unticked

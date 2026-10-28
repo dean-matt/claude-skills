@@ -91,6 +91,12 @@ continue at step 4. Any other condition ends the run.
 merged; a subagent's report does not. A `state` other than `MERGED` stops the run. The count is
 of merges, not attempts.
 
+Time the issue, merged or stopped, and keep the output for the report:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/timing.mjs" <n> [<pr>]
+```
+
 ## Cleanup
 
 When the run ends for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in this
@@ -108,6 +114,8 @@ One line per issue attempted, in order:
   such as a second issue `build` filed
 - `#<n>` **stopped** — the pull request, the condition quoted from the skill that named it, and
   that the next run picks the same issue unless its readiness or rank changed
+
+Under each, the line `timing.mjs` printed, as it printed it.
 
 Close with why the run ended, and which branch, pull request and worktree remain after cleanup,
 read off disk and GitHub.

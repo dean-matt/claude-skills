@@ -20,14 +20,33 @@ nothing, and take the next stage. Never skip criteria or ui.
 
 ## 2. Dispatch
 
-Send the `github-sdlc:design-auditor` agent the issue number and stage only:
+Use a fresh `github-sdlc:design-auditor` agent for every pass.
+
+**Full pass:** the first pass of a loop, or any pass with no saved edit for the stage. Send the
+issue number and stage only:
 
 ```
 Review the <stage> stage of issue <n> with the github-sdlc:review-design checklist and return
 findings in the required format. Do not post, label, or edit anything.
 ```
 
-Use a fresh agent for every pass.
+**Verify pass:** a pass after [`address-feedback`](../address-feedback/references/design.md)
+saved the section before and after its edit. Diff the two, then send the diff's path:
+
+```bash
+d="$(git rev-parse --git-common-dir)/github-sdlc"
+diff -u "$d/<n>-<stage>.before.md" "$d/<n>-<stage>.after.md" > "$d/<n>-<stage>.diff"
+```
+
+```
+Verify the <stage> stage of issue <n>. The last design-pass comment holds the findings and their
+verdicts; <diff path> holds the edits that answer them. Check that each Applied finding is fixed
+and that each changed line holds up against the github-sdlc:review-design checklist and the code.
+Raise nothing in unchanged text. Return findings in the required format. Do not post, label, or
+edit anything.
+```
+
+Delete the three files once the pass returns.
 
 ## 3. The reviewer's criteria
 

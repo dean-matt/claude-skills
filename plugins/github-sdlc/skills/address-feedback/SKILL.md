@@ -24,7 +24,7 @@ The loop is the same; the references hold what differs.
    or `medium`.
    In pr mode, repeat fix and **verify** passes until a verify pass returns nothing blocking,
    then run one **full** pass. If it finds more, loop again. Stop after two full passes and let
-   the replies carry what remains. In design mode, every pass is a full pass of the stage.
+   the replies carry what remains. In design mode, the pass after an edit verifies the edits alone.
 6. **Tidy** in pr mode after each pass is answered and pushed. It hides earlier passes and
    verdict-only reviews, and resolves each thread whose last reply is `**Applied**` or
    `**Accepted**`. A `**Declined**` thread stays open until the user agrees. The last pass stays

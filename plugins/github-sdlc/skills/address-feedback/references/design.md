@@ -9,7 +9,9 @@ For one stage of an issue: criteria, ui, technical or test. Stages and gates:
 - **Applying:** edit only that stage's section, inside its `<details open>` wrapper with the blank
   lines kept. Re-read the issue first and write the whole body back, so a concurrent edit
   elsewhere survives. Editing a section clears that stage's `review-passed` and every later
-  stage's.
+  stage's. Save the section as it stood and as written to
+  `$(git rev-parse --git-common-dir)/github-sdlc/<n>-<stage>.before.md` and `.after.md`, so the
+  next pass verifies the edits alone.
 - **Never add a criterion to answer a finding.** Reword, tighten or merge existing ones, or move a
   detail to the stage that owns it. A finding only a new criterion can meet is not applied: reply
   `**Held for the user**` and add an unticked Open question proposing it.

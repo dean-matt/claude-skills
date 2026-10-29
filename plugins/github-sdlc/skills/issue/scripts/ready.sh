@@ -4,7 +4,8 @@
 #   ready.sh [--design] <issue> [owner/repo]
 #
 # Prints "ready" and exits 0; or one "not ready: <reason>" line per failure and exits 1.
-# Blockers, sub-issues, open questions and state are checked for every issue. The stage labels
+# Blockers, sub-issues, open questions and state are checked for every issue. The risk:<level>
+# label sets the stages: info, low or medium needs the criteria stage alone. The stage labels
 # are checked only for an issue in the pipeline, meaning one carrying a *-agent: label. An issue
 # that passes the first checks but is not in the pipeline prints "not in the pipeline" and
 # exits 2, so a caller can offer to run the pipeline or build from the issue as written.
@@ -39,9 +40,11 @@ gap() { stage_gaps="${stage_gaps:+$stage_gaps; }$1"; }
 
 type=$(printf '%s\n' "$labels" | awk -F: '$1 == "type" && t == "" { t = $2 } END { print t }')
 
+risk=$(printf '%s\n' "$labels" | sed -n 's/^risk:\([a-z]*\)$/\1/p' | head -n 1)
+
 if [ "$pipeline" -eq 1 ]; then
   stages="criteria"
-  if [ "$type" != spike ]; then
+  if [ "$type" != spike ] && ! [[ "$risk" =~ ^(info|low|medium)$ ]]; then
     body_has '^## UI/UX Design\|<summary><h2>UI/UX Design</h2>' && stages="$stages ui"
     stages="$stages technical test"
   fi
@@ -49,6 +52,7 @@ if [ "$pipeline" -eq 1 ]; then
     has "$s-agent:changes-requested" && gap "$s review has findings to address"
     has "$s-agent:review-passed" || gap "$s has not passed review"
   done
+  [ "$type" != spike ] && [ -z "$risk" ] && ! has technical-agent:review-passed && gap "no risk: label"
 fi
 
 open_questions=$(printf '%s\n' "$body" | awk '

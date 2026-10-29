@@ -1,7 +1,8 @@
 # The issue pipeline
 
-An issue passes four stages in order. Each stage is written by one skill, then reviewed by
-[`review-design`](../../review-design/SKILL.md) before the next may start.
+An issue passes up to four stages in order; its risk decides how many. Each stage is written by
+one skill, then reviewed by [`review-design`](../../review-design/SKILL.md) before the next may
+start.
 
 | Stage | Written by | Writes | Agent label prefix |
 |---|---|---|---|
@@ -15,12 +16,16 @@ The labels, their colors and the commands that create them are in
 
 ## Which stages an issue needs
 
-- **ui** only when the body has a UI/UX Design heading. `issue` adds the heading only for
-  a change a user can see, so no heading means no stage.
-- **technical** and **test** for every type except a spike. A docs or trivial issue writes
-  `n/a — <reason>`, which `review-design` passes without a review pass.
-- At `medium` or `low` change [risk](../../setup/references/severity.md), `technical-design` writes
-  the test section too, and one technical review covers both and sets both stages' labels.
+The issue's `risk:<level>` label ([scale](../../setup/references/severity.md)) decides:
+
+- **`info`, `low` or `medium`:** the criteria stage alone. `build` plans from the criteria and the
+  code, and the pull request review checks the result. Most issues take this path.
+- **No `risk:` label**, as on an issue written before the rule: the pipeline rates it first, and
+  the criteria review checks it. An issue whose technical stage already passed keeps its design
+  and needs none.
+- **`high` or `critical`:** every design stage. **ui** runs only when the body has
+  a UI/UX Design heading, which `issue` adds only for a change a user can see. **technical** and
+  **test** run for every type except a spike.
 - A **spike** needs the criteria stage alone.
 
 ## Gates
@@ -36,7 +41,7 @@ The labels, their colors and the commands that create them are in
     from the issue, the code and Out of scope, taking the narrower answer where they leave it open.
     Write `- [x] <question> — Decided (auto): <answer>, because <reason>`.
   - **Needs a person** (changes stored data or a migration, behavior a user will notice, scope
-    beyond the title, or a split into more issues; or only the user can know it, such as a credential, price or deadline): leave
+    beyond the title, a split into more issues, or a lower risk than the criteria stage rated; or only the user can know it, such as a credential, price or deadline): leave
     it unticked and return it with a recommended answer and alternatives. The caller asks the
     user and writes `- [x] <question> — Answered: <answer>`.
 

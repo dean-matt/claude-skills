@@ -18,10 +18,6 @@ A technical or test stage whose section is the single line `n/a — <reason>` ha
 review: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`, post nothing, dispatch
 nothing, and take the next stage. Never skip criteria or ui.
 
-A technical section whose `**Risk:**` line reads `medium` or `low` carries the test section with
-it. Review both in one pass, with both checklists, as the technical stage, and set both stages'
-result labels from that pass.
-
 ## 2. Dispatch
 
 Use a fresh `github-sdlc:design-auditor` agent for every pass.

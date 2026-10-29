@@ -17,9 +17,7 @@ name the missing stage.
 
 ## Steps
 
-1. Read the criteria and the Technical Design. At `medium` or `low` risk,
-   [`technical-design`](../technical-design/SKILL.md) wrote this section and its review covered
-   it: stop. Steps 2–5 are what it followed.
+1. Read the criteria and the Technical Design.
 2. Write one line per case, starting with the AC it covers, wrapped per
    [`shape.md`](../issue/references/shape.md#foldable-sections):
 

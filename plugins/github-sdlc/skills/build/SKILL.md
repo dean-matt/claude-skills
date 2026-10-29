@@ -21,7 +21,7 @@ Ask only if the request does not say:
 
 1. **Choose.** With no issue named, invoke [`pick-issue`](../pick-issue/SKILL.md).
 2. **Check it is ready before claiming it.** Read the issue in full: criteria, Out of scope (a
-   fence), and the UI/UX, Technical and Test Design.
+   fence), its `risk:` label, and the UI/UX, Technical and Test Design where it has them.
    ```bash
    "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/ready.sh" <n>
    ```
@@ -35,7 +35,11 @@ Ask only if the request does not say:
    See [`references/claim-and-worktree.md`](references/claim-and-worktree.md).
 4. **Mark it In Development** on the board ([`board.md`](../setup/references/board.md)), if configured.
 5. **Follow the design.** The Technical Design is the plan; the Test Design lists the tests, by
-   AC. An issue built as written follows the approach approved in step 2.
+   AC. An issue built as written follows the approach approved in step 2. An issue whose risk
+   skipped the design stages has criteria alone: search the code every criterion reaches (each
+   caller, view and route), plan the smallest change, and write a test per criterion that fails
+   without it. Where the code shows the risk is higher than rated (stored data, a migration,
+   auth, a shared interface), stop: the issue needs its design stages.
 6. **Implement** the smallest change that meets the criteria, with its tests. Where the code
    makes the design wrong, depart from it and note each departure and why, for the pull
    request's Deviations. Never edit the issue. Update docs the change made stale in the same

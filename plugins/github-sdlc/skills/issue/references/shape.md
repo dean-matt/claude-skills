@@ -70,7 +70,7 @@ One `type:` label per issue.
 | `type:feat` | The full shape |
 | `type:fix` | The full shape with Reproduction; Technical Design is the root cause, the fix and the blast radius; Test Design starts with the regression case |
 | `type:chore` | The full shape; a criterion states that behavior does not change, and Test Design names the existing tests that prove it |
-| `type:docs` | Summary, Out of scope, criteria; the design sections read `n/a — <reason>` |
+| `type:docs` | Summary, Out of scope, criteria; risk `info` |
 | `type:spike` | Summary, Open questions, Out of scope; criteria are "a recommendation is written and linked"; no design sections |
 
 A bug also carries one `severity:` label, set at triage.

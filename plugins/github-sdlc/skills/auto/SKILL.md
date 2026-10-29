@@ -103,6 +103,7 @@ Time the issue, merged or stopped, and keep the output for the report:
 
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/timing.mjs" <n> [<pr>]
+node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/tokens.mjs" <n> [<pr>]
 ```
 
 ## Cleanup
@@ -123,7 +124,7 @@ One line per issue attempted, in order:
 - `#<n>` **stopped** — the pull request, the condition quoted from the skill that named it, and
   that the next run picks the same issue unless its readiness or rank changed
 
-Under each, the line `timing.mjs` printed, as it printed it.
+Under each, the lines `timing.mjs` and `tokens.mjs` printed, as they printed them.
 
 Close with why the run ended, and which branch, pull request and worktree remain after cleanup,
 read off disk and GitHub.

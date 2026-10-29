@@ -81,6 +81,11 @@ test("--criteria on an issue with criteria is ready", () => {
   assert.deepEqual(ready({ labels: L, body: AC }, "--criteria"), { code: 0, out: "ready" });
 });
 
+test("a folded Open questions section counts its unticked items", () => {
+  const body = `<details open>\n<summary><h2>Open questions</h2></summary>\n\n- [ ] which one?\n- [x] done\n\n</details>\n${AC}`;
+  assert.match(ready({ labels: L, body }).out, /1 open question/);
+});
+
 test("open questions end at a folded heading", () => {
   const body = "## Open questions\n- [x] done\n\n<details open>\n<summary><h2>Acceptance criteria</h2></summary>\n\n- [ ] AC1 check\n\n</details>\n";
   assert.deepEqual(ready({ labels: L, body }), { code: 0, out: "ready" });

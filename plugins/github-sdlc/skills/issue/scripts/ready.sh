@@ -30,7 +30,7 @@ gap() { gaps="${gaps:+$gaps; }$1"; }
 has_criteria=$([ "$(printf '%s\n' "$body" | grep -c 'AC1\b')" -gt 0 ] && echo 1 || echo 0)
 
 open_questions=$(printf '%s\n' "$body" | awk '
-  /^## |<summary><h2>/{inq = ($0 == "## Open questions"); next}
+  /^## |<summary><h2>/{inq = ($0 == "## Open questions" || index($0, "<summary><h2>Open questions</h2>") > 0); next}
   inq && /^- \[ \]/{n++}
   END{print n+0}')
 if [ "$open_questions" -ne 0 ]; then

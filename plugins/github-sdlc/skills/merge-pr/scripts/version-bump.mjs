@@ -3,6 +3,7 @@
  * raises one (its CLAUDE.md or CONTRIBUTING.md), so nothing here asks whether to.
  *
  *   node version-bump.mjs <pr> [--file package.json] [--feat minor] [--other patch] [--skip <glob>]...
+ *   node version-bump.mjs --title "<pull request title>" [flags]   before the pull request exists
  *
  * The defaults are the usual convention: a `feat` title raises the minor and every other type
  * the patch, over the default branch's version, once; a pull request changing only docs and
@@ -71,16 +72,18 @@ if (process.argv[1] !== undefined && import.meta.filename === realpathSync(proce
       feat: { type: "string" },
       other: { type: "string" },
       skip: { type: "string", multiple: true },
+      title: { type: "string" },
     },
   });
   const pr = positionals[0];
-  if (!/^\d+$/.test(pr ?? "")) {
-    console.error("usage: node version-bump.mjs <pr> [--file f] [--feat kind] [--other kind] [--skip glob]...");
+  const { title, ...given } = values;
+  if (!/^\d+$/.test(pr ?? "") && title === undefined) {
+    console.error("usage: node version-bump.mjs <pr> | --title <title> [--file f] [--feat kind] [--other kind] [--skip glob]...");
     process.exit(2);
   }
-  const rules = Object.fromEntries(Object.entries(values).filter(([, v]) => v !== undefined));
+  const rules = Object.fromEntries(Object.entries(given).filter(([, v]) => v !== undefined));
   const file = rules.file ?? DEFAULTS.file;
-  const meta = JSON.parse(capture("gh", ["pr", "view", pr, "--json", "title,author"]));
+  const meta = title === undefined ? JSON.parse(capture("gh", ["pr", "view", pr, "--json", "title,author"])) : { title };
   if (isBot(meta.author)) {
     console.log("no bump (opened by a bot)");
     process.exit(0);

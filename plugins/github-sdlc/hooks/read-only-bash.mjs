@@ -1,10 +1,10 @@
 /**
- * PreToolUse hook for the review agents: rejects a Bash command that writes to the
+ * PreToolUse hook for the review agent: rejects a Bash command that writes to the
  * repository, the remote or GitHub, so a review pass cannot finish the run it reviews.
  *
  * Plugin agents ignore `hooks` in their own frontmatter, so this runs for every Bash call in a
- * session (one short Node process each) and acts only where the payload's `agent_type` names `pr-auditor` or
- * `design-auditor`. Any other caller, and any payload it cannot read, passes: a hook that
+ * session (one short Node process each) and acts only where the payload's `agent_type` names
+ * `pr-auditor`. Any other caller, and any payload it cannot read, passes: a hook that
  * blocked what it could not identify would break ordinary sessions. That makes this a fence
  * for an agent drifting into the next step, not one for an agent working around it.
  *
@@ -49,7 +49,7 @@ export function rejects(command) {
 
 /** Whether `agentType` names a review agent, bare or plugin-scoped (`github-sdlc:pr-auditor`). */
 export function isAuditor(agentType) {
-  return /(^|:)(pr|design)-auditor$/.test(agentType ?? "");
+  return /(^|:)pr-auditor$/.test(agentType ?? "");
 }
 
 // ESM resolves symlinks and argv[1] does not, so comparing them raw fails open.

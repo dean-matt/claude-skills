@@ -73,8 +73,7 @@ Each line starts with its kind:
 | **Correction** | The issue's premise was wrong, and the change follows the real behavior | No |
 | **Narrowing** | Part of what the issue asked is deferred, and work remains. Link the issue that takes the rest. A criterion changed on the user's word is amended by [`signoff`](../../signoff/SKILL.md), never filed as an issue | Yes |
 | **Addition** | Something the issue did not authorize, such as a new dependency or wider scope | Yes |
-| **Technical Design**, **UI/UX Design**, **Test Design** | The build differed from that design section | No |
 
-A change to behavior an acceptance criterion states is never a design deviation: it is a
+A change to behavior an acceptance criterion states is a
 **Correction** only where the issue's premise was wrong, otherwise an **Addition**, which waits on
-the user. A line for a section that did not change is never written.
+the user.

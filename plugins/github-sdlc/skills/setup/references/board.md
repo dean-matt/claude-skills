@@ -7,7 +7,7 @@ each time; nothing is hard-coded.
 |---|---|
 | Triage | `triage`, on a new issue |
 | Todo | `triage`, when the issue is ready to pick |
-| In Design | a design stage, on claim |
+| In Design | `issue`, reshaping a claimed issue |
 | In Development | `build`, on claim |
 | In Review | `open-pr` |
 | Done | `merge-pr` |

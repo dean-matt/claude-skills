@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 # Check ranked candidates for readiness and name the first one worth taking.
 #
-#   next.sh [--design] <issue>...        or the numbers on stdin, one per line, in rank order
+#   next.sh [--criteria] <issue>...        or the numbers on stdin, one per line, in rank order
 #
 # Runs ready.sh ten candidates at a time and prints a line per candidate, in rank order:
-# "<n>: ready", "<n>: needs design: <why>" (--design only) or "<n>: not ready: <why>". Stops after
+# "<n>: ready", "<n>: needs criteria: <why>" (--criteria only) or "<n>: not ready: <why>". Stops after
 # the first batch holding a takeable issue and ends "take <n>" or "none". Takeable means ready,
-# or with --design also needs design. Needs `gh` and `jq`.
+# or with --criteria also needs criteria. Needs `gh` and `jq`.
 set -euo pipefail
 
 flag=""
-if [ "${1:-}" = --design ]; then flag=--design; shift; fi
+if [ "${1:-}" = --criteria ]; then flag=--criteria; shift; fi
 here=$(cd "$(dirname "$0")" && pwd)
 ready=${READY:-$here/../../issue/scripts/ready.sh}
 repo=${REPO:-$(gh repo view --json nameWithOwner --jq .nameWithOwner)}
@@ -28,7 +28,7 @@ for ((i = 0; i < ${#candidates[@]}; i += batch)); do
     xargs -P "$batch" -L1 bash -c "$(declare -f check); check \"\$@\"" _ "$ready" "$flag" |
     sort -n | cut -f2-)
   printf '%s\n' "$results"
-  first=$(printf '%s\n' "$results" | awk -F': ' '$2 == "ready" || $2 ~ /^needs design/ { print $1; exit }')
+  first=$(printf '%s\n' "$results" | awk -F': ' '$2 == "ready" || $2 ~ /^needs criteria/ { print $1; exit }')
   if [ -n "$first" ]; then echo "take $first"; exit 0; fi
 done
 echo none

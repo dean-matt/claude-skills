@@ -12,7 +12,7 @@ claims it.
 ## What to tell the user
 
 Progress lines name the issue by number and title, say what is being checked in plain words, and
-report the result. Keep the skill's terms (*Held*, `needs design`, `next.sh`) out of them:
+report the result. Keep the skill's terms (*Held*, `needs criteria`, `next.sh`) out of them:
 
 - `Checking #854 "Add dice history" is free to take (no other assignee, open PR or branch)…`
 - `#854 is free. Claiming it.`
@@ -66,13 +66,13 @@ stops at the first batch holding a takeable issue:
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" <n>...    # or the numbers on stdin
-"${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" --design <n>...
+"${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" --criteria <n>...
 ```
 
 It prints a line per candidate and ends `take <n>` or `none`. Skip `not ready` issues and report
-the reasons. With `--design`, an issue lacking passed stages, in no pipeline, or carrying an
-unticked Open question is `needs design` and takeable. Without it, an issue `ready.sh` calls
-`not in the pipeline` (exit 2) is taken only if the user agrees to build it as written.
+the reasons. With `--criteria`, an issue with no acceptance criteria or an unticked Open question is
+`needs criteria` and takeable. Without it, an issue `ready.sh` calls `no acceptance criteria`
+(exit 2) is taken only if the user agrees to build it as written.
 A parent is never ready (it has open sub-issues); its children are the work.
 
 ## Held
@@ -99,6 +99,6 @@ Pass an issue number to name one, or `--auto`.
 - **Interactive** (default when several qualify): show the top five with title, milestone and
   why any were skipped, checking *Held* on those five, and ask which to take.
 - **Auto**: take the first without asking; stop with the reason when none qualify. The `auto`
-  skill passes `--design`.
+  skill passes `--criteria`.
 
 On "API rate limit exceeded", stop and report; do not retry in a loop.

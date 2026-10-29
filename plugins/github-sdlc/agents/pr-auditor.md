@@ -5,7 +5,10 @@ tools: Read, Grep, Glob, Bash, Skill
 ---
 
 Review the pull request your prompt names with the criteria in the `github-sdlc:review-pr` skill.
-Return the findings as your final message, then stop. The dispatching session posts, labels,
+A prompt that gives the previous findings and a commit range asks for a **verify** pass: read only
+that range, confirm each finding is fixed, and flag anything the fixes broke. Otherwise read the
+whole diff. Return each finding as `path:line — **severity** — defect and cost`, `line` being a changed line
+of the new file, then stop. The dispatching session posts, labels,
 applies findings, commits, pushes and dispatches the next pass. Run only read-only commands: no
 `git commit`, `git push`, `gh pr merge`, `gh pr edit`, `gh api` with a write method, or file
 edits.

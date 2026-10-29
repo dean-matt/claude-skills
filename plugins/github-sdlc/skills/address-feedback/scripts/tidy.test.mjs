@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { PASS_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
-import { doneThreads, staleDesign, staleReviews, tidy } from "./tidy.mjs";
+import { PASS_MARKER, VERIFY_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
+import { doneThreads, passedDesign, staleDesign, staleReviews, tidy } from "./tidy.mjs";
 
 const c = (node_id, body) => ({ node_id, body });
 
@@ -10,25 +10,25 @@ test("design: every pass before the last is stale, the last pass and what follow
     c("p1", "<!-- design-pass:criteria -->\n1. **critical** — x\n   **Applied** — fixed"),
     c("r1", "Replies to design pass 1 (criteria):\n1. **Applied**"),
     c("human", "looks right to me"),
-    c("p2", "<!-- design-pass:criteria -->\n1. **warning** — y\n   **Applied** — fixed"),
+    c("p2", "<!-- design-pass:criteria -->\n1. **high** — y\n   **Applied** — fixed"),
     c("r2", "Replies to design pass 2 (criteria):\n1. **Applied**"),
   ];
   assert.deepEqual(staleDesign(comments, "criteria"), ["p1", "r1"]);
 });
 
-test("design: a declined comment waits on nobody, a declined warning does", () => {
+test("design: a declined low waits on nobody, a declined high does", () => {
   const taste = [
-    c("p1", "<!-- design-pass:criteria -->\n1. **comment** — x\n   **Declined** — taste"),
-    c("p2", "<!-- design-pass:criteria -->\n1. **comment** — z"),
+    c("p1", "<!-- design-pass:criteria -->\n1. **low** — x\n   **Declined** — taste"),
+    c("p2", "<!-- design-pass:criteria -->\n1. **low** — z"),
   ];
   assert.deepEqual(staleDesign(taste, "criteria"), ["p1"]);
 });
 
 test("design: a pass that still holds a declined or held finding stays visible", () => {
   const comments = [
-    c("p1", "<!-- design-pass:criteria -->\n1. **warning** — x\n   **Declined** — out of scope"),
-    c("p2", "<!-- design-pass:criteria -->\n1. **warning** — y\n   **Held for the user** — new criterion"),
-    c("p3", "<!-- design-pass:criteria -->\n1. **comment** — z"),
+    c("p1", "<!-- design-pass:criteria -->\n1. **high** — x\n   **Declined** — out of scope"),
+    c("p2", "<!-- design-pass:criteria -->\n1. **high** — y\n   **Held for the user** — new criterion"),
+    c("p3", "<!-- design-pass:criteria -->\n1. **low** — z"),
   ];
   assert.deepEqual(staleDesign(comments, "criteria"), []);
 });
@@ -65,7 +65,7 @@ test("pr: only Applied and Accepted threads are resolved", () => {
       t("done", "**Applied** — renamed"),
       t("ok", "**Accepted** — keep it"),
       t("declined", "**Declined** — out of scope"),
-      t("open", "**warning** — no answer yet"),
+      t("open", "**high** — no answer yet"),
       t("already", "**Applied**", true),
     ]),
     ["done", "ok"],
@@ -84,6 +84,30 @@ test("tidy minimizes through GraphQL and reports the count", () => {
   assert.ok(!calls.some((l) => l.includes("id=p2")));
 });
 
+test("design: a passed stage hides every pass, declines too, but not one held for the user", () => {
+  const comments = [
+    c("p1", "<!-- design-pass:criteria -->\n1. **medium** — x\n   **Declined** — no"),
+    c("p2", "<!-- design-pass:criteria -->\n1. **high** — y\n   **Held for the user** — new criterion"),
+    c("human", "looks right"),
+    c("ui", "<!-- design-pass:ui -->\n1. **low** — z"),
+    c("p3", "<!-- design-pass:criteria -->\n"),
+  ];
+  assert.deepEqual(passedDesign(comments, "criteria"), ["p1", "p3"]);
+});
+
+test("tidy --passed minimizes the last pass too", () => {
+  const run = (file, args) =>
+    args.includes("--slurp") ? JSON.stringify([[c("p1", "<!-- design-pass:ui -->"), c("p2", "<!-- design-pass:ui -->")]]) : "{}";
+  assert.equal(tidy(["issue", "7", "ui", "--passed"], run), "issue #7 ui: minimized 2 passed comment(s)");
+});
+
 test("tidy refuses a call it does not understand", () => {
   assert.throws(() => tidy(["issue", "7"]), /usage/);
+});
+
+test("a verify pass is hidden once a later pass exists, and counts as the last pass", () => {
+  const r = (node_id, body) => ({ node_id, body });
+  const reviews = [r("a", `${PASS_MARKER}\nfull`), r("b", `${VERIFY_MARKER}\nfixes`), r("c", `${PASS_MARKER}\nfinal`)];
+  assert.deepEqual(staleReviews(reviews), ["a", "b"]);
+  assert.deepEqual(staleReviews(reviews.slice(0, 2)), ["a"]);
 });

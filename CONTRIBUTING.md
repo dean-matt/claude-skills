@@ -33,6 +33,9 @@ Conventions for working in `claude-skills`. What the repo is and how to install 
 - **`SKILL.md` short, supporting files deep.** Every line of `SKILL.md` costs tokens on every use.
   Keep when-to-use, the shape of the work and pointers; detail needed only sometimes goes in a
   supporting file.
+- **`github-sdlc` skills are cheap to run.** Every change serves the plugin's
+  [goals](plugins/github-sdlc/README.md#goals): few tokens, fast, work done once. Measure a change
+  that adds a dispatch, a review pass or a loop against that cost.
 - **`name:` matches the directory**, for plugin and skill alike. A mismatch silently stops the
   skill loading, and nothing in the tooling flags it.
 - **Name skills for the action, not the domain.** The plugin supplies the namespace:

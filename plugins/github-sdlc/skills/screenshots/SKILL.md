@@ -28,7 +28,9 @@ It posts to GitHub's `user-attachments` endpoint with the `gh` token and prints 
 once per file. It accepts PNG, JPEG, GIF, WebP, MP4 and MOV.
 
 The URL works for anyone holding it, even on a private repository. Confirm with the user before
-the first upload of a session, unless they asked for screenshots.
+the first upload of a session, unless they asked for screenshots or the run is autonomous:
+`auto`, or `build --autonomous`, authorizes uploads to the run's own pull request. Never leave a
+visible change without screenshots for want of a confirmation.
 
 The endpoint is unofficial. On failure, report the response and ask the user to drag the images
 into the pull request; never commit them as a workaround.

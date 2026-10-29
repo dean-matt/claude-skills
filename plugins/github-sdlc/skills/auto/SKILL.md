@@ -1,6 +1,6 @@
 ---
 name: auto
-description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build (which includes the pull request review) and merge-pr per issue in fresh subagents, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
+description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build (which includes the pull request review) and merge-pr's gate per issue in fresh subagents and merge in this session, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
 argument-hint: "[--issue <n>] [--count <n>] [--deadline <2h>]"
 ---
 
@@ -12,6 +12,13 @@ it, [`build`](../build/SKILL.md) (which hands the pull request to
 `ai-review:completed`), [`merge-pr`](../merge-pr/SKILL.md). [`cleanup`](../cleanup/SKILL.md) runs
 when the run ends. This skill calls them in turn and decides when to stop. Run every command from
 the main checkout.
+
+## Cost
+
+Spend few tokens and finish fast: those are the plugin's [goals](../../README.md#goals). A long
+conversation is the main cost: every turn re-reads all of it. Run each issue through this
+skill, whose `build` and `merge-pr` subagents start fresh, rather than driving the stages by hand
+in one conversation. If you do drive them by hand, start a new session between stages.
 
 ## Limits
 
@@ -46,10 +53,10 @@ if [ "$(date +%s)" -ge <deadline> ]; then echo past; else echo within; fi
 Read them here and nowhere else — abandoning an issue mid-flight leaves a branch and a pull
 request nobody asked for. The deadline stops the next issue from starting, not the one running.
 
-**2. Choose.** Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an
-issue you claimed and left unfinished ahead of new work. Drop what its *Held* rules exclude. Run
-`next.sh --design` on that list. It ends `take <n>` or `none`; on `none`, stop and give each
-reason it printed.
+**2. Choose.** Say what you are doing in plain words, as [`pick-issue`](../pick-issue/SKILL.md#what-to-tell-the-user) says. Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an
+issue you claimed and left unfinished ahead of new work. Run `next.sh --design` on that list. It
+ends `take <n>` or `none`; on `none`, stop and give each reason it printed. Check its *Held* rules
+on `<n>` only; if held, drop it and run `next.sh --design` on the rest.
 
 **Claim `<n>` before any dispatch,** as [`claim`](../issue/references/claim.md) says. Print the
 issue number once the card has moved. If someone else holds it, drop it and run `next.sh --design`
@@ -58,7 +65,7 @@ on the rest.
 `needs design` goes to *Design*, then back here. `ready` goes to step 2b.
 
 **2b. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` in autonomous mode for
-issue `<n>`. Ask for `build`'s report. Stop where it:
+issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s report. Stop where it:
 
 - **puts the review pass outside the `pr-auditor` agent.** An agent that reviews its own work
   still earns `ai-review:completed`, and GitHub cannot check the claim, so this catches a failed
@@ -66,54 +73,33 @@ issue `<n>`. Ask for `build`'s report. Stop where it:
 - **names an issue and no pull request.** Give the condition. Looping back either retakes a
   not-ready issue forever or skips a check that failed
 
-**Design.** Dispatch a fresh subagent that runs the [pipeline](../issue/references/pipeline.md) on
-issue `<n>` in autonomous mode, from the first stage lacking `review-passed`. The issue is already
-claimed. Ask for the label each stage ended on, each question it decided with its answer, and each
-question it left for a person with a recommendation and alternatives. Running `auto` authorizes the
-pipeline, never building an issue as written.
+**Design.** Run [`references/design.md`](references/design.md), then `ready` goes to step 2b.
 
-Then run `next.sh` for `<n>`. `ready` goes to step 2b.
+**3. Merge.** Dispatch a fresh subagent, since the agent that wrote the code is the worst reader
+of a gate judging its own work. Its prompt is exactly this, with the number substituted:
 
-- **Questions for a person.** Ask them yourself in one `AskUserQuestion`, recommended answer first.
-  Dispatch a fresh design subagent with the issue and the user's answers, quoted as theirs; it
-  records each as `Answered` and continues.
-- **A stage still lacks `review-passed` after three passes.** Ask in one `AskUserQuestion` that
-  quotes the last findings and the stage's growth in criteria or items. No result label means
-  unreviewed edits; `changes-requested` means findings stand. Options, first is the default:
-  - **One more review pass:** dispatch `review-design` once; ask again if it still fails.
-  - **Accept as it stands:** only when the last pass found no `critical`. Do it yourself on the
-    user's word, never in a subagent: comment quoting the accepted findings, add
-    `<prefix>:review-passed`, remove `<prefix>:changes-requested`, continue.
-  - **Stop here.**
+> Invoke the `github-sdlc:merge-pr` skill with `--gate-only` for pull request `<pr>`. Report
+> `gate passed at <sha>`, or the condition that stopped you.
 
-Stop when the user declines a question or chooses to stop (quote the question or findings), or when
-`<n>` is not `ready` after the pipeline (give the reason). On a stop, release `<n>` as `claim`
-says. A design followed by a build keeps the claim; a `build` that stops releases its own.
+Add nothing: no review commentary, no earlier denial. `merge-pr` runs the gate; nothing here runs
+it first. On `gate passed at <sha>`, run `merge-pr`'s *Merge, then clean up* yourself with that
+`<sha>`: the merge belongs to the session whose user ran `auto`, never to a subagent.
 
-**3. Run the gate.**
+Where the report names a protected path, a blocking decline, an unconfirmed deviation or
+the label, add `needs-user` to the issue while you ask, and remove it once the user answers
+([`claim`](../issue/references/claim.md#waiting-on-the-user)). When the user answers in this conversation, run [`signoff`](../signoff/SKILL.md)
+yourself; never relabel and dispatch again, whose subagent would merge on a relayed answer. Then
+continue at step 4. Any other condition ends the run.
 
-```bash
-node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/merge-gate.mjs" <pr>
-```
-
-Continue where it exits 0. Stop the run on a failure and quote each `FAIL` line, or the usage
-line on exit 2. Where the stop is a protected path, a blocking decline, an unconfirmed deviation
-or the label, and the user answers it in this conversation, run [`signoff`](../signoff/SKILL.md)
-yourself; never relabel and dispatch step 4, whose subagent would merge on a relayed answer.
-Then continue at step 5. Any other stop ends the run.
-
-**4. Merge.** Dispatch a second fresh subagent, since the agent that wrote the code is the worst
-reader of a gate judging its own work. Its prompt is exactly this, with the number substituted:
-
-> Invoke the `github-sdlc:merge-pr` skill in autonomous mode for pull request `<pr>`. Report the merge
-> commit, or the condition that stopped you.
-
-Add nothing: no review commentary, no earlier denial. Stop where the report names a condition
-instead of a merge commit.
-
-**5. Count the merge and loop.** `gh pr view <pr> --json state,mergeCommit` settles whether it
+**4. Count the merge and loop.** `gh pr view <pr> --json state,mergeCommit` settles whether it
 merged; a subagent's report does not. A `state` other than `MERGED` stops the run. The count is
 of merges, not attempts.
+
+Time the issue, merged or stopped, and keep the output for the report:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/timing.mjs" <n> [<pr>]
+```
 
 ## Cleanup
 
@@ -132,6 +118,8 @@ One line per issue attempted, in order:
   such as a second issue `build` filed
 - `#<n>` **stopped** — the pull request, the condition quoted from the skill that named it, and
   that the next run picks the same issue unless its readiness or rank changed
+
+Under each, the line `timing.mjs` printed, as it printed it.
 
 Close with why the run ended, and which branch, pull request and worktree remain after cleanup,
 read off disk and GitHub.
@@ -158,7 +146,7 @@ approach written and approved by the run itself.
 **Start itself.** No cron, no workflow trigger, nothing that begins a run without a person
 asking. Nobody reads an unwatched run, and it merges all the same.
 
-**Share a dispatch.** Once step 2b or step 4 sends a subagent off, it is the worktree's only
+**Share a dispatch.** Once step 2b or step 3 sends a subagent off, it is the worktree's only
 writer until it reports back. Resuming it by hand, or dispatching a second one at the same
 issue, gives the worktree two drivers — wait for the report instead.
 

@@ -14,16 +14,43 @@ Label names: [`../setup/references/labels.md`](../setup/references/labels.md).
 Use the stage named. Otherwise take the first needed stage that carries `<prefix>:designed`
 and lacks `<prefix>:review-passed`. If none qualifies, say so and stop.
 
+A technical or test stage whose section is the single line `n/a — <reason>` has nothing to
+review: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`, post nothing, dispatch
+nothing, and take the next stage. Never skip criteria or ui.
+
+A technical section whose `**Risk:**` line reads `medium` or `low` carries the test section with
+it. Review both in one pass, with both checklists, as the technical stage, and set both stages'
+result labels from that pass.
+
 ## 2. Dispatch
 
-Send the `github-sdlc:design-auditor` agent the issue number and stage only:
+Use a fresh `github-sdlc:design-auditor` agent for every pass.
+
+**Full pass:** the stage's first pass, or any pass with no saved edit for the stage. Send the
+issue number and stage only:
 
 ```
 Review the <stage> stage of issue <n> with the github-sdlc:review-design checklist and return
 findings in the required format. Do not post, label, or edit anything.
 ```
 
-Use a fresh agent for every pass.
+**Verify pass:** a pass after [`address-feedback`](../address-feedback/references/design.md)
+saved the section before and after its edit. Diff the two, then send the diff's path:
+
+```bash
+d="$(git rev-parse --git-common-dir)/github-sdlc"
+diff -u "$d/<n>-<stage>.before.md" "$d/<n>-<stage>.after.md" > "$d/<n>-<stage>.diff"
+```
+
+```
+Verify the <stage> stage of issue <n>. The last design-pass comment holds the findings and their
+verdicts; <diff path> holds the edits that answer them. Check that each Applied finding is fixed
+and that each changed line holds up against the github-sdlc:review-design checklist and the code.
+Raise nothing in unchanged text. Return findings in the required format. Do not post, label, or
+edit anything.
+```
+
+Delete the three files once the pass returns.
 
 ## 3. The reviewer's criteria
 
@@ -43,14 +70,22 @@ Every stage is also held to one rule: repeat nothing another section or a link s
 Open each finding with its severity in bold, then the defect and what it costs:
 
 ```
-**warning** — AC3 says "works correctly" and names no observable result, so it cannot be tested.
+**high** — Step 3 imports the editor statically into the detail, so every detail loads CodeMirror.
 ```
 
-| Severity | Means |
-|---|---|
-| `critical` | The stage cannot be built or tested as written, or contradicts another section |
-| `warning` | Breaks a rule in the shape, or leaves a gap a builder would have to guess at |
-| `comment` | A taste call, reported once |
+| Severity | Means | Blocks |
+|---|---|---|
+| `critical` | The stage cannot be built or tested as written, contradicts another section, or would ship the core feature broken | Yes |
+| `high` | Would cause a bug, a regression or a failed check in the build | Yes |
+| `medium` | Would cause rework or duplicated code, breaks a rule in the shape, or leaves a decision a builder would have to guess | Yes |
+| `low` | Tidiness: wording, an incomplete list, an order that misleads nobody | No |
+| `info` | A note or taste call, reported once | No |
+
+The levels are the plugin's [scale](../setup/references/severity.md); this table applies it to a pass.
+
+Calibrate: a blocking finding names the bug, failed check, rework, rule or guessed decision it
+causes; a finding that cannot is `low` or `info`. Report a defect once, and raise nothing in a
+later pass that the stage already held unless an edit introduced it.
 
 ## 5. Post and label
 
@@ -64,18 +99,33 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/review-design/scripts/post-pass.mjs" <n> <sta
 
 Never post a pass with `gh issue comment`. A hiding failure is reported and never undoes the pass.
 
-- No `critical` or `warning`: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`.
-- Any `critical` or `warning`: add `<prefix>:changes-requested`, remove `<prefix>:review-passed`,
+- No `critical`, `high` or `medium`: add `<prefix>:review-passed`, remove `<prefix>:changes-requested`,
+  then hide the stage's passes; one holding a finding for the user stays:
+
+  ```bash
+  node "${CLAUDE_PLUGIN_ROOT}/skills/address-feedback/scripts/tidy.mjs" issue <n> <stage> --passed
+  ```
+- Any `critical`, `high` or `medium`: add `<prefix>:changes-requested`, remove `<prefix>:review-passed`,
   then run [`address-feedback`](../address-feedback/SKILL.md) in design mode.
 
 A pass with nothing to report still posts its marked comment.
 
 ## 6. Repeat
 
-`address-feedback` returns here for a fresh pass while the last returned a `critical` or
-`warning`. After three passes in one loop, stop. The last findings are applied and unreviewed, so
-the stage carries `designed` and no result label. Tell the user what the last pass found. The next
-stage does not start.
+`address-feedback` returns here for a fresh pass while the last returned a `critical`, `high` or
+`medium`. A loop is one full pass and up to three verify passes; after the third verify pass, stop. The last findings are applied and unreviewed, so the
+stage carries `designed` and no result label. The next stage does not start. Tell the user
+what the last pass found, then give the [cap message](#the-cap-message).
+
+## The cap message
+
+End the stop with a recommendation, never a bare choice:
+
+- Whether the last pass found a `critical`. Accepting the stage is open only if it found none.
+- The recommended action, first, with one clause why. Another verify pass costs about two minutes;
+  prefer it when the findings are real gaps, and accepting when they are taste.
+- Each other option with its cost, and the exact words to continue, such as `review-design 42 ui`.
+- The claim and the In Design card stay until the user answers ([`claim`](../issue/references/claim.md)).
 
 ## Will not do
 

@@ -1,6 +1,6 @@
 ---
 name: cleanup
-description: Find and remove what a build run strands — issue worktrees, claim and feature branches, and issue assignments whose pull request merged, closed or never opened. Use when asked to clean up, tidy branches or worktrees, or when pick-issue skips an issue as held that nobody is building.
+description: Find and remove what a build run strands — issue worktrees, claim and feature branches whose pull request merged or closed or whose issue closed, and claims you choose to give up. Use when asked to clean up or tidy branches or worktrees.
 ---
 
 # Cleaning up
@@ -16,11 +16,12 @@ pull request, so a chore branch with no issue number is included.
 
 Each line is `verdict`, kind, ref and reason:
 
-- **safe**: merged, or a claim with no commits. Removing loses nothing.
+- **safe**: merged, or an empty claim whose issue is closed. Removing loses nothing.
 - **ask**: a branch whose pull request closed unmerged, a copy with commits the merge lacks,
-  a worktree on an unrecognised branch, an assignment with no branch or pull request.
-- **keep**: an open pull request, uncommitted changes (including in the checkout you are on), or
-  commits with no pull request.
+  a worktree on an unrecognised branch, or your own claim on an open issue. Removing a claim gives
+  the issue up ([`claim.md`](../issue/references/claim.md#give-up)).
+- **keep**: an open pull request, uncommitted changes (including in the checkout you are on),
+  commits with no pull request, or someone else's claim on an open issue.
 
 ## Steps
 
@@ -48,8 +49,11 @@ git worktree remove <path>                          # refuses on uncommitted wor
 git worktree prune
 git branch -D <branch>                              # -D: a squash merge is not an ancestor
 git push --quiet origin --delete <branch>           # only if the remote copy exists
-gh issue edit <n> --remove-assignee @me             # an assignment
+gh issue edit <n> --remove-assignee @me             # a claim you give up
 ```
+
+A claim given up also moves its card back to **Todo**
+([`board.md`](../setup/references/board.md#move-a-card)).
 
 Stop on a refusal and report it. Re-run the scan to show what remains.
 

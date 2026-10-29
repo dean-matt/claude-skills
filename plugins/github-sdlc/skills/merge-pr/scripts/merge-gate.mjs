@@ -13,6 +13,7 @@ import { realpathSync } from "node:fs";
 import { capture } from "./capture.mjs";
 import { defaultBranch, hasWorkflows, matchesAny, protectedPaths } from "./repo.mjs";
 import {
+  checkedCommit,
   expectedChecks,
   headCommit,
   isGreen,
@@ -25,11 +26,19 @@ import {
  * read is `unreadable`, which blocks: a finding the gate cannot classify is the one it must
  * not wave through.
  */
-const MARKER = /^\*\*(critical|warning|comment)\*\*/;
+export const SEVERITIES = ["critical", "high", "medium", "low", "info"];
+
+/** The severities that send a finding back for a fix and a fresh pass. */
+export const BLOCKING = ["critical", "high", "medium"];
+
+const MARKER = new RegExp(`^\\*\\*(${SEVERITIES.join("|")})\\*\\*`);
 
 export function severity(body) {
   return MARKER.exec(body ?? "")?.[1] ?? "unreadable";
 }
+
+/** Whether a finding blocks. An `unreadable` one does, so the gate never waves it through. */
+export const blocks = (body) => !["low", "info"].includes(severity(body));
 
 export function notGreen(checks) {
   return checks.filter((c) => !isGreen(c)).map((c) => c.name);
@@ -62,32 +71,43 @@ export function headBlocked(shown, sha) {
     : `GitHub shows ${shown} as the head, not ${sha} — wait for the push to show, or bring the local branch level with origin`;
 }
 
-/** The line `review-pr` opens a pass body with. It renders as nothing on GitHub. */
+/** The line `review-pr` opens a full-diff pass body with. It renders as nothing on GitHub. */
 export const PASS_MARKER = "<!-- audit-pass -->";
 
+/** The line a verify pass opens with: it reads the fixes since the last pass, not the diff. */
+export const VERIFY_MARKER = "<!-- audit-verify -->";
+
+const isVerify = (r) => r.body.includes(VERIFY_MARKER);
+
 /**
- * The review passes, oldest first. A pass carries `PASS_MARKER`; verdict replies land as
- * reviews with no body, and a person's review carries neither, so neither spends one of
- * `PASS_CAP` nor stands in as the last pass whose findings this reads.
+ * The review passes, oldest first. A pass carries `PASS_MARKER` or `VERIFY_MARKER`; verdict
+ * replies land as reviews with no body, and a person's review carries neither, so neither
+ * stands in as the last pass whose findings this reads.
  *
  * Where no review carries the marker the bodied ones are the passes, which is how a pull
  * request reviewed before the marker existed still reaches the gate.
  */
 export function passes(reviews) {
   const bodied = reviews.filter((r) => r.body !== "");
-  const marked = bodied.filter((r) => r.body.includes(PASS_MARKER));
+  const marked = bodied.filter((r) => r.body.includes(PASS_MARKER) || isVerify(r));
   return marked.length === 0 ? bodied : marked;
 }
 
+/**
+ * The passes that read the whole diff. Only these spend `PASS_CAP`: a verify pass is a
+ * fix round, and the final full pass after it is what the gate reads.
+ */
+export const fullPasses = (reviews) => passes(reviews).filter((r) => !isVerify(r));
+
 export function blockingFindings(comments) {
-  return comments.filter((c) => severity(c.body) !== "comment").map((c) => c.html_url);
+  return comments.filter((c) => blocks(c.body)).map((c) => c.html_url);
 }
 
 /**
- * The passes a run spends before this condition stops asking for a clean one.
+ * The full-diff passes a run spends before this condition stops asking for a clean one.
  * `address-feedback` loops against this number rather than carrying one of its own.
  */
-export const PASS_CAP = 3;
+export const PASS_CAP = 2;
 
 const plural = (n, noun) => `${n} ${noun}${n === 1 ? "" : "s"}`;
 
@@ -110,16 +130,25 @@ export function staleNote(sha, head, behind, base) {
 }
 
 /**
- * The pass that reads a fix is what answers the finding, so this wants a last pass whose
- * findings are all `comment`. A pass that found nothing satisfies it by posting a body and no
- * comments. At `PASS_CAP` it stops asking: the thread verdicts already hold the fix, and
- * demanding a pass the run may not take leaves a hand merge as the only way out.
+ * The pass that reads a fix is what answers the finding, so this wants a last pass that read
+ * the whole diff and whose findings are all `low` or `info`. A verify pass never satisfies it: it
+ * read the fixes alone, so a regression elsewhere would pass unread. A pass that found nothing
+ * satisfies it by posting a body and no comments. At `PASS_CAP` full passes it stops asking:
+ * the thread verdicts already hold the fix, and demanding a pass the run may not take leaves
+ * a hand merge as the only way out.
  */
 export function reviewBlocked(reviews, findings) {
-  const count = passes(reviews).length;
-  if (count === 0) return "no review pass found — nothing has reviewed this";
+  const all = passes(reviews);
+  if (all.length === 0) return "no review pass found — nothing has reviewed this";
+  const count = fullPasses(reviews).length;
+  if (count >= PASS_CAP) return null;
   const blocking = blockingFindings(findings);
-  if (blocking.length === 0 || count >= PASS_CAP) return null;
+  if (isVerify(all.at(-1)))
+    return [
+      "the last pass was a verify pass — fix what it found, then run the final full-diff pass",
+      ...blocking,
+    ].join("\n      ");
+  if (blocking.length === 0) return null;
   return [`pass ${count} of ${PASS_CAP} returned a blocking finding — review again`, ...blocking].join(
     "\n      ",
   );
@@ -132,7 +161,7 @@ export function reviewBlocked(reviews, findings) {
  * counts, a person's "LGTM" included, so a block there is one nothing clears.
  */
 export function capNote(reviews, findings) {
-  const count = passes(reviews).length;
+  const count = fullPasses(reviews).length;
   if (count > PASS_CAP)
     return `${count} passes, past the cap of ${PASS_CAP} — read the extra passes before merging`;
   if (count === PASS_CAP && blockingFindings(findings).length > 0)
@@ -164,11 +193,17 @@ const VERDICT = /^\*\*(Applied|Declined)\*\*/;
  */
 const isFinding = (c) => c.in_reply_to_id === undefined || c.in_reply_to_id === null;
 
+/**
+ * A blocking finding with no verdict reply. A `low` or `info` needs none: a pass that finds
+ * nothing blocking ends the review without `address-feedback`, which writes the verdicts.
+ */
 export function unanswered(comments) {
   const answered = new Set(
     comments.filter((c) => VERDICT.test(c.body)).map((c) => String(c.in_reply_to_id)),
   );
-  return comments.filter((c) => isFinding(c) && !answered.has(String(c.id))).map((c) => c.html_url);
+  return comments
+    .filter((c) => isFinding(c) && blocks(c.body) && !answered.has(String(c.id)))
+    .map((c) => c.html_url);
 }
 
 const DECLINED = /^\*\*Declined\*\*/;
@@ -186,7 +221,7 @@ const ACCEPTED = /^\*\*Accepted\*\*/;
 const isAccepted = (c, who) => ACCEPTED.test(c.body ?? "") && who.includes(c.user?.login ?? "");
 
 /**
- * A declined `comment` is a taste call refused and ends a healthy review; anything else is a
+ * A declined `low` or `info` is a taste call refused and ends a healthy review; anything else is a
  * judgment the user has not seen — unless a signer's `**Accepted**` reply in the same thread
  * records that they have.
  */
@@ -197,16 +232,16 @@ export function blockingDeclines(comments, who) {
   );
   return comments
     .filter((c) => DECLINED.test(c.body))
-    .filter((c) => severity(findings.get(String(c.in_reply_to_id))) !== "comment")
+    .filter((c) => blocks(findings.get(String(c.in_reply_to_id))))
     .filter((c) => !accepted.has(String(c.in_reply_to_id)))
     .map((c) => c.html_url);
 }
 
-const BODY_DECLINED = /^\*\*Declined\*\* (critical|warning)\b/;
+const BODY_DECLINED = new RegExp(`^\\*\\*Declined\\*\\* (${BLOCKING.join("|")})\\b`);
 
 /**
  * A finding the pass could not anchor to a line has no thread, so its verdict is a plain pull
- * request comment opening `**Declined** critical` or `**Declined** warning`, and a signer's
+ * request comment opening `**Declined** <severity>` for a blocking severity, and a signer's
  * `**Accepted**` is a later plain comment. GitHub gives such comments no reply link, so an
  * acceptance clears every body decline posted before it, never one posted after.
  * `comments` must run oldest first, as the API returns them.
@@ -367,7 +402,7 @@ function gate(n, given) {
     const sha = headCommit(pr.headRefName, given);
     const names = expectedChecks(base);
     const noCi = names.length === 0 && !hasWorkflows(sha);
-    checkFailure = headBlocked(head, sha) ?? checksBlocked(readChecks(sha), names, noCi);
+    checkFailure = headBlocked(head, sha) ?? checksBlocked(readChecks(checkedCommit(sha)), names, noCi);
   } catch (error) {
     checkFailure = `could not read the required checks or the commit: ${error.message}`;
   }
@@ -396,14 +431,14 @@ function gate(n, given) {
   const issueComments = api(`repos/{owner}/{repo}/issues/${n}/comments`);
   const who = signers();
   const open = unanswered(comments);
-  report(open.length === 0, "every thread carries a verdict", open.join("\n      "));
+  report(open.length === 0, "every blocking finding carries a verdict", open.join("\n      "));
   const declined = [
     ...blockingDeclines(comments, who),
     ...blockingBodyDeclines(issueComments, who),
   ];
   report(
     declined.length === 0,
-    "no declined finding is critical or warning",
+    "no declined finding is critical, high or medium",
     declined.join("\n      "),
   );
 

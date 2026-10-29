@@ -2,14 +2,15 @@
  * Hides superseded review passes.
  *
  *   tidy.mjs issue <n> <stage>   minimize earlier design passes as outdated
+ *   tidy.mjs issue <n> <stage> --passed   minimize all of a passed stage's passes
  *   tidy.mjs pr <n>              minimize earlier review passes, resolve answered threads
  *
- * The last pass stays visible, since the merge gate reads it. A person's comment, an
+ * The last pass stays visible, since the merge gate reads it, until a design stage passes. A person's comment, an
  * `**Accepted**` record and a thread waiting on a verdict are never touched. Minimized comments
  * stay in the API. Needs `gh`. The exported functions are pure so they can be tested.
  */
 import { capture } from "../../merge-pr/scripts/capture.mjs";
-import { PASS_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
+import { PASS_MARKER, VERIFY_MARKER } from "../../merge-pr/scripts/merge-gate.mjs";
 
 export const designMarker = (stage) => `<!-- design-pass:${stage} -->`;
 
@@ -24,19 +25,19 @@ export function isLegacyReply(body, stage) {
 }
 
 /**
- * Whether a `critical` or `warning` finding in the comment carries a verdict that waits on the
- * user. A declined `comment` is a taste call refused and waits on nobody.
+ * Whether a `critical`, `high` or `medium` finding in the comment carries a verdict that waits on
+ * the user. A declined `low` or `info` is a taste call refused and waits on nobody.
  *
  * @param {string} body
  */
 export const waiting = (body) =>
   body
     .split(/^\d+\. /m)
-    .some((item) => /\*\*(critical|warning)\*\*/.test(item) && /\*\*(Declined|Held for the user)\*\*/.test(item));
+    .some((item) => /\*\*(critical|high|medium)\*\*/.test(item) && /\*\*(Declined|Held for the user)\*\*/.test(item));
 
 /**
  * Comments of one stage that an earlier pass left behind: every pass before the last, and the
- * legacy replies before it, unless one still holds a declined or held `critical` or `warning`. The last pass
+ * legacy replies before it, unless one still holds a declined or held `critical`, `high` or `medium`. The last pass
  * stays with whatever follows it.
  *
  * @param {{ node_id: string, body: string }[]} comments oldest first
@@ -56,6 +57,24 @@ export function staleDesign(comments, stage) {
 }
 
 /**
+ * Comments of a stage that passed review: every pass and legacy reply, declined findings
+ * included, since the passing review settled them. A pass holding a finding for the user stays.
+ *
+ * @param {{ node_id: string, body: string }[]} comments
+ * @param {string} stage
+ * @returns {string[]}
+ */
+export function passedDesign(comments, stage) {
+  return comments
+    .filter(
+      (c) =>
+        (c.body.startsWith(designMarker(stage)) || isLegacyReply(c.body, stage)) &&
+        !c.body.includes("**Held for the user**"),
+    )
+    .map((c) => c.node_id);
+}
+
+/**
  * Reviews an earlier pass left behind: every marked pass before the last, and the bodiless
  * reviews that only carry verdict replies before it.
  *
@@ -63,9 +82,10 @@ export function staleDesign(comments, stage) {
  * @returns {string[]}
  */
 export function staleReviews(reviews) {
-  const last = reviews.findLastIndex((r) => r.body.includes(PASS_MARKER));
+  const isPass = (r) => r.body.includes(PASS_MARKER) || r.body.includes(VERIFY_MARKER);
+  const last = reviews.findLastIndex(isPass);
   return reviews
-    .filter((r, i) => i < last && (r.body.includes(PASS_MARKER) || r.body === ""))
+    .filter((r, i) => i < last && (isPass(r) || r.body === ""))
     .map((r) => r.node_id);
 }
 
@@ -99,13 +119,14 @@ function gh(args, run) {
  * @returns {string} a one-line summary
  */
 export function tidy(argv, run = capture) {
-  const [kind, n, stage] = argv;
+  const [kind, n, stage, flag] = argv;
   const mutate = (query, id) => gh(["api", "graphql", "-f", `query=${query}`, "-f", `id=${id}`], run);
   if (kind === "issue" && n && stage) {
     const comments = gh(["api", "--paginate", "--slurp", `repos/{owner}/{repo}/issues/${n}/comments`], run).flat();
-    const stale = staleDesign(comments, stage);
+    const passed = flag === "--passed";
+    const stale = passed ? passedDesign(comments, stage) : staleDesign(comments, stage);
     for (const id of stale) mutate(MINIMIZE, id);
-    return `issue #${n} ${stage}: minimized ${stale.length} earlier comment(s)`;
+    return `issue #${n} ${stage}: minimized ${stale.length} ${passed ? "passed" : "earlier"} comment(s)`;
   }
   if (kind === "pr" && n) {
     const reviews = gh(["api", "--paginate", "--slurp", `repos/{owner}/{repo}/pulls/${n}/reviews`], run).flat();
@@ -118,7 +139,7 @@ export function tidy(argv, run = capture) {
     for (const id of done) mutate(RESOLVE, id);
     return `pr #${n}: minimized ${stale.length} earlier review(s), resolved ${done.length} thread(s)`;
   }
-  throw new Error("usage: tidy.mjs issue <n> <stage> | tidy.mjs pr <n>");
+  throw new Error("usage: tidy.mjs issue <n> <stage> [--passed] | tidy.mjs pr <n>");
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

@@ -51,6 +51,35 @@ export function headCommit(branch, sha, run = capture) {
 }
 
 /**
+ * Whether a diff changes one file's `"version"` line and nothing else.
+ *
+ * @param {string} diff `git diff -U0` output
+ */
+export function versionOnly(diff) {
+  const files = diff.match(/^diff --git /gm) ?? [];
+  const lines = diff.split("\n").filter((l) => /^[-+]/.test(l) && !/^(---|\+\+\+) /.test(l));
+  return files.length === 1 && lines.length === 2 && lines.every((l) => /^[-+]\s*"version":/.test(l));
+}
+
+/**
+ * The commit whose checks stand for `sha`. A version-only commit pushed with `[skip ci]` runs no
+ * checks; its parent differs from it by the version line alone, so the parent's checks stand.
+ * Anything else, or a failed read, is judged on its own checks.
+ *
+ * @param {string} sha
+ * @param {(file: string, args: string[]) => string} [run]
+ */
+export function checkedCommit(sha, run = capture) {
+  try {
+    if (!run("git", ["log", "-1", "--format=%B", sha]).includes("[skip ci]")) return sha;
+    if (!versionOnly(run("git", ["diff", "-U0", `${sha}^`, sha]))) return sha;
+    return run("git", ["rev-parse", `${sha}^`]).trim();
+  } catch {
+    return sha;
+  }
+}
+
+/**
  * The latest run of each check on `sha`. A required check posted as a commit status rather
  * than a check run reads as unreported, which waits rather than passes. A failed call, or one
  * past `GH_TIMEOUT_MS`, reads as nothing reported.

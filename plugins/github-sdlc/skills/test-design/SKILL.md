@@ -17,7 +17,9 @@ name the missing stage.
 
 ## Steps
 
-1. Read the criteria and the Technical Design.
+1. Read the criteria and the Technical Design. At `medium` or `low` risk,
+   [`technical-design`](../technical-design/SKILL.md) wrote this section and its review covered
+   it: stop. Steps 2–5 are what it followed.
 2. Write one line per case, starting with the AC it covers, wrapped per
    [`shape.md`](../issue/references/shape.md#foldable-sections):
 
@@ -38,7 +40,7 @@ name the missing stage.
    writes `n/a — <reason>`.
 5. If a criterion cannot be tested as written, add an unticked Open question; do not edit it.
 6. Take the section through [`technical-writing`](../technical-writing/SKILL.md). Then replace
-   only the `## Test Design` section (re-read first), set `test-agent:designed`, and clear this
+   only the Test Design section (re-read first), set `test-agent:designed`, and clear this
    stage's `review-passed` and `changes-requested`.
 7. Hand off to [`review-design`](../review-design/SKILL.md) for the test stage.
 

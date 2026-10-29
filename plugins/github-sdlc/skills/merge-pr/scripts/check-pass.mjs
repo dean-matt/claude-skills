@@ -8,20 +8,30 @@
  * Usage: node check-pass.mjs <pass.json>; exits 1 and names each fault.
  */
 import { readFileSync, realpathSync } from "node:fs";
-import { PASS_MARKER, severity } from "./merge-gate.mjs";
+import { BLOCKING, PASS_MARKER, SEVERITIES, VERIFY_MARKER, severity } from "./merge-gate.mjs";
+
+const BODY_FINDING = new RegExp(`^\\s*(?:\\d+[.)]\\s*|[-*]\\s*)?\\*\\*(?:${SEVERITIES.join("|")})\\*\\*`, "i");
 
 /**
- * @param {{ body?: string, comments?: { path?: string, line?: number, body?: string }[] }} pass
+ * @param {{ event?: string, body?: string, comments?: { path?: string, line?: number, body?: string }[] }} pass
  * @returns {string[]} one sentence per fault
  */
 export function passFaults(pass) {
   const faults = [];
-  if (!(pass.body ?? "").startsWith(PASS_MARKER))
-    faults.push(`the body does not open with ${PASS_MARKER}`);
+  const body = pass.body ?? "";
+  if (!body.startsWith(PASS_MARKER) && !body.startsWith(VERIFY_MARKER))
+    faults.push(`the body does not open with ${PASS_MARKER} or ${VERIFY_MARKER}`);
+  for (const line of body.split("\n").filter((l) => BODY_FINDING.test(l)))
+    faults.push(
+      `the body carries a finding (${line.trim().slice(0, 40)}…) — post it inline on the nearest changed line`,
+    );
+  const blocking = (pass.comments ?? []).some((c) => BLOCKING.includes(severity(c.body)));
+  if (pass.event === "REQUEST_CHANGES" && !blocking)
+    faults.push("event is REQUEST_CHANGES but no inline comment is critical, high or medium");
   for (const c of pass.comments ?? []) {
     if (severity(c.body) === "unreadable")
       faults.push(
-        `${c.path ?? "a comment"}:${c.line ?? "?"} does not open with **critical**, **warning** or **comment**`,
+        `${c.path ?? "a comment"}:${c.line ?? "?"} does not open with a severity: ${SEVERITIES.map((s) => `**${s}**`).join(", ")}`,
       );
   }
   return faults;

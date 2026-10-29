@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { classify, isOurs, retrying } from "./scan.mjs";
 
-const base = { base: "main", worktrees: [], branches: [], prs: [], assigned: [], here: { branch: null, dirty: false } };
+const base = { base: "main", worktrees: [], branches: [], prs: [], assigned: [], open: [], here: { branch: null, dirty: false } };
 const branch = (name, extra = {}) => ({ name, local: "aaa", remote: "aaa", ahead: 2, ...extra });
 const pr = (head, state, extra = {}) => ({ number: 7, state, head, sha: "aaa", closes: [], ...extra });
 const one = (facts) => classify({ ...base, ...facts })[0];
@@ -24,6 +24,12 @@ test("a branch closed without merging is asked about", () => {
 test("with no pull request, an empty branch is safe and one with commits is kept", () => {
   assert.equal(one({ branches: [branch("fix/2-y", { ahead: 0 })] }).verdict, "safe");
   assert.equal(one({ branches: [branch("fix/2-y")] }).verdict, "keep");
+});
+
+test("an empty claim on an open issue is kept, and asked about only when the claim is yours", () => {
+  const empty = { branches: [branch("fix/2-y", { ahead: 0 })], open: [2] };
+  assert.equal(one(empty).verdict, "keep");
+  assert.equal(one({ ...empty, assigned: [2] }).verdict, "ask");
 });
 
 test("a dirty worktree is kept whatever its pull request says", () => {

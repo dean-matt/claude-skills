@@ -17,11 +17,13 @@ Read [`references/shape.md`](references/shape.md) (shape, types, rules) and
 2. **Pick the type.** Infer it and state it; ask only when two fit.
 3. **Draft** the sections for that type, in order, with the criteria wrapped as
    [`shape.md`](references/shape.md#foldable-sections) says. Open with the problem, not the solution.
-   Write each criterion as an observable result and number it.
+   Write each criterion as an observable result and number it. Keep it to one slice that ships
+   alone; where the idea holds more, as the criteria checklist's
+   [Size](../review-design/references/criteria.md) rule says, draft one issue per slice and say so.
 4. **Ask about gaps** in one batch with AskUserQuestion, instead of inventing: a missing
    reproduction, an ambiguous expected result, a scope boundary. Anything left unanswered becomes an
    unticked Open question.
-5. **Decide whether it is visual.** If a user can see the change, add an empty
+5. **Decide whether it is visual.** If a user can see the change, add the bare
    `## UI/UX Design` heading; otherwise add none. For a UI bug, offer a screenshot through
    [`screenshots`](../screenshots/SKILL.md) under Actual.
 6. **Prose pass** with [`technical-writing`](../technical-writing/SKILL.md).

@@ -1,10 +1,18 @@
 # Checklist: UI/UX design
 
-Stage: ui. Reads the `## UI/UX Design` section against the criteria and the existing interface.
+Stage: ui. Reads the UI/UX Design section against the criteria and the existing interface.
 
 - The flow is stated step by step from the user's side.
 - Every state is covered: default, empty, loading, error, disabled or locked, and any a
-  criterion implies. A missing state a builder would have to invent is a `warning`.
+  criterion implies. A missing state a builder would have to invent is a `medium`.
+- **Dismiss and return paths:** for each new surface, Escape, a backdrop click, Back and Close
+  are stated, with where focus lands after each, including when it opens over another surface.
+  A missing one is a `medium`.
+- **Reach:** every screen, card, picker and filter that shows or chooses the data the criteria
+  change, found by searching the code for its components, hooks and endpoints, is named with what
+  it shows. A consumer the design misses is a `medium`; a builder ships it unchanged.
+- **Save and failure paths:** what the user sees while saving, after success and on each
+  failure a criterion or the API allows. A missing one is a `medium`.
 - Every new string is given exactly.
 - Keyboard order and keys, screen-reader labels and announcements, focus handling, and
   contrast are stated for each new control.

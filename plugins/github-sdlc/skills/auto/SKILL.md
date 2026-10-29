@@ -70,6 +70,10 @@ issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s repor
 - **puts the review pass outside the `pr-auditor` agent.** An agent that reviews its own work
   still earns `ai-review:completed`, and GitHub cannot check the claim, so this catches a failed
   dispatch and not a skipped one
+- **proposes a split.** Add `needs-user` to `<n>`, ask the user with the proposal as the
+  recommended answer, and remove the label. On a yes, dispatch a fresh subagent that splits as
+  [`issue`](../issue/SKILL.md#splitting) says, then dispatch build again for `<n>`. On a no, dispatch
+  build again saying the user kept the issue whole.
 - **names an issue and no pull request.** Give the condition. Looping back either retakes a
   not-ready issue forever or skips a check that failed
 

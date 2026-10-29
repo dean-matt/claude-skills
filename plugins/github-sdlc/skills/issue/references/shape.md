@@ -46,7 +46,8 @@ Summary, Out of scope and Open questions are never wrapped. Keep the wrapper whe
 - Together they cover the Summary's goal, and none contradicts another or Out of scope.
 - **One slice per issue.** Where the criteria fall into two or more groups that each ship, and
   pass their own checks, without the others, and the issue has more than three criteria or a group
-  changes stored data, split it ([`issue`](../SKILL.md#splitting)).
+  changes stored data, write one issue per group. [`build`](../../build/SKILL.md) checks this
+  before writing code and proposes a split ([`issue`](../SKILL.md#splitting)).
 
 ## Open questions
 

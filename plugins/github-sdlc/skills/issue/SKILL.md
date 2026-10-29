@@ -46,7 +46,7 @@ Pass `--autonomous`.
     from the issue, the code and Out of scope, taking the narrower answer where they leave it
     open. Write `- [x] <question> — Decided (auto): <answer>, because <reason>`.
   - **Needs a person** (changes stored data or a migration, behavior a user will notice, scope
-    beyond the title, or a split into more issues; or only the user can know it, such as a
+    beyond the title; or only the user can know it, such as a
     credential, price or deadline): leave it unticked and return it with a recommended answer and
     alternatives. The caller asks the user and writes `- [x] <question> — Answered: <answer>`.
 
@@ -61,8 +61,8 @@ Pass `--autonomous`.
 
 ## Splitting
 
-A split is the user's call. Propose it as an Open question: each group's criterion numbers, a
-title, and the order they ship in. On the user's yes, keep the first group in this issue, create
+A split is the user's call, proposed by [`build`](../build/SKILL.md) with each group's criterion
+numbers, a title, and the order they ship in. On the user's yes, keep the first group in this issue, create
 each other group as its own issue with this skill in autonomous mode, carrying its criteria, the
 Summary's part that motivates them and any Out of scope line they need, and set *blocked by* where
 a group needs an earlier one ([`relationships.md`](references/relationships.md)). Then remove the

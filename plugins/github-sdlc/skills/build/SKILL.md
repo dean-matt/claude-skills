@@ -35,7 +35,12 @@ Ask only if the request does not say:
    See [`references/claim-and-worktree.md`](references/claim-and-worktree.md).
 4. **Mark it In Development** on the board ([`board.md`](../setup/references/board.md)), if configured.
 5. **Plan from the criteria.** Search the code every criterion reaches (each caller, view and
-   route), plan the smallest change, and write a test per criterion that fails without it. A
+   route), plan the smallest change, and write a test per criterion that fails without it.
+   **Check the size first:** where the criteria break the
+   [one-slice rule](../issue/references/shape.md#acceptance-criteria), stop before writing code
+   and propose the split: each group's criterion numbers, a title, and the order they ship in.
+   Interactively, ask; on a yes, split as [`issue`](../issue/SKILL.md#splitting) says and build
+   the first group. Autonomously, report the proposal and stop. A
    design section an older issue carries is the plan; an issue built as written follows the
    approach approved in step 2.
 6. **Implement** the smallest change that meets the criteria, with its tests. Where the code

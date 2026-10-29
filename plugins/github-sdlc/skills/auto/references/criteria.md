@@ -14,8 +14,7 @@ Add `needs-user` to `<n>` before each `AskUserQuestion` below and remove it once
 
 - **Questions for a person.** Ask them yourself in one `AskUserQuestion`, recommended answer first.
   Dispatch a fresh subagent with the issue and the user's answers, quoted as theirs; it records
-  each as `Answered` and edits any criterion the answer changes. A yes to a split creates the new
-  issues as [`issue`](../../issue/SKILL.md#splitting) says; this run carries on with `<n>`.
+  each as `Answered` and edits any criterion the answer changes.
 
 Stop when the user declines a question or chooses to stop (quote the question), or when `<n>` is
 not `ready` afterwards (give the reason). A stop keeps the claim on `<n>`, as

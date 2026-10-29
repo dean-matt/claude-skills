@@ -52,7 +52,14 @@ Ask only if the request does not say:
 8. **Prose pass** with [`technical-writing`](../technical-writing/SKILL.md) over commit
    messages, comments and docs.
 9. **Screenshots** if a user can see the change: [`screenshots`](../screenshots/SKILL.md).
-10. **Commit and push**, one commit per concern, in the repository's commit style.
+10. **Commit and push**, one commit per concern, in the repository's commit style. Where the
+    repository raises a version at the merge ([`merge-pr`](../merge-pr/SKILL.md#raise-the-version)),
+    raise it in the last commit, with the title the pull request will carry and the same flags,
+    so the first CI run covers it and the merge pushes nothing new:
+
+    ```bash
+    node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/version-bump.mjs" --title "<title>"
+    ```
 11. **Open the pull request** with [`open-pr`](../open-pr/SKILL.md).
 12. **Hand off** to [`review-pr`](../review-pr/SKILL.md). Do not merge.
 

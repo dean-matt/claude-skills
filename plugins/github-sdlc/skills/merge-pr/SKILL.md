@@ -22,7 +22,8 @@ The input is an open, non-draft pull request. Anything else stops.
 ## Raise the version
 
 Only where the repository's CLAUDE.md or CONTRIBUTING.md says the merge raises a version;
-otherwise skip. The bump happens at the merge, not in the pull request.
+otherwise skip. [`build`](../build/SKILL.md) raises it in the pull request's last commit, so
+this prints `no bump` unless the default branch moved past it or the title's type changed.
 
 Work in the issue's worktree, reopening it on `$b` per
 [`../build/references/claim-and-worktree.md`](../build/references/claim-and-worktree.md) if gone:
@@ -35,7 +36,8 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/version-bump.mjs" "$n"
 Defaults: `feat` raises the minor, anything else the patch; docs and Markdown alone skip it.
 Pass a flag only where the repository's sentence names an exception: `--file <path>`,
 `--feat <kind>`, `--other <kind>`, `--skip <glob>`. It skips a bot's pull request. It prints
-`no bump`, or the new version, which you commit as `chore: release <version>` and push.
+`no bump`, which needs no commit, or the new version, which you commit as
+`chore: release <version>` and push.
 
 Add ` [skip ci]` to that message when the merge above printed `Already up to date` and the
 default branch's rules require no check:

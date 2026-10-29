@@ -93,10 +93,7 @@ export function passes(reviews) {
   return marked.length === 0 ? bodied : marked;
 }
 
-/**
- * The passes that read the whole diff. Only these spend `PASS_CAP`: a verify pass is a
- * fix round, and the final full pass after it is what the gate reads.
- */
+/** The passes that read the whole diff. A run takes one, first; the rest verify its fixes. */
 export const fullPasses = (reviews) => passes(reviews).filter((r) => !isVerify(r));
 
 export function blockingFindings(comments) {
@@ -104,10 +101,10 @@ export function blockingFindings(comments) {
 }
 
 /**
- * The full-diff passes a run spends before this condition stops asking for a clean one.
- * `address-feedback` loops against this number rather than carrying one of its own.
+ * The verify passes a run spends after its full pass before this condition stops asking for a
+ * clean one. `address-feedback` loops against this number rather than carrying one of its own.
  */
-export const PASS_CAP = 2;
+export const VERIFY_CAP = 3;
 
 const plural = (n, noun) => `${n} ${noun}${n === 1 ? "" : "s"}`;
 
@@ -130,42 +127,39 @@ export function staleNote(sha, head, behind, base) {
 }
 
 /**
- * The pass that reads a fix is what answers the finding, so this wants a last pass that read
- * the whole diff and whose findings are all `low` or `info`. A verify pass never satisfies it: it
- * read the fixes alone, so a regression elsewhere would pass unread. A pass that found nothing
- * satisfies it by posting a body and no comments. At `PASS_CAP` full passes it stops asking:
- * the thread verdicts already hold the fix, and demanding a pass the run may not take leaves
- * a hand merge as the only way out.
+ * A run reads the whole diff once, then verifies each round of fixes, so this wants a full pass
+ * and a last pass, full or verify, whose findings are all `low` or `info`. A pass that found
+ * nothing satisfies it by posting a body and no comments. At `VERIFY_CAP` verify passes it stops
+ * asking: the thread verdicts already hold the fix, and demanding a pass the run may not take
+ * leaves a hand merge as the only way out.
  */
 export function reviewBlocked(reviews, findings) {
   const all = passes(reviews);
   if (all.length === 0) return "no review pass found — nothing has reviewed this";
-  const count = fullPasses(reviews).length;
-  if (count >= PASS_CAP) return null;
+  if (fullPasses(reviews).length === 0) return "no pass read the whole diff — run the full pass";
+  const verifies = all.filter(isVerify).length;
+  if (verifies >= VERIFY_CAP) return null;
   const blocking = blockingFindings(findings);
-  if (isVerify(all.at(-1)))
-    return [
-      "the last pass was a verify pass — fix what it found, then run the final full-diff pass",
-      ...blocking,
-    ].join("\n      ");
   if (blocking.length === 0) return null;
-  return [`pass ${count} of ${PASS_CAP} returned a blocking finding — review again`, ...blocking].join(
-    "\n      ",
-  );
+  return [
+    `the last pass returned a blocking finding — fix it, then verify (${verifies} of ${VERIFY_CAP} verify passes used)`,
+    ...blocking,
+  ].join("\n      ");
 }
 
 /**
  * What the cap did, printed beside the condition. At the cap it names the waiver, since a
- * condition that stops asking in silence is one nobody audits. Past the cap it names the
- * overage rather than blocking: a submitted review cannot be withdrawn and any bodied one
- * counts, a person's "LGTM" included, so a block there is one nothing clears.
+ * condition that stops asking in silence is one nobody audits. Past it, or past one full pass,
+ * it names the overage rather than blocking: a submitted review cannot be withdrawn.
  */
 export function capNote(reviews, findings) {
-  const count = fullPasses(reviews).length;
-  if (count > PASS_CAP)
-    return `${count} passes, past the cap of ${PASS_CAP} — read the extra passes before merging`;
-  if (count === PASS_CAP && blockingFindings(findings).length > 0)
-    return `the cap of ${PASS_CAP} passes stopped this condition asking — the thread verdicts carry what it found`;
+  const verifies = passes(reviews).filter(isVerify).length;
+  const full = fullPasses(reviews).length;
+  if (verifies > VERIFY_CAP)
+    return `${verifies} verify passes, past the cap of ${VERIFY_CAP} — read the extra passes before merging`;
+  if (verifies === VERIFY_CAP && blockingFindings(findings).length > 0)
+    return `the cap of ${VERIFY_CAP} verify passes stopped this condition asking — the thread verdicts carry what it found`;
+  if (full > 1) return `${full} full passes, where a run takes one — read the later ones before merging`;
   return null;
 }
 

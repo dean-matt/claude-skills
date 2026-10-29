@@ -10,7 +10,7 @@ import {
   labelBlocked,
   linkNote,
   mergeBlocked,
-  PASS_CAP,
+  VERIFY_CAP,
   PASS_MARKER,
   VERIFY_MARKER,
   fullPasses,
@@ -24,6 +24,7 @@ import {
 } from "./merge-gate.mjs";
 
 const pass = (id, extra = {}) => ({ id, body: `${PASS_MARKER}\nfindings`, ...extra });
+const verify = (id) => ({ id, body: `${VERIFY_MARKER}\nfindings` });
 const finding = (id, sev = "critical") => ({ id, body: `**${sev}** — x`, html_url: `u${id}` });
 const reply = (id, to, body, login = "me") => ({
   id,
@@ -73,31 +74,26 @@ test("passes: marked reviews are the passes, and an unmarked pull request falls 
 
 test("review: no pass blocks, a clean last pass converges, a blocking one asks again until the cap", () => {
   assert.match(reviewBlocked([], []), /nothing has reviewed/);
+  assert.match(reviewBlocked([verify(1)], []), /no pass read the whole diff/);
   assert.equal(reviewBlocked([pass(1)], [finding(1, "low")]), null);
-  assert.match(reviewBlocked([pass(1)], [finding(1)]), /pass 1 of 2 returned a blocking finding/);
-  const capped = Array.from({ length: PASS_CAP }, (_, i) => pass(i));
+  assert.match(reviewBlocked([pass(1)], [finding(1)]), /0 of 3 verify passes used/);
+  const capped = [pass(0), ...Array.from({ length: VERIFY_CAP }, (_, i) => verify(i + 1))];
   assert.equal(reviewBlocked(capped, [finding(9)]), null);
 });
 
-const verify = (id) => ({ id, body: `${VERIFY_MARKER}\nfixes` });
-
-test("verify passes: marked as passes, never counted against the cap, never the last word", () => {
-  const reviews = [pass(1), verify(2), pass(3)];
-  assert.deepEqual(passes(reviews).map((r) => r.id), [1, 2, 3]);
-  assert.deepEqual(fullPasses(reviews).map((r) => r.id), [1, 3]);
+test("verify passes: a clean verify pass is the last word, and only verify passes spend the cap", () => {
+  const reviews = [pass(1), { id: 2, body: "" }, verify(3)];
+  assert.deepEqual(fullPasses(reviews).map((r) => r.id), [1]);
   assert.equal(reviewBlocked(reviews, []), null);
-  assert.match(reviewBlocked([pass(1), verify(2)], []), /last pass was a verify pass/);
-  assert.match(reviewBlocked([pass(1), verify(2)], [finding(1)]), /final full-diff pass/);
-  const capped = [...Array.from({ length: PASS_CAP }, (_, i) => pass(i)), verify(9)];
-  assert.equal(reviewBlocked(capped, []), null);
-  assert.equal(capNote([pass(1), verify(2), verify(3), pass(4)], []), null);
+  assert.match(reviewBlocked([pass(1), verify(2)], [finding(1)]), /1 of 3 verify passes used/);
 });
 
-test("cap note names the waiver and the overage, and is silent otherwise", () => {
-  const capped = Array.from({ length: PASS_CAP }, (_, i) => pass(i));
+test("cap note names the waiver and the overages, and is silent otherwise", () => {
+  const capped = [pass(0), ...Array.from({ length: VERIFY_CAP }, (_, i) => verify(i + 1))];
   assert.match(capNote(capped, [finding(1)]), /stopped this condition asking/);
-  assert.match(capNote([...capped, pass(9)], []), /past the cap/);
-  assert.equal(capNote([pass(1)], [finding(1)]), null);
+  assert.match(capNote([...capped, verify(9)], []), /past the cap/);
+  assert.match(capNote([pass(1), verify(2), pass(3)], []), /2 full passes/);
+  assert.equal(capNote([pass(1), verify(2)], [finding(1)]), null);
 });
 
 test("label: exactly ai-review:completed passes", () => {

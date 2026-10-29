@@ -38,10 +38,6 @@ closes. Skip what the check command and formatters assert. Four lenses run on ev
   zero, negative, concurrent; a visible change carries screenshots.
 - **Editor**: the prose the change writes, through [`technical-writing`](../technical-writing/SKILL.md).
 
-Where the issue carries `risk:info`, `risk:low` or `risk:medium`, it had no design stages: a diff that
-touches stored data, a migration, auth or a shared interface is a `high`, since that work
-skipped the design it needed.
-
 Read the pull request's **Deviations** first and judge each: justified, and the right kind? Then
 check every acceptance criterion of the closing issue against the diff. The body does not list
 them, so a criterion nothing in the diff meets is yours to find.

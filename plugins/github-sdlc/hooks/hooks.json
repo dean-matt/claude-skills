@@ -1,5 +1,5 @@
 {
-  "description": "Keep the review agents read-only: refuse a Bash command that writes to git or GitHub when the caller is pr-auditor or design-auditor.",
+  "description": "Keep the review agents read-only: refuse a Bash command that writes to git or GitHub when the caller is pr-auditor.",
   "hooks": {
     "PreToolUse": [
       {

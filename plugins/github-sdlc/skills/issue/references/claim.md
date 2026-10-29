@@ -1,7 +1,7 @@
-# Claiming an issue for design
+# Claiming an issue
 
-Design writes no branch, so the assignee is the claim. [`pick-issue`](../../pick-issue/SKILL.md)
-holds an issue assigned to someone else. A skill that writes or edits a stage claims first.
+Writing criteria makes no branch, so the assignee is the claim. [`pick-issue`](../../pick-issue/SKILL.md)
+holds an issue assigned to someone else. A skill that reshapes an issue claims first.
 
 ## Claim
 

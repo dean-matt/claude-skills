@@ -35,7 +35,7 @@ and keep the subjects it returns.
 
 ## 4. Deviations
 
-Compare the build with the issue's design sections and acceptance criteria. Record each
+Compare the build with the issue's acceptance criteria and Out of scope. Record each
 difference with its kind (see the template). A **Narrowing** names the issue that takes the rest;
 file it first if missing.
 

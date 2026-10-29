@@ -49,7 +49,7 @@ test("every write is refused", () => {
 });
 
 test("isAuditor accepts the bare and plugin-scoped names and nothing else", () => {
-  for (const t of ["pr-auditor", "design-auditor", "github-sdlc:pr-auditor", "github-sdlc:design-auditor"])
+  for (const t of ["pr-auditor", "github-sdlc:pr-auditor"])
     assert.ok(isAuditor(t), t);
   for (const t of ["Explore", "general-purpose", "my-pr-auditor", "pr-auditor-2", undefined, ""])
     assert.ok(!isAuditor(t), String(t));
@@ -69,7 +69,7 @@ test("a review agent's write exits 2 with the reason, which is what blocks the c
 });
 
 test("a review agent's read exits 0", () => {
-  assert.equal(hook({ agent_type: "design-auditor", tool_input: { command: "git status" } }).status, 0);
+  assert.equal(hook({ agent_type: "pr-auditor", tool_input: { command: "git status" } }).status, 0);
 });
 
 test("any other caller passes, even with a write", () => {

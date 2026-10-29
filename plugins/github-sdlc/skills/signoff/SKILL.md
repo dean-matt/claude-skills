@@ -55,7 +55,7 @@ Never relabel on the answer; a dispatched run would read the new label as an app
 For a deviation that is really a changed criterion, on the user's word and their wording:
 
 1. Re-read the issue, replace only that criterion's line (numbers unchanged), and write the body
-   back. Leave the stage labels as they are; the build is done.
+   back. The build is done.
 2. Comment on the issue, through [`technical-writing`](../technical-writing/SKILL.md): the old
    line, the new line, and that the user changed it.
 3. Remove the deviation's line from the pull request body with `gh pr edit <n> --body-file`; the

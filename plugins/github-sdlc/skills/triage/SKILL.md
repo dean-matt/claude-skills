@@ -6,7 +6,7 @@ argument-hint: "[issue-number] [--autonomous]"
 
 # Triage
 
-Shape, types and the pipeline: [`../issue/references/shape.md`](../issue/references/shape.md).
+Shape and types: [`../issue/references/shape.md`](../issue/references/shape.md).
 
 ## Per issue
 

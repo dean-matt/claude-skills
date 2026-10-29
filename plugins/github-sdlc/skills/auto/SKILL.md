@@ -1,13 +1,13 @@
 ---
 name: auto
-description: Work the repository's issues one after another, from open to merged — run the design pipeline on the next issue when it lacks one, then dispatch build (which includes the pull request review) and merge-pr's gate per issue in fresh subagents and merge in this session, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
+description: Work the repository's issues one after another, from open to merged — write the next issue's acceptance criteria when it lacks them, then dispatch build (which includes the pull request review) and merge-pr's gate per issue in fresh subagents and merge in this session, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
 argument-hint: "[--issue <n>] [--count <n>] [--deadline <2h>]"
 ---
 
 # Working the backlog
 
-Lifecycle, per issue: the [design pipeline](../issue/references/pipeline.md) where the issue lacks
-it, [`build`](../build/SKILL.md) (which hands the pull request to
+Lifecycle, per issue: [`issue`](../issue/SKILL.md) where the issue lacks criteria,
+[`build`](../build/SKILL.md) (which hands the pull request to
 [`review-pr`](../review-pr/SKILL.md) and [`address-feedback`](../address-feedback/SKILL.md) until
 `ai-review:completed`), [`merge-pr`](../merge-pr/SKILL.md). [`cleanup`](../cleanup/SKILL.md) runs
 when the run ends. This skill calls them in turn and decides when to stop. Run every command from
@@ -54,15 +54,15 @@ Read them here and nowhere else — abandoning an issue mid-flight leaves a bran
 request nobody asked for. The deadline stops the next issue from starting, not the one running.
 
 **2. Choose.** Say what you are doing in plain words, as [`pick-issue`](../pick-issue/SKILL.md#what-to-tell-the-user) says. Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an
-issue you claimed and left unfinished ahead of new work. Run `next.sh --design` on that list. It
+issue you claimed and left unfinished ahead of new work. Run `next.sh --criteria` on that list. It
 ends `take <n>` or `none`; on `none`, stop and give each reason it printed. Check its *Held* rules
-on `<n>` only; if held, drop it and run `next.sh --design` on the rest.
+on `<n>` only; if held, drop it and run `next.sh --criteria` on the rest.
 
 **Claim `<n>` before any dispatch,** as [`claim`](../issue/references/claim.md) says. Print the
-issue number once the card has moved. If someone else holds it, drop it and run `next.sh --design`
+issue number once the card has moved. If someone else holds it, drop it and run `next.sh --criteria`
 on the rest.
 
-`needs design` goes to *Design*, then back here. `ready` goes to step 2b.
+`needs criteria` goes to *Criteria*, then back here. `ready` goes to step 2b.
 
 **2b. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` in autonomous mode for
 issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s report. Stop where it:
@@ -73,7 +73,7 @@ issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s repor
 - **names an issue and no pull request.** Give the condition. Looping back either retakes a
   not-ready issue forever or skips a check that failed
 
-**Design.** Run [`references/design.md`](references/design.md), then `ready` goes to step 2b.
+**Criteria.** Run [`references/criteria.md`](references/criteria.md), then `ready` goes to step 2b.
 
 **3. Merge.** Dispatch a fresh subagent, since the agent that wrote the code is the worst reader
 of a gate judging its own work. Its prompt is exactly this, with the number substituted:
@@ -140,7 +140,7 @@ the run goes on only on their word.
 
 **Rerank the backlog.** Rank and milestone belong to the repository's collaborators.
 
-**Build from an issue as written.** An issue with no pipeline labels gets the pipeline, never an
+**Build from an issue without criteria.** It gets its criteria from `issue` first, never an
 approach written and approved by the run itself.
 
 **Start itself.** No cron, no workflow trigger, nothing that begins a run without a person

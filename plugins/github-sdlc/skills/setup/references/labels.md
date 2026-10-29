@@ -7,15 +7,8 @@ none that exist, apart from the rename below. Re-running is safe.
 |---|---|
 | `type:feat`, `type:fix`, `type:chore`, `type:docs`, `type:spike` | The kind of issue |
 | `severity:critical`, `severity:high`, `severity:medium`, `severity:low`, `severity:info` | How bad a bug is, on the plugin's [scale](severity.md). Bugs only. `triage` proposes and the user confirms |
-| `risk:critical`, `risk:high`, `risk:medium`, `risk:low`, `risk:info` | How much a change could break, on the [scale](severity.md). Sets which design stages run. The criteria stage sets it |
 | `ai-review:completed`, `ai-review:changes-requested` | The state of a pull request's review |
 | `needs-user` | The issue waits on the user's answer. [`claim`](../../issue/references/claim.md#waiting-on-the-user) sets and clears it |
-| `<agent>:designed` | The stage's section is written. Accumulates |
-| `<agent>:review-passed`, `<agent>:changes-requested` | The review result for the stage's current text. Only one is set. Editing the stage clears both, so `designed` alone means written and not yet reviewed |
-
-`<agent>` is `criteria-agent`, `ui-agent`, `technical-agent` or `test-agent`, as
-[`pipeline.md`](../../issue/references/pipeline.md) lists. For the criteria stage,
-`criteria-agent:designed` reads as "written".
 
 The repository owns `area:*` and any label it already has. `triage` uses the existing
 `area:*` labels and never invents one.
@@ -29,19 +22,9 @@ mk severity:high D93F0B "Broken with no reasonable workaround"
 mk severity:medium FBCA04 "Broken, with a workaround"
 mk severity:low 0E8A16 "Cosmetic or rare"
 mk severity:info BFD4F2 "Not a defect: works as designed, or a note"
-mk risk:critical B60205 "Touches stored data, a migration, auth or security"
-mk risk:high D93F0B "Adds a dependency, changes a shared interface, or spans areas"
-mk risk:medium FBCA04 "Changes behavior within one area"
-mk risk:low 0E8A16 "A local change"
-mk risk:info BFD4F2 "Docs or trivial"
 mk needs-user D876E3 "Waits on the user's answer"
 mk ai-review:completed 0E8A16 "AI review finished; nothing waits on a person"
 mk ai-review:changes-requested D93F0B "AI review left something for a person"
-for a in criteria ui technical test; do
-  mk "$a-agent:designed" C5DEF5 "Section written"
-  mk "$a-agent:review-passed" 0E8A16 "Section review passed"
-  mk "$a-agent:changes-requested" D93F0B "Section review has findings"
-done
 ```
 
 A label that already exists is skipped, so a repository's own color or description for it survives.
@@ -50,7 +33,8 @@ A label that already exists is skipped, so a repository's own color or descripti
 
 If a repository has `review:approved` or `review:changes-requested`, offer to rename them so open
 pull requests follow. A `blocked` label repeats the native dependency; offer to remove it once no
-board view depends on it.
+board view depends on it. The `*-agent:*` and `risk:*` labels
+belong to retired design stages; offer to remove each that no open issue carries.
 
 ```bash
 gh label edit "review:approved" --name "ai-review:completed"

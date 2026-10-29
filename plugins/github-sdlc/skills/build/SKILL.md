@@ -21,25 +21,23 @@ Ask only if the request does not say:
 
 1. **Choose.** With no issue named, invoke [`pick-issue`](../pick-issue/SKILL.md).
 2. **Check it is ready before claiming it.** Read the issue in full: criteria, Out of scope (a
-   fence), its `risk:` label, and the UI/UX, Technical and Test Design where it has them.
+   fence), and any UI/UX, Technical or Test Design an older issue carries.
    ```bash
    "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/ready.sh" <n>
    ```
    Skip the script when the caller says `next.sh` just returned `take <n>`.
-   On `not ready`, stop and report why. On `not in the pipeline`, ask whether to run the
-   pipeline from [`issue`](../issue/SKILL.md) or build as written (write the approach, get
+   On `not ready`, stop and report why. On `no acceptance criteria`, ask whether to write
+   them with [`issue`](../issue/SKILL.md) in reshape mode or build as written (write the approach, get
    approval, then build); in autonomous mode stop and report. Check every number or shape the
    issue states against the code.
 3. **Claim** by creating the branch, which a second session cannot, or resume your own from a
    stopped run. Never use `gh issue develop`, which succeeds twice.
    See [`references/claim-and-worktree.md`](references/claim-and-worktree.md).
 4. **Mark it In Development** on the board ([`board.md`](../setup/references/board.md)), if configured.
-5. **Follow the design.** The Technical Design is the plan; the Test Design lists the tests, by
-   AC. An issue built as written follows the approach approved in step 2. An issue whose risk
-   skipped the design stages has criteria alone: search the code every criterion reaches (each
-   caller, view and route), plan the smallest change, and write a test per criterion that fails
-   without it. Where the code shows the risk is higher than rated (stored data, a migration,
-   auth, a shared interface), stop: the issue needs its design stages.
+5. **Plan from the criteria.** Search the code every criterion reaches (each caller, view and
+   route), plan the smallest change, and write a test per criterion that fails without it. A
+   design section an older issue carries is the plan; an issue built as written follows the
+   approach approved in step 2.
 6. **Implement** the smallest change that meets the criteria, with its tests. Where the code
    makes the design wrong, depart from it and note each departure and why, for the pull
    request's Deviations. Never edit the issue. Update docs the change made stale in the same

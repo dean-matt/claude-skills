@@ -8,15 +8,15 @@ import { test } from "node:test";
 const SCRIPT = new URL("./next.sh", import.meta.url).pathname;
 const dir = mkdtempSync(join(tmpdir(), "next-test-"));
 
-// A ready.sh that answers from a table: 1 blocked, 2 needs design, 3 ready, 4 ready, 5+ blocked.
-// It records the flag it was given, since only --design may take an issue that needs design.
+// A ready.sh that answers from a table: 1 blocked, 2 needs criteria, 3 ready, 4 ready, 5+ blocked.
+// It records the flag it was given, since only --criteria may take an issue that needs criteria.
 const stub = join(dir, "ready.sh");
 writeFileSync(
   stub,
   `#!/usr/bin/env bash
-flag=""; [ "$1" = --design ] && { flag=$1; shift; }
+flag=""; [ "$1" = --criteria ] && { flag=$1; shift; }
 case $1 in
-  2) if [ -n "$flag" ]; then echo "needs design: criteria has not passed review"; exit 3; fi
+  2) if [ -n "$flag" ]; then echo "needs criteria: no acceptance criteria"; exit 3; fi
      echo "not ready: criteria has not passed review"; exit 1 ;;
   3|4) echo ready ;;
   *) echo "not ready: blocked by #9"; echo "not ready: 1 open question(s) unticked"; exit 1 ;;
@@ -50,10 +50,10 @@ test("rank order is the argument order, not the number order", () => {
   assert.equal(next(["4", "3"]).lines.at(-1), "take 4");
 });
 
-test("--design takes an issue that needs design when it ranks above a ready one", () => {
-  const r = next(["--design", "1", "2", "3"]);
+test("--criteria takes an issue that needs criteria when it ranks above a ready one", () => {
+  const r = next(["--criteria", "1", "2", "3"]);
   assert.equal(r.lines.at(-1), "take 2");
-  assert.match(r.lines[1], /^2: needs design: criteria/);
+  assert.match(r.lines[1], /^2: needs criteria: no/);
 });
 
 test("prints none when no candidate is takeable, and reads candidates from stdin", () => {

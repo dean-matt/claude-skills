@@ -7,6 +7,7 @@ none that exist, apart from the rename below. Re-running is safe.
 |---|---|
 | `type:feat`, `type:fix`, `type:chore`, `type:docs`, `type:spike` | The kind of issue |
 | `severity:critical`, `severity:high`, `severity:medium`, `severity:low`, `severity:info` | How bad a bug is, on the plugin's [scale](severity.md). Bugs only. `triage` proposes and the user confirms |
+| `risk:critical`, `risk:high`, `risk:medium`, `risk:low`, `risk:info` | How much a change could break, on the [scale](severity.md). Sets which design stages run. The criteria stage sets it |
 | `ai-review:completed`, `ai-review:changes-requested` | The state of a pull request's review |
 | `needs-user` | The issue waits on the user's answer. [`claim`](../../issue/references/claim.md#waiting-on-the-user) sets and clears it |
 | `<agent>:designed` | The stage's section is written. Accumulates |
@@ -28,6 +29,11 @@ mk severity:high D93F0B "Broken with no reasonable workaround"
 mk severity:medium FBCA04 "Broken, with a workaround"
 mk severity:low 0E8A16 "Cosmetic or rare"
 mk severity:info BFD4F2 "Not a defect: works as designed, or a note"
+mk risk:critical B60205 "Touches stored data, a migration, auth or security"
+mk risk:high D93F0B "Adds a dependency, changes a shared interface, or spans areas"
+mk risk:medium FBCA04 "Changes behavior within one area"
+mk risk:low 0E8A16 "A local change"
+mk risk:info BFD4F2 "Docs or trivial"
 mk needs-user D876E3 "Waits on the user's answer"
 mk ai-review:completed 0E8A16 "AI review finished; nothing waits on a person"
 mk ai-review:changes-requested D93F0B "AI review left something for a person"

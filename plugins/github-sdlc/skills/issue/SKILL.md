@@ -20,6 +20,8 @@ Read [`references/shape.md`](references/shape.md) (shape, types, rules) and
    Write each criterion as an observable result and number it. Keep it to one slice that ships
    alone; where the idea holds more, as the criteria checklist's
    [Size](../review-design/references/criteria.md) rule says, draft one issue per slice and say so.
+   Rate the [change risk](../setup/references/severity.md) after searching the code the criteria
+   reach.
 4. **Ask about gaps** in one batch with AskUserQuestion, instead of inventing: a missing
    reproduction, an ambiguous expected result, a scope boundary. Anything left unanswered becomes an
    unticked Open question.
@@ -32,7 +34,7 @@ Read [`references/shape.md`](references/shape.md) (shape, types, rules) and
 
    ```bash
    gh issue create --title "<title>" --body-file <body.md> --label "type:<type>"
-   gh issue edit <n> --add-label "criteria-agent:designed"
+   gh issue edit <n> --add-label "criteria-agent:designed" --add-label "risk:<level>"
    ```
 
    Set native relationships the user named, as

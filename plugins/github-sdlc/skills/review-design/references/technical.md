@@ -2,10 +2,8 @@
 
 Stage: technical. Reads the Technical Design section against the criteria and the code.
 
-The section opens with a `**Risk:**` line on the [scale](../../setup/references/severity.md).
-A missing one is a `medium`; one below what the design touches is a `high`. At `medium` or
-`low`, run every check on the files it names and their callers, and review the test section
-with [`test.md`](test.md) in the same pass.
+A design that touches less than the issue's `risk:high` or `risk:critical` label names it as an `info`, so
+the user can lower the risk for the next issue like it.
 
 - The files, symbols, tools, collections and conventions it cites exist. Check them in the code; an invented one is
   a `critical`.

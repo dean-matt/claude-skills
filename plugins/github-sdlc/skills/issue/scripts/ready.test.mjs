@@ -112,6 +112,18 @@ test("--design still refuses an issue that is blocked, whatever its stages", () 
   assert.match(r.out, /blocked by #9/);
 });
 
+test("a low or medium risk issue needs the criteria stage alone", () => {
+  for (const level of ["info", "low", "medium"])
+    assert.deepEqual(ready({ labels: ["type:feat", "criteria-agent:review-passed", `risk:${level}`], body: "x" }), { code: 0, out: "ready" });
+});
+
+test("a high risk issue, or one with no risk label, needs every design stage", () => {
+  const labels = ["type:feat", "criteria-agent:review-passed"];
+  for (const extra of [["risk:high"], []])
+    assert.match(ready({ labels: [...labels, ...extra], body: "x" }).out, /technical has not passed review/);
+  assert.match(ready({ labels, body: "x" }, "--design").out, /no risk: label/);
+});
+
 test("--design on a fully designed issue is ready", () => {
   assert.deepEqual(ready({ labels: PASSED, body: "x" }, "--design"), { code: 0, out: "ready" });
 });

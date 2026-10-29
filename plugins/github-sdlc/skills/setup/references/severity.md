@@ -16,7 +16,8 @@ outcome? Each use applies it to a different thing.
   the detail for its subject.
 - **Bugs:** [`triage`](../../triage/SKILL.md) proposes the label and the user confirms it.
   Severity never reorders the queue.
-- **Change risk:** [`technical-design`](../../technical-design/SKILL.md) states it on the
-  section's first line. It sets how deep the design goes; the
+- **Change risk:** a `risk:<level>` label on the issue, set by the criteria stage from the
+  criteria and a search of the code they reach, taking the higher of two levels when unsure. It
+  decides which design stages run; the
   [pipeline](../../issue/references/pipeline.md#which-stages-an-issue-needs) says how.
 - Take the highest level that applies.

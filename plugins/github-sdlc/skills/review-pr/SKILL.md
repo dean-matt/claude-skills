@@ -105,8 +105,25 @@ On exit 1, fix the faults it names and do not post.
 
 ## 5. Label and hand off
 
-Set `ai-review:changes-requested` while a `critical`, `high` or `medium` stands. Then run
-[`address-feedback`](../address-feedback/SKILL.md), which loops back here: verify passes until
-one returns nothing blocking, three at most. It sets `ai-review:completed` once that pass is
-clean. A first pass with nothing blocking sets `ai-review:completed`
-itself; its `low` and `info` findings stand as advice and need no reply. This skill never merges.
+Label after every pass, full or verify; this skill owns the `ai-review:` label.
+
+- **A `critical`, `high` or `medium` stands:** set `ai-review:changes-requested`, then run
+  [`address-feedback`](../address-feedback/SKILL.md), which fixes, replies and loops back here
+  for a verify pass, three at most.
+- **Nothing blocking:** set `ai-review:completed` once the check command is green and nothing
+  waits on the user. Its `low` and `info` findings stand as advice and need no reply. Before
+  labelling, dismiss each earlier review still in `CHANGES_REQUESTED`, since only a later approval
+  or a dismissal clears it:
+
+  ```bash
+  gh api -X PUT repos/{owner}/{repo}/pulls/<n>/reviews/<id>/dismissals -f message='Addressed and verified'
+  gh pr edit <n> --add-label ai-review:completed --remove-label ai-review:changes-requested
+  ```
+
+  What waits on the user, and leaves `ai-review:changes-requested` in place: a declined
+  `critical`, `high` or `medium`; a point a pass asked the user to confirm; a **Narrowing** or
+  **Addition** deviation the user has not confirmed; a second bug filed as its own issue. The
+  user clears each in conversation, with the record
+  [`records.md`](../merge-pr/references/records.md) gives.
+
+This skill never merges.

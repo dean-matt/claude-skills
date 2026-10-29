@@ -14,7 +14,7 @@ what the issue must do, never how to build it; `build` plans from the criteria a
 1. **Take the idea.** Search for a duplicate first (`gh issue list --search`), and say so if
    one is close; [`triage`](../triage/SKILL.md) owns closing duplicates.
 2. **Pick the type.** Infer it and state it; ask only when two fit.
-3. **Draft** the sections for that type, in order, with the criteria wrapped as
+3. **Draft** the sections for that type, in order, each wrapped as
    [`shape.md`](references/shape.md#foldable-sections) says. Open with the problem, not the solution.
    Write each criterion as an observable result and number it, searching the code each one
    reaches so none states a premise the code contradicts. Keep it to one slice that ships alone;
@@ -54,7 +54,7 @@ Pass `--autonomous`.
   criterion in the same step. When the last question is ticked and its answer is in the sections
   that carry it, post one comment through [`technical-writing`](../technical-writing/SKILL.md)
   listing each question and answer tagged `Decided (auto)` or `Answered`, then delete the
-  `## Open questions` section. Report every decision.
+  Open questions section, wrapper included. Report every decision.
 - **Reshape**: restructure an existing issue into this shape, keeping the reporter's words
   in Summary and Reproduction. Used from `triage`. Claim the issue first, per
   [`claim`](references/claim.md); a new issue has no one else to hold it.

@@ -13,28 +13,27 @@ sub-issues) and are never repeated in the body. Pull request links belong to the
 | Out of scope | A fence. `Nothing` is allowed; omitting the section is not | Always |
 | Acceptance criteria | `AC1`, `AC2`, … each an observable result | Always |
 
-The headings are exactly these, at `h2` level, so tooling can find them: `## <name>` for a plain
-section, `<summary><h2><name></h2></summary>` for a foldable one.
+The headings are exactly these, at `h2` level, as `<summary><h2><name></h2></summary>`, so tooling
+can find them.
 
 ## Foldable sections
 
-Acceptance criteria fold under their own heading, and start open. The heading is the `<summary>`, written as HTML because Markdown does
+Every section folds under its own heading, and starts open. The heading is the `<summary>`, written as HTML because Markdown does
 not render there; GitHub shows it beside the fold arrow. Keep a blank line after `<summary>` and
 before `</details>`, or the Markdown inside does not render:
 
 ````markdown
 <details open>
-<summary><h2>Acceptance criteria</h2></summary>
+<summary><h2>Summary</h2></summary>
 
-- **AC1.** ...
+The problem, then the goal.
 
 </details>
 ````
 
-A section in the older form, a `##` heading over a `Show or hide` summary, is rewritten to this
-form whenever it is edited.
-
-Summary, Out of scope and Open questions are never wrapped. Keep the wrapper when rewriting a section.
+A section in an older form, a bare `## <name>` heading or a `##` heading over a `Show or hide`
+summary, is rewritten to this form whenever the issue is edited. Keep the wrapper when rewriting a
+section.
 
 ## Acceptance criteria
 
@@ -56,8 +55,8 @@ condition with nothing to link, such as "wait for the schema freeze", is an Open
 Relationships are not: use a dependency.
 
 Once the last question is ticked and its answer is in the Summary, Out of scope or the criteria,
-post one comment listing each question and answer, then delete the whole `## Open questions`
-section, heading included.
+post one comment listing each question and answer, then delete the whole Open questions
+section, wrapper included.
 
 ## Types
 

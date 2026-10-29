@@ -82,6 +82,21 @@ test("a stage reopened after the pull request opened is credited again, never ne
   ]);
 });
 
+test("checks finishing after the last review pass show as a ci row", () => {
+  const events = [ev("10:00", "assigned")];
+  const reviews = [{ body: "<!-- audit-pass -->", submittedAt: t("10:10") }, { body: "<!-- audit-verify -->", submittedAt: t("10:15") }];
+  const pr = { createdAt: t("10:05"), mergedAt: t("10:24"), ciDoneAt: t("10:20"), reviews };
+  assert.deepEqual(timing(events, pr, [label("10:21", "ai-review:completed")], NOW), [
+    { stage: "build", minutes: 5 },
+    { stage: "review", minutes: 11, passes: 2 },
+    { stage: "ci", minutes: 5 },
+    { stage: "merge", minutes: 3 },
+    { stage: "total", minutes: 24 },
+  ]);
+  const early = { ...pr, ciDoneAt: t("10:12") };
+  assert.ok(!timing(events, early, [label("10:21", "ai-review:completed")], NOW).some((r) => r.stage === "ci"));
+});
+
 test("an issue nobody claimed has no timing", () => {
   assert.deepEqual(timing([pass("10:00", "test")], null, [], NOW), []);
 });

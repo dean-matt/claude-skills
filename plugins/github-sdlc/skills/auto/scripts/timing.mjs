@@ -68,7 +68,10 @@ function stageOf(e) {
  * row; the total is wall clock.
  *
  * @param {{ event: string, created_at: string, label?: { name: string }, body?: string }[]} issueEvents oldest first
- * @param {{ createdAt: string, mergedAt?: string | null, reviews: { body?: string, submittedAt?: string }[] } | null} pr
+ * The head's checks finishing after the last review pass is time spent waiting on CI: a `ci`
+ * mark there takes the stretch from that pass to the checks.
+ *
+ * @param {{ createdAt: string, mergedAt?: string | null, ciDoneAt?: string | null, reviews: { body?: string, submittedAt?: string }[] } | null} pr
  * @param {{ event: string, created_at: string, label?: { name: string } }[]} prEvents oldest first
  * @param {number} now
  * @returns {{ stage: string, minutes: number, passes?: number }[]}
@@ -84,7 +87,10 @@ export function timing(issueEvents, pr, prEvents, now) {
   const marks = after.map((e) => [at(e), stageOf(e)]).filter(([, stage]) => stage !== null);
   if (pr) {
     marks.push([Date.parse(pr.createdAt), "build"]);
-    for (const r of pr.reviews.filter((r) => isPass(r) && r.submittedAt)) marks.push([Date.parse(r.submittedAt), "review"]);
+    const reviewed = pr.reviews.filter((r) => isPass(r) && r.submittedAt).map((r) => Date.parse(r.submittedAt));
+    for (const t of reviewed) marks.push([t, "review"]);
+    const ci = pr.ciDoneAt ? Date.parse(pr.ciDoneAt) : null;
+    if (ci !== null && reviewed.length > 0 && ci > Math.max(...reviewed)) marks.push([ci, "ci"]);
     for (const e of prEvents.filter((e) => e.label?.name?.startsWith("ai-review:"))) marks.push([at(e), "review"]);
     if (pr.mergedAt) marks.push([Date.parse(pr.mergedAt), "merge"]);
   }
@@ -112,6 +118,7 @@ export function timing(issueEvents, pr, prEvents, now) {
   }
   rows.push({ stage: "build", minutes: minutes(spent.get("build") ?? 0) });
   if (pr) rows.push({ stage: "review", minutes: minutes(spent.get("review") ?? 0), passes: pr.reviews.filter(isPass).length });
+  if (spent.has("ci")) rows.push({ stage: "ci", minutes: minutes(spent.get("ci")) });
   if (pr?.mergedAt) rows.push({ stage: "merge", minutes: minutes(spent.get("merge") ?? 0) });
   const waited = minutes(overlap(claim, end, waiting));
   if (waited > 0) rows.push({ stage: "waiting", minutes: waited });
@@ -139,8 +146,14 @@ if (process.argv[1] !== undefined && import.meta.filename === realpathSync(proce
     process.exit(2);
   }
   const prData = pr
-    ? JSON.parse(capture("gh", ["pr", "view", pr, "--json", "createdAt,mergedAt,reviews"]))
+    ? JSON.parse(capture("gh", ["pr", "view", pr, "--json", "createdAt,mergedAt,reviews,headRefOid"]))
     : null;
+  if (prData) {
+    const runs = JSON.parse(
+      capture("gh", ["api", `repos/{owner}/{repo}/commits/${prData.headRefOid}/check-runs`, "--jq", "[.check_runs[].completed_at]"]),
+    );
+    prData.ciDoneAt = runs.includes(null) || runs.length === 0 ? null : runs.sort().at(-1);
+  }
   const rows = timing(timeline(issue), prData, pr ? timeline(pr) : [], Date.now());
   console.log(rows.length === 0 ? `#${issue}: no claim found` : `#${issue}: ${format(rows)}`);
 }

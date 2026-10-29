@@ -20,10 +20,11 @@ required format. Do not post, label, merge, edit a tracked file, commit or push.
 
 Use a fresh agent for every pass. Two kinds:
 
-- **Full** reads the whole diff. The first pass, and the final one, are full.
-- **Verify** follows a round of fixes. Add the previous pass's findings and the range
+- **Full** reads the whole diff, once, as the first pass. It is exhaustive: every lens on every
+  changed file, since no later pass reads the diff again.
+- **Verify** follows each round of fixes. Add the previous pass's findings and the range
   `<last pass commit>..<head>` to the prompt. It confirms each finding is fixed and flags what the
-  fixes broke, and reads nothing else. Never use it as the first or last pass.
+  fixes broke, and reads nothing else. A clean verify pass ends the review.
 
 ## 2. The reviewer's criteria
 
@@ -68,9 +69,9 @@ the defect and its cost:
 The levels are the plugin's [scale](../setup/references/severity.md); this table applies it to a pass.
 
 Calibrate: a blocking finding names the bug, rule, criterion or test it concerns; a finding that
-cannot is `low` or `info`. Report a defect once: skip one an earlier pass raised and a reply
-answered, and in a verify or final pass raise nothing the diff did not already hold unless a fix
-introduced it.
+cannot is `low` or `info`. Report a defect once, with every place it occurs: one finding on the
+first line, naming the others ("the inputs at X, Y and Z have no error"). Skip one an earlier pass
+raised and a reply answered, and in a verify pass raise nothing in code the fixes did not touch.
 
 A **Narrowing** or **Addition** deviation is a `high` stating it needs the user's confirmation.
 A note on a decision worth a reader's attention is an `info` on the line.
@@ -106,6 +107,6 @@ On exit 1, fix the faults it names and do not post.
 
 Set `ai-review:changes-requested` while a `critical`, `high` or `medium` stands. Then run
 [`address-feedback`](../address-feedback/SKILL.md), which loops back here: verify passes until
-nothing blocking stands, then one final full pass. It sets `ai-review:completed` once that
-final pass returns nothing blocking. A first pass with nothing blocking sets `ai-review:completed`
+one returns nothing blocking, three at most. It sets `ai-review:completed` once that pass is
+clean. A first pass with nothing blocking sets `ai-review:completed`
 itself; its `low` and `info` findings stand as advice and need no reply. This skill never merges.

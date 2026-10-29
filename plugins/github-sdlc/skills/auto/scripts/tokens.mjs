@@ -23,7 +23,7 @@ export function phaseOf(meta) {
   if (/pr-auditor|review|verify/.test(text)) return "review";
   if (/merge|gate/.test(text)) return "merge";
   if (/criteria|reshape|\bissue skill\b|questions/.test(text)) return "criteria";
-  if (/build/.test(text)) return "build";
+  if (/build|screenshot/.test(text)) return "build";
   return "auto";
 }
 

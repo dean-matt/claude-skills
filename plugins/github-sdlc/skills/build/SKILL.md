@@ -1,7 +1,7 @@
 ---
 name: build
 description: Take one GitHub issue from open to a pull request ready for review — check it is ready, claim it, open an isolated worktree, implement, run the checks, take screenshots, commit, push and open the pull request. Use when asked to implement, build, fix or work an issue.
-argument-hint: "[issue-number] [--draft] [--autonomous]"
+argument-hint: "[issue-number] [--draft] [--autonomous] [--no-review]"
 ---
 
 # Building an issue
@@ -16,6 +16,8 @@ Ask only if the request does not say:
 
 - **Draft**: open the pull request as a draft.
 - **Autonomous**: no questions; stop only on the conditions under *Stop*.
+- **No review**: stop once the pull request is open; the caller runs the review in a fresh agent.
+  `auto` passes it, so review fixes do not re-read this whole conversation on every turn.
 
 ## Steps
 
@@ -51,7 +53,9 @@ Ask only if the request does not say:
 7. **Run the check command** and fix failures at the cause. Never push past a failure.
 8. **Prose pass** with [`technical-writing`](../technical-writing/SKILL.md) over commit
    messages, comments and docs.
-9. **Screenshots** if a user can see the change: [`screenshots`](../screenshots/SKILL.md).
+9. **Screenshots** if a user can see the change. Dispatch a fresh subagent that invokes
+   [`screenshots`](../screenshots/SKILL.md) for the worktree and the criteria it shows, and ask
+   for the markdown it returns, so the images stay out of this conversation.
 10. **Commit and push**, one commit per concern, in the repository's commit style. Where the
     repository raises a version at the merge ([`merge-pr`](../merge-pr/SKILL.md#raise-the-version)),
     raise it in the last commit, with the title the pull request will carry and the same flags,
@@ -61,7 +65,7 @@ Ask only if the request does not say:
     node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/version-bump.mjs" --title "<title>"
     ```
 11. **Open the pull request** with [`open-pr`](../open-pr/SKILL.md).
-12. **Hand off** to [`review-pr`](../review-pr/SKILL.md). Do not merge.
+12. **Hand off** to [`review-pr`](../review-pr/SKILL.md), unless *No review* is set. Do not merge.
 
 ## Stop
 
@@ -79,6 +83,7 @@ End with:
 
 - the issue taken, or the reason none was
 - the pull request number, or the condition that stopped the run before one opened
-- the label left on it, and where its review pass ran (the `pr-auditor` agent, or not)
+- the label left on it, and where its review pass ran (the `pr-auditor` agent, or not); with
+  *No review*, that the review is the caller's
 - what waits on the user: a held deviation, a declined `critical`, `high` or `medium`, a protected
   path, a second issue this run filed. Write "nothing" when there is none.

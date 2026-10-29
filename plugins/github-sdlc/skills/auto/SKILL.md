@@ -1,15 +1,15 @@
 ---
 name: auto
-description: Work the repository's issues one after another, from open to merged — write the next issue's acceptance criteria when it lacks them, then dispatch build (which includes the pull request review) and merge-pr's gate per issue in fresh subagents and merge in this session, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
+description: Work the repository's issues one after another, from open to merged — write the next issue's acceptance criteria when it lacks them, then dispatch build, the pull request review and merge-pr's gate per issue in fresh subagents and merge in this session, stop on the first issue that does not merge, and finish by running cleanup. Use when asked to work through the backlog, clear the board, or keep going until a count or a deadline.
 argument-hint: "[--issue <n>] [--count <n>] [--deadline <2h>]"
 ---
 
 # Working the backlog
 
 Lifecycle, per issue: [`issue`](../issue/SKILL.md) where the issue lacks criteria,
-[`build`](../build/SKILL.md) (which hands the pull request to
-[`review-pr`](../review-pr/SKILL.md) and [`address-feedback`](../address-feedback/SKILL.md) until
-`ai-review:completed`), [`merge-pr`](../merge-pr/SKILL.md). [`cleanup`](../cleanup/SKILL.md) runs
+[`build`](../build/SKILL.md), [`review-pr`](../review-pr/SKILL.md) with
+[`address-feedback`](../address-feedback/SKILL.md) until `ai-review:completed`,
+[`merge-pr`](../merge-pr/SKILL.md). [`cleanup`](../cleanup/SKILL.md) runs
 when the run ends. This skill calls them in turn and decides when to stop. Run every command from
 the main checkout.
 
@@ -64,18 +64,26 @@ on the rest.
 
 `needs criteria` goes to *Criteria*, then back here. `ready` goes to step 2b.
 
-**2b. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` in autonomous mode for
-issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s report. Stop where it:
+**2b. Build.** Dispatch a fresh subagent that invokes `github-sdlc:build` with `--autonomous
+--no-review` for issue `<n>`, and say `next.sh` just returned `take <n>`. Ask for `build`'s
+report. Stop where it:
 
-- **puts the review pass outside the `pr-auditor` agent.** An agent that reviews its own work
-  still earns `ai-review:completed`, and GitHub cannot check the claim, so this catches a failed
-  dispatch and not a skipped one
 - **proposes a split.** Add `needs-user` to `<n>`, ask the user with the proposal as the
   recommended answer, and remove the label. On a yes, dispatch a fresh subagent that splits as
   [`issue`](../issue/SKILL.md#splitting) says, then dispatch build again for `<n>`. On a no, dispatch
   build again saying the user kept the issue whole.
 - **names an issue and no pull request.** Give the condition. Looping back either retakes a
   not-ready issue forever or skips a check that failed
+
+**2c. Review.** Dispatch a fresh subagent, which starts small where the build agent ended large:
+
+> Invoke the `github-sdlc:review-pr` skill for pull request `<pr>`, and run `address-feedback`
+> autonomously for each fix round it hands off, working in `.claude/worktrees/<n>`. Report the
+> label left, each pass and the agent it ran in, and what waits on the user.
+
+Stop where it **puts a review pass outside the `pr-auditor` agent.** An agent that reviews its own
+work still earns `ai-review:completed`, and GitHub cannot check the claim, so this catches a
+failed dispatch and not a skipped one.
 
 **Criteria.** Run [`references/criteria.md`](references/criteria.md), then `ready` goes to step 2b.
 
@@ -151,7 +159,7 @@ approach written and approved by the run itself.
 **Start itself.** No cron, no workflow trigger, nothing that begins a run without a person
 asking. Nobody reads an unwatched run, and it merges all the same.
 
-**Share a dispatch.** Once step 2b or step 3 sends a subagent off, it is the worktree's only
+**Share a dispatch.** Once step 2b, 2c or 3 sends a subagent off, it is the worktree's only
 writer until it reports back. Resuming it by hand, or dispatching a second one at the same
 issue, gives the worktree two drivers — wait for the report instead.
 

@@ -14,6 +14,7 @@ const u = (input, cacheWrite, cacheRead, output) => ({
 test("a subagent's phase comes from its type and description", () => {
   assert.equal(phaseOf({ agentType: "github-sdlc:pr-auditor", description: "Full review of PR 7" }), "review");
   assert.equal(phaseOf({ agentType: "general-purpose", description: "Build issue 1064" }), "build");
+  assert.equal(phaseOf({ agentType: "general-purpose", description: "Screenshots for #1064" }), "build");
   assert.equal(phaseOf({ agentType: "general-purpose", description: "Merge gate for PR 7" }), "merge");
   assert.equal(phaseOf({ agentType: "general-purpose", description: "Write criteria for #9" }), "criteria");
   assert.equal(phaseOf({}), "auto");

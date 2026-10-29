@@ -19,5 +19,14 @@ outcome? Each use applies it to a different thing.
 - **Change risk:** a `risk:<level>` label on the issue, set by the criteria stage from the
   criteria and a search of the code they reach, taking the higher of two levels when unsure. It
   decides which design stages run; the
-  [pipeline](../../issue/references/pipeline.md#which-stages-an-issue-needs) says how.
+  [pipeline](../../issue/references/pipeline.md#which-stages-an-issue-needs) says how. The table
+  rates what the change touches; three things raise it:
+  - **The core path:** a change to what users do most (saving, loading, the main flow) is at least
+    `high`, since a bug there costs every user.
+  - **Uncertainty:** a root cause the criteria do not pin down, or a pattern the repository does
+    not use yet, raises it one level.
+  - **No tests:** a change to code no test covers raises it one level, since a regression there
+    shows only in use.
+
+  Raises add up, to `critical` at most.
 - Take the highest level that applies.

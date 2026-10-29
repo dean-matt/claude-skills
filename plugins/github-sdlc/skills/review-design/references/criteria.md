@@ -5,8 +5,9 @@ Stage: criteria. Covers Summary, Reproduction, Open questions, Out of scope and 
 - Summary opens with the problem, then the goal.
 - One `risk:<level>` label, checked against the code the criteria reach
   ([scale](../../setup/references/severity.md)). A missing label is a `medium`; a level below what
-  they touch (stored data, a migration, auth, a shared interface, several areas) is a `high`,
-  since it skips design the issue needs. Give the reason in the finding.
+  they touch (stored data, a migration, auth, a shared interface, several areas), or below what
+  the scale's raises for the core path, uncertainty or missing tests give, is a `high`, since it
+  skips design the issue needs. Give the reason in the finding.
 - A bug's Reproduction has steps, **Actual** and **Expected**.
 - Every criterion states an **observable result**, not an activity, and someone who did not
   write it could check it.

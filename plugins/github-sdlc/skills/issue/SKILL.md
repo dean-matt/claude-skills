@@ -32,9 +32,11 @@ what the issue must do, never how to build it; `build` plans from the criteria a
    gh issue create --title "<title>" --body-file <body.md> --label "type:<type>"
    ```
 
-   Set native relationships the user named, as
-   [`references/relationships.md`](references/relationships.md) describes.
-9. **Report** the issue number. It is ready to build once no Open question is unticked.
+   Add it to the board in Triage ([`board.md`](../setup/references/board.md)); nothing else
+   does, so an issue created without this step is never seen by `auto` or `triage`. Set native
+   relationships the user named, as [`references/relationships.md`](references/relationships.md)
+   describes.
+9. **Report** the issue number, and whether it is on the board. It is ready to build once no Open question is unticked.
 
 ## Options
 

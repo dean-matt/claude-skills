@@ -23,13 +23,14 @@ pass 2 of 2", and "part of the issue is deferred", not "Narrowing".
 
 ## Order
 
-Read the board once per run, in one query, and derive both lists below from that file. A run
-that picks again reuses the file and the ranked list, dropping the issues it has taken; it does
-not re-read the board, since `next.sh` and the *Held* checks read each candidate's live state.
+Read the board once per run, in one query, into a file, and derive both lists below from it. A
+later pick reuses the file and the ranked list, dropping the issues the run has taken; it does not
+re-read the board, since `next.sh` and the *Held* checks read each candidate's live state. Shell
+variables do not carry between commands, so each block names the path. Delete the file when the
+run ends.
 
 ```bash
-board=$(mktemp)
-gh project item-list <n> --owner <owner> --limit 2000 --format json > "$board"
+gh project item-list <n> --owner <owner> --limit 2000 --format json > "${TMPDIR:-/tmp}/sdlc-board.json"
 ```
 
 **Resume first.** An issue you claimed and left unfinished comes before new work: `In Design`,
@@ -40,7 +41,7 @@ claim moves the card out of `Todo`.
 me=$(gh api user --jq .login)
 jq -r "
   .items[] | select((.status | IN(\"In Design\", \"In Development\", \"In Progress\")) and .content.type == \"Issue\"
-                    and ((.assignees // []) | index(\"$me\"))) | .content.number" "$board"
+                    and ((.assignees // []) | index(\"$me\"))) | .content.number" "${TMPDIR:-/tmp}/sdlc-board.json"
 ```
 
 Drop numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held* command
@@ -58,7 +59,7 @@ Then use the first source that exists for new work:
      [.items[] | select(.status == "Todo" and .content.type == "Issue"
                         and .milestone != null and .rank != null)
       | {number: .content.number, milestone: .milestone.title, due: (.milestone.dueOn // ""), rank}]
-     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number' "$board"
+     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number' "${TMPDIR:-/tmp}/sdlc-board.json"
    ```
 
    A board with no `Rank` field returns nothing here; use the next source.
@@ -70,8 +71,8 @@ decides: never reorder by severity.
 
 ## Ready
 
-Check candidates in rank order with one command, before the *Held* checks. It runs the readiness check four at a time and
-stops at the first batch holding a takeable issue:
+Check candidates in rank order with one command, before the *Held* checks. It runs the readiness
+check four at a time and stops at the first batch holding a takeable issue:
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" <n>...    # or the numbers on stdin

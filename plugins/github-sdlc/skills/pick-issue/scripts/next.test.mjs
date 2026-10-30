@@ -80,10 +80,12 @@ sleep 0.2; rm "${live}/$$"; echo "not ready: blocked"; exit 1
 `,
   );
   chmodSync(slow, 0o755);
-  spawnSync("bash", [SCRIPT, ...Array.from({ length: 12 }, (_, i) => String(i + 1))], {
+  const r = spawnSync("bash", [SCRIPT, ...Array.from({ length: 12 }, (_, i) => String(i + 1))], {
     encoding: "utf8",
     env: { ...process.env, READY: slow, REPO: "o/r" },
   });
-  const max = Math.max(...readFileSync(peak, "utf8").trim().split("\n").map(Number));
-  assert.ok(max > 1 && max <= 4, `peak concurrency ${max}`);
+  assert.equal(r.status, 0, r.stderr);
+  const seen = readFileSync(peak, "utf8").trim().split("\n").map(Number);
+  assert.equal(seen.length, 12);
+  assert.ok(Math.max(...seen) <= 4, `peak concurrency ${Math.max(...seen)}`);
 });

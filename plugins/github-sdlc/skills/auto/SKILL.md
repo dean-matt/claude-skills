@@ -118,7 +118,8 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/tokens.mjs" <n> [<pr>]
 
 ## Cleanup
 
-Delete the board file `pick-issue` made, whatever ended the run.
+Run `rm <board-file>`, the path `pick-issue` printed, whatever ended the run. A board file that is
+missing or empty mid-run is a failed read: stop and report it, never "no issues".
 
 When the run ends for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in this
 conversation, never in a subagent, since it asks before deleting. Run it before the report. A

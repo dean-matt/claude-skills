@@ -77,7 +77,8 @@ visible change cannot be captured or uploaded, or the issue needs the user's dec
 
 A stop keeps the claim: the branch, the assignment and the **In Development** card stand, so the
 issue stays yours ([`claim.md`](../issue/references/claim.md#release)). Close the worktree when
-the run ends; push any commits first.
+the run ends; push any commits first. Release the session lock, unless the caller is `auto`, which
+holds it until the issue ends.
 
 ## Report
 

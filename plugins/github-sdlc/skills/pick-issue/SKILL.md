@@ -48,9 +48,15 @@ jq -r "
                     and ((.assignees // []) | index(\"$me\"))) | .content.number" <board-file>
 ```
 
-Drop numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held* command
-below); `build` resumes those. Put the rest ahead of the ranked list, in board order. They still
-pass the readiness and held checks.
+Drop the numbers another live session holds:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/lock.mjs" others
+```
+
+Then drop numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held*
+command below); `build` resumes those. Put the rest ahead of the ranked list, in board order.
+They still pass the readiness and held checks.
 
 Then use the first source that exists for new work:
 
@@ -93,12 +99,14 @@ A parent is never ready (it has open sub-issues); its children are the work.
 
 Check *Held* on the issue `next.sh` takes, not on every candidate. If it is held, drop it and run
 `next.sh` on the rest. An issue is held when someone other than you is assigned, an open pull
-request closes it, or a branch named for it (`*/<number>-*`) exists with no open pull request. An
-issue assigned only to you is not held by its branch: taking it resumes that work.
+request closes it, a branch named for it (`*/<number>-*`) exists with no open pull request, or
+`lock.mjs status <n>` prints `busy`: another session on this login works it. An issue assigned
+only to you is not held by its branch: taking it resumes that work.
 
 ```bash
 gh issue view <n> --json assignees,closedByPullRequestsReferences
 git ls-remote --heads origin '*/<n>-*'
+node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/lock.mjs" status <n>
 ```
 
 ## Always report

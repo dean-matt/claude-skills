@@ -30,8 +30,10 @@ closes, or write the body with no closing line.
 
 ## 3. Screenshots
 
-If the diff changes anything a user sees, invoke [`screenshots`](../screenshots/SKILL.md)
-and keep the subjects it returns.
+If the caller passed screenshots markdown, use it as the section and capture nothing. Otherwise,
+if the diff changes anything a user sees, invoke [`screenshots`](../screenshots/SKILL.md) and
+keep the subjects it returns. If a visible change cannot be captured, stop and report; do not
+open without them.
 
 ## 4. Deviations
 

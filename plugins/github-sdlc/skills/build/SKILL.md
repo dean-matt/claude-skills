@@ -53,9 +53,10 @@ Ask only if the request does not say:
 7. **Run the check command** and fix failures at the cause. Never push past a failure.
 8. **Prose pass** with [`technical-writing`](../technical-writing/SKILL.md) over commit
    messages, comments and docs.
-9. **Screenshots** if a user can see the change. Dispatch a fresh subagent that invokes
+9. **Screenshots** if the diff changes anything a user sees. Dispatch a fresh subagent that invokes
    [`screenshots`](../screenshots/SKILL.md) for the worktree and the criteria it shows, and ask
-   for the markdown it returns, so the images stay out of this conversation.
+   for the markdown it returns, so the images stay out of this conversation. Keep that markdown
+   for step 11. If it cannot capture or upload, stop; do not open the pull request without it.
 10. **Commit and push**, one commit per concern, in the repository's commit style. Where the
     repository raises a version at the merge ([`merge-pr`](../merge-pr/SKILL.md#raise-the-version)),
     raise it in the last commit, with the title the pull request will carry and the same flags,
@@ -64,14 +65,15 @@ Ask only if the request does not say:
     ```bash
     node "${CLAUDE_PLUGIN_ROOT}/skills/merge-pr/scripts/version-bump.mjs" --title "<title>"
     ```
-11. **Open the pull request** with [`open-pr`](../open-pr/SKILL.md).
+11. **Open the pull request** with [`open-pr`](../open-pr/SKILL.md), passing the step 9 markdown
+    as its Screenshots section.
 12. **Hand off** to [`review-pr`](../review-pr/SKILL.md), unless *No review* is set. Do not merge.
 
 ## Stop
 
 Stop and report, never forcing, when the issue is held, an edit appears that this run did not
-make (a second driver), the check fails twice for a reason you cannot fix, or the issue needs the
-user's decision. A second bug found on the way becomes its own issue.
+make (a second driver), the check fails twice for a reason you cannot fix, screenshots of a
+visible change cannot be captured or uploaded, or the issue needs the user's decision. A second bug found on the way becomes its own issue.
 
 A stop keeps the claim: the branch, the assignment and the **In Development** card stand, so the
 issue stays yours ([`claim.md`](../issue/references/claim.md#release)). Close the worktree when
@@ -83,6 +85,7 @@ End with:
 
 - the issue taken, or the reason none was
 - the pull request number, or the condition that stopped the run before one opened
+- screenshots: embedded, why the change is not visible, or that capture failed
 - the label left on it, and where its review pass ran (the `pr-auditor` agent, or not); with
   *No review*, that the review is the caller's
 - what waits on the user: a held deviation, a declined `critical`, `high` or `medium`, a protected

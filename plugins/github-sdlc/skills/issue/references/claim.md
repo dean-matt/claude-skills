@@ -65,8 +65,9 @@ gh issue edit <n> --remove-label needs-user   # on the answer or the next claim
 
 ## Give up
 
-Release only when the holder says to give the issue up. Drop the lock, unassign and move the card back to
-**Todo** ([`board.md`](../../setup/references/board.md#move-a-card)):
+Release only when the holder says to give the issue up. Drop the lock (the command under
+[Release](#release)), unassign and move the card back to **Todo**
+([`board.md`](../../setup/references/board.md#move-a-card)):
 
 ```bash
 gh issue edit <n> --remove-assignee @me

@@ -48,9 +48,15 @@ jq -r "
                     and ((.assignees // []) | index(\"$me\"))) | .content.number" <board-file>
 ```
 
-Drop numbers another live session holds (`lock.mjs others` prints them), then numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held* command
-below); `build` resumes those. Put the rest ahead of the ranked list, in board order. They still
-pass the readiness and held checks.
+Drop the numbers another live session holds:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/lock.mjs" others
+```
+
+Then drop numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held*
+command below); `build` resumes those. Put the rest ahead of the ranked list, in board order.
+They still pass the readiness and held checks.
 
 Then use the first source that exists for new work:
 

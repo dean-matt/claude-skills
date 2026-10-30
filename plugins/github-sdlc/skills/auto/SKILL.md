@@ -122,6 +122,8 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/tokens.mjs" <n> [<pr>]
 
 ## Cleanup
 
+Release the lock on the issue in flight, whatever ended the run, with the command in step 4.
+
 Run `rm -f <board-file>`, the path `pick-issue` printed, whatever ended the run. A board file that
 is missing or empty mid-run is a failed read: stop and report it, never "no issues".
 

@@ -7,7 +7,9 @@
  *   node lock.mjs others        print each issue number another live session holds
  *   node lock.mjs release <n>   drop this session's lock; another session's stays
  *
- * A session is the Claude Code process (`CLAUDE_PID`), so a subagent and its parent share a lock.
+ * A session is the Claude Code process (`CLAUDE_PID`, else the nearest `claude` ancestor), so a
+ * subagent and its parent share a lock. With neither it exits 2 rather than lock on a shell that
+ * dies with the call. Liveness reads `ps`, so it needs a POSIX system.
  * A lock whose process has died, or whose pid a later process reused, is stale: `acquire` takes
  * it over and `status` and `others` ignore it. Locks live in the repository's common git
  * directory, so every worktree of one clone sees them. They do not span machines.
@@ -26,8 +28,27 @@ function started(pid) {
   }
 }
 
-function self() {
-  const pid = Number(process.env.CLAUDE_PID) || process.ppid;
+/** The nearest ancestor of this process whose command is `name`, or 0. */
+export function ancestor(name = "claude") {
+  let pid = process.ppid;
+  for (let depth = 0; pid > 1 && depth < 20; depth++) {
+    try {
+      const [ppid, ...comm] = execFileSync("ps", ["-o", "ppid=,comm=", "-p", String(pid)], { encoding: "utf8" }).trim().split(/\s+/);
+      if (comm.join(" ").split("/").pop() === name) return pid;
+      pid = Number(ppid);
+    } catch {
+      return 0;
+    }
+  }
+  return 0;
+}
+
+export function self(env = process.env) {
+  const pid = Number(env.CLAUDE_PID) || ancestor();
+  if (!pid) {
+    console.error("lock.mjs: no Claude Code session found (CLAUDE_PID unset, no claude ancestor)");
+    process.exit(2);
+  }
   return { pid, start: started(pid) };
 }
 
@@ -55,6 +76,29 @@ export function inspect(path, me = self()) {
 }
 
 /**
+ * Moves a stale lock aside and deletes it. The move is checked: where the lock it took was live,
+ * another session had just replaced the stale one, so it is put back and nothing is cleared.
+ */
+export function clear(path, me = self()) {
+  const aside = `${path}.stale-${process.pid}`;
+  try {
+    renameSync(path, aside);
+  } catch {
+    return true;
+  }
+  if (inspect(aside, me).state === "free") {
+    rmSync(aside, { recursive: true, force: true });
+    return true;
+  }
+  try {
+    renameSync(aside, path);
+  } catch {
+    rmSync(aside, { recursive: true, force: true });
+  }
+  return false;
+}
+
+/**
  * Takes the lock, or reports its live holder. The owner file is written before the directory
  * appears at `path`, and a rename onto a non-empty directory fails, so no one sees a half-made lock.
  */
@@ -64,13 +108,7 @@ export function acquire(dir, n, me = self()) {
     const found = inspect(path, me);
     if (found.state === "ours") return found;
     if (found.state === "busy") return found;
-    const stale = `${path}.stale-${process.pid}`;
-    try {
-      renameSync(path, stale);
-      rmSync(stale, { recursive: true, force: true });
-    } catch {
-      // No lock to clear, or another session cleared it first.
-    }
+    if (!clear(path, me)) continue;
     const tmp = mkdtempSync(join(dir, `${n}.new-`));
     writeFileSync(join(tmp, "owner"), JSON.stringify(me));
     try {

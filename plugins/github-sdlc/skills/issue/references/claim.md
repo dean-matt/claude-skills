@@ -13,7 +13,9 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/lock.mjs" acquire <n>
 ```
 
 `busy <pid>` means another live session on this machine holds the issue: stop and name it. A lock
-this session already holds, which includes its subagents, prints `held`. Then check the assignee:
+this session already holds, which includes its subagents, prints `held`. The lock is local to one
+clone: sessions on two machines at once are not kept apart, but stopping on one machine and
+resuming on another is safe, since the first session's lock lapses with it. Then check the assignee:
 
 ```bash
 me=$(gh api user --jq .login)

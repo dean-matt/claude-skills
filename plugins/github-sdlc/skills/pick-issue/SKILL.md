@@ -23,15 +23,29 @@ pass 2 of 2", and "part of the issue is deferred", not "Narrowing".
 
 ## Order
 
+Read the board once per run, in one query, into a file, and derive both lists below from it. A
+later pick reuses the file and the ranked list, dropping the issues the run has claimed or merged
+(from the resume list too); it does not re-read the board, since `next.sh` and the *Held* checks read each candidate's live state. A
+file made for this run keeps two runs from reading each other's board: print its path once and
+carry it, as `auto` carries its deadline, since shell variables do not carry between commands.
+An issue filed or re-ranked mid-run waits for the next run. A standalone pick reads the board
+afresh and runs `rm <board-file>` after.
+
+```bash
+f=$(mktemp); gh project item-list <n> --owner <owner> --limit 2000 --format json > "$f" && echo "$f" || rm -f "$f"
+```
+
+It prints `<board-file>` below; on a failed read it prints nothing, so stop and report.
+
 **Resume first.** An issue you claimed and left unfinished comes before new work: `In Design`,
 `In Development` or `In Progress` on the board, assigned to you, no open pull request. The board query below reads `Todo` only, and a
 claim moves the card out of `Todo`.
 
 ```bash
 me=$(gh api user --jq .login)
-gh project item-list <n> --owner <owner> --limit 2000 --format json --jq "
+jq -r "
   .items[] | select((.status | IN(\"In Design\", \"In Development\", \"In Progress\")) and .content.type == \"Issue\"
-                    and ((.assignees // []) | index(\"$me\"))) | .content.number"
+                    and ((.assignees // []) | index(\"$me\"))) | .content.number" <board-file>
 ```
 
 Drop numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held* command
@@ -45,11 +59,11 @@ Then use the first source that exists for new work:
    else by title), then lowest rank:
 
    ```bash
-   gh project item-list <n> --owner <owner> --limit 2000 --format json --jq '
+   jq -r '
      [.items[] | select(.status == "Todo" and .content.type == "Issue"
                         and .milestone != null and .rank != null)
       | {number: .content.number, milestone: .milestone.title, due: (.milestone.dueOn // ""), rank}]
-     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number'
+     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number' <board-file>
    ```
 
    A board with no `Rank` field returns nothing here; use the next source.
@@ -61,8 +75,8 @@ decides: never reorder by severity.
 
 ## Ready
 
-Check candidates in rank order with one command, before the *Held* checks. It runs the readiness check ten at a time and
-stops at the first batch holding a takeable issue:
+Check candidates in rank order with one command, before the *Held* checks. It runs the readiness
+check four at a time and stops at the first batch holding a takeable issue:
 
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/next.sh" <n>...    # or the numbers on stdin

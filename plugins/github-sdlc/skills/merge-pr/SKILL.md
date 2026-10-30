@@ -106,6 +106,9 @@ gh pr merge "$n" --squash --delete-branch --match-head-commit <sha>
 git checkout <default-branch> && git pull --ff-only
 ```
 
+Wait five seconds (`sleep 5`) before the card move, so the merge and the move are not one burst
+of GitHub calls.
+
 Closing a blocker clears the block; edit nothing on blocked issues. Move the issue's card to
 **Done** ([`../setup/references/board.md`](../setup/references/board.md)). A failure there does
 not undo the merge: report the card as not moved.

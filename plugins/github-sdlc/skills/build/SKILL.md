@@ -72,9 +72,8 @@ Ask only if the request does not say:
 ## Stop
 
 Stop and report, never forcing, when the issue is held, an edit appears that this run did not
-make (a second driver), the check fails twice for a reason you cannot fix, screenshots of a visible change cannot be
-captured or uploaded, or the issue needs the
-user's decision. A second bug found on the way becomes its own issue.
+make (a second driver), the check fails twice for a reason you cannot fix, screenshots of a
+visible change cannot be captured or uploaded, or the issue needs the user's decision. A second bug found on the way becomes its own issue.
 
 A stop keeps the claim: the branch, the assignment and the **In Development** card stand, so the
 issue stays yours ([`claim.md`](../issue/references/claim.md#release)). Close the worktree when

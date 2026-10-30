@@ -24,8 +24,8 @@ pass 2 of 2", and "part of the issue is deferred", not "Narrowing".
 ## Order
 
 Read the board once per run, in one query, into a file, and derive both lists below from it. A
-later pick reuses the file and the ranked list, dropping the issues the run has taken; it does not
-re-read the board, since `next.sh` and the *Held* checks read each candidate's live state. A
+later pick reuses the file and the ranked list, dropping the issues the run has claimed or merged
+(from the resume list too); it does not re-read the board, since `next.sh` and the *Held* checks read each candidate's live state. A
 file made for this run keeps two runs from reading each other's board: print its path once and
 carry it, as `auto` carries its deadline, since shell variables do not carry between commands.
 An issue filed or re-ranked mid-run waits for the next run. A standalone pick reads the board

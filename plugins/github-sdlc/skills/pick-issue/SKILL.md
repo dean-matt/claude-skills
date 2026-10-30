@@ -29,11 +29,13 @@ re-read the board, since `next.sh` and the *Held* checks read each candidate's l
 file made for this run keeps two runs from reading each other's board: print its path once and
 carry it, as `auto` carries its deadline, since shell variables do not carry between commands.
 An issue filed or re-ranked mid-run waits for the next run. A standalone pick reads the board
-afresh and deletes the file after.
+afresh and runs `rm <board-file>` after.
 
 ```bash
-f=$(mktemp) && gh project item-list <n> --owner <owner> --limit 2000 --format json > "$f" && echo "$f"
+f=$(mktemp); gh project item-list <n> --owner <owner> --limit 2000 --format json > "$f" && echo "$f" || rm -f "$f"
 ```
+
+It prints `<board-file>` below; on a failed read it prints nothing, so stop and report.
 
 **Resume first.** An issue you claimed and left unfinished comes before new work: `In Design`,
 `In Development` or `In Progress` on the board, assigned to you, no open pull request. The board query below reads `Todo` only, and a

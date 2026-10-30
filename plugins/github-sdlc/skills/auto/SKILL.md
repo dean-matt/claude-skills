@@ -96,8 +96,8 @@ of a gate judging its own work. Its prompt is exactly this, with the number subs
 
 Add nothing: no review commentary, no earlier denial. `merge-pr` runs the gate; nothing here runs
 it first. On `gate passed at <sha>`, run `merge-pr`'s *Merge, then clean up* yourself with that
-`<sha>`: the merge belongs to the session whose user ran `auto`, never to a subagent. Wait five
-seconds (`sleep 5`) between the merge, the card move and the next pick.
+`<sha>`: the merge belongs to the session whose user ran `auto`, never to a subagent. `merge-pr`
+pauses before the card move; wait five seconds (`sleep 5`) before the next pick.
 
 Where the report names a protected path, a blocking decline, an unconfirmed deviation or
 the label, add `needs-user` to the issue while you ask, and remove it once the user answers
@@ -118,7 +118,9 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/tokens.mjs" <n> [<pr>]
 
 ## Cleanup
 
-Delete the board file `pick-issue` made. When the run ends for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in this
+Delete the board file `pick-issue` made, whatever ended the run.
+
+When the run ends for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in this
 conversation, never in a subagent, since it asks before deleting. Run it before the report. A
 stopped issue's branch, pull request and worktree show as keep or ask items and stay unless the
 user says otherwise.

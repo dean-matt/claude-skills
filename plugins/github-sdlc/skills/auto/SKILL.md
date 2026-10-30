@@ -107,7 +107,11 @@ continue at step 4. Any other condition ends the run.
 
 **4. Count the merge and loop.** `gh pr view <pr> --json state,mergeCommit` settles whether it
 merged; a subagent's report does not. A `state` other than `MERGED` stops the run. The count is
-of merges, not attempts.
+of merges, not attempts. Release the lock on `<n>` whether it merged or stopped:
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/lock.mjs" release <n>
+```
 
 Time the issue, merged or stopped, and keep the output for the report:
 

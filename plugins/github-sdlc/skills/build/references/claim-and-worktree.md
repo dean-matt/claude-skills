@@ -5,6 +5,15 @@
 The branch name derives from the issue number, so a second session claiming the issue creates
 the same ref and GitHub refuses it with `Reference already exists (HTTP 422)`.
 
+Take the session lock first: `busy <pid>` means another live session holds the issue, so take the
+next one or stop and name it.
+
+```bash
+node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/lock.mjs" acquire <n>
+```
+
+Then create the branch:
+
 ```bash
 n=<n>; base=$(gh repo view --json defaultBranchRef --jq .defaultBranchRef.name)
 me=$(gh api user --jq .login)
@@ -40,7 +49,7 @@ data directory, `.env`) with `ln -sfn`; never link a database two agents would w
 
 ## Give up a claim
 
-Only when the user says to give the issue up; a stopped run keeps its claim
+Only when the user says to give the issue up; a stopped run keeps its claim (but drops its lock)
 ([`claim.md`](../../issue/references/claim.md#release)). Delete the branch only if neither copy
 is ahead of the base, unassign yourself, then move the card back to **Todo**.
 

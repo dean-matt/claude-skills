@@ -23,15 +23,24 @@ pass 2 of 2", and "part of the issue is deferred", not "Narrowing".
 
 ## Order
 
+Read the board once per run, in one query, and derive both lists below from that file. A run
+that picks again reuses the file and the ranked list, dropping the issues it has taken; it does
+not re-read the board, since `next.sh` and the *Held* checks read each candidate's live state.
+
+```bash
+board=$(mktemp)
+gh project item-list <n> --owner <owner> --limit 2000 --format json > "$board"
+```
+
 **Resume first.** An issue you claimed and left unfinished comes before new work: `In Design`,
 `In Development` or `In Progress` on the board, assigned to you, no open pull request. The board query below reads `Todo` only, and a
 claim moves the card out of `Todo`.
 
 ```bash
 me=$(gh api user --jq .login)
-gh project item-list <n> --owner <owner> --limit 2000 --format json --jq "
+jq -r "
   .items[] | select((.status | IN(\"In Design\", \"In Development\", \"In Progress\")) and .content.type == \"Issue\"
-                    and ((.assignees // []) | index(\"$me\"))) | .content.number"
+                    and ((.assignees // []) | index(\"$me\"))) | .content.number" "$board"
 ```
 
 Drop numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held* command
@@ -45,11 +54,11 @@ Then use the first source that exists for new work:
    else by title), then lowest rank:
 
    ```bash
-   gh project item-list <n> --owner <owner> --limit 2000 --format json --jq '
+   jq -r '
      [.items[] | select(.status == "Todo" and .content.type == "Issue"
                         and .milestone != null and .rank != null)
       | {number: .content.number, milestone: .milestone.title, due: (.milestone.dueOn // ""), rank}]
-     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number'
+     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number' "$board"
    ```
 
    A board with no `Rank` field returns nothing here; use the next source.
@@ -61,7 +70,7 @@ decides: never reorder by severity.
 
 ## Ready
 
-Check candidates in rank order with one command, before the *Held* checks. It runs the readiness check ten at a time and
+Check candidates in rank order with one command, before the *Held* checks. It runs the readiness check four at a time and
 stops at the first batch holding a takeable issue:
 
 ```bash

@@ -98,7 +98,8 @@ repairs it from the pull request's Development box).
 ## Merge, then clean up
 
 Close the issue's worktree first, or `gh` cannot delete the branch it holds. It refuses to
-discard uncommitted work; stop on that refusal and never force it.
+discard uncommitted work; stop on that refusal and never force it. Run the merge, the card move
+and anything after as separate commands, since chained they make one burst of GitHub calls.
 
 ```bash
 git worktree remove .claude/worktrees/<issue> && git worktree prune

@@ -56,7 +56,8 @@ request nobody asked for. The deadline stops the next issue from starting, not t
 **2. Choose.** Say what you are doing in plain words, as [`pick-issue`](../pick-issue/SKILL.md#what-to-tell-the-user) says. Rank the board with [`pick-issue`](../pick-issue/SKILL.md)'s Order, which puts an
 issue you claimed and left unfinished ahead of new work. Run `next.sh --criteria` on that list. It
 ends `take <n>` or `none`; on `none`, stop and give each reason it printed. Check its *Held* rules
-on `<n>` only; if held, drop it and run `next.sh --criteria` on the rest.
+on `<n>` only; if held, drop it and run `next.sh --criteria` on the rest. Read the board on the
+first issue only and keep the ranked list for the run, as `pick-issue`'s Order says.
 
 **Claim `<n>` before any dispatch,** as [`claim`](../issue/references/claim.md) says. Print the
 issue number once the card has moved. If someone else holds it, drop it and run `next.sh --criteria`
@@ -95,7 +96,7 @@ of a gate judging its own work. Its prompt is exactly this, with the number subs
 
 Add nothing: no review commentary, no earlier denial. `merge-pr` runs the gate; nothing here runs
 it first. On `gate passed at <sha>`, run `merge-pr`'s *Merge, then clean up* yourself with that
-`<sha>`: the merge belongs to the session whose user ran `auto`, never to a subagent.
+`<sha>`, each step in its own command: the merge belongs to the session whose user ran `auto`, never to a subagent.
 
 Where the report names a protected path, a blocking decline, an unconfirmed deviation or
 the label, add `needs-user` to the issue while you ask, and remove it once the user answers
@@ -142,7 +143,8 @@ Name a worktree in particular: the next run's `git worktree add` fails on it unt
 
 A subagent's report of "API rate limit exceeded" ends the run. Wait for the reset before the next
 run; never retry in a loop. `gh api rate_limit` does not show the secondary limit that expensive
-bursts trip, so plenty left there proves nothing.
+bursts trip, so plenty left there proves nothing. Keep the burst small: one board read per run,
+the merge, the card move and the next pick each in their own command, and a few concurrent calls.
 
 ## Will not do
 

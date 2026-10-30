@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
-import { chmodSync, mkdtempSync, writeFileSync } from "node:fs";
+import { chmodSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { test } from "node:test";
@@ -65,4 +65,25 @@ test("stops after the first batch holding a takeable issue", () => {
   const r = next([...blocked, "1", "3", ...blocked.slice(0, 8), "99"]);
   assert.equal(r.lines.at(-1), "take 3");
   assert.ok(!r.lines.some((l) => l.startsWith("99:")));
+});
+
+test("runs at most four readiness checks at once", () => {
+  const live = join(dir, "live");
+  const peak = join(dir, "peak");
+  const slow = join(dir, "slow.sh");
+  writeFileSync(
+    slow,
+    `#!/usr/bin/env bash
+mkdir -p "${live}"; touch "${live}/$$"
+n=$(ls "${live}" | wc -l); echo "$n" >> "${peak}"
+sleep 0.2; rm "${live}/$$"; echo "not ready: blocked"; exit 1
+`,
+  );
+  chmodSync(slow, 0o755);
+  spawnSync("bash", [SCRIPT, ...Array.from({ length: 12 }, (_, i) => String(i + 1))], {
+    encoding: "utf8",
+    env: { ...process.env, READY: slow, REPO: "o/r" },
+  });
+  const max = Math.max(...readFileSync(peak, "utf8").trim().split("\n").map(Number));
+  assert.ok(max > 1 && max <= 4, `peak concurrency ${max}`);
 });

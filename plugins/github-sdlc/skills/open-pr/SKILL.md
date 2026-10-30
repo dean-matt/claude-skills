@@ -32,7 +32,8 @@ closes, or write the body with no closing line.
 
 If the caller passed screenshots markdown, use it as the section and capture nothing. Otherwise,
 if the diff changes anything a user sees, invoke [`screenshots`](../screenshots/SKILL.md) and
-keep the subjects it returns. Never open the pull request on a visible change without them.
+keep the subjects it returns. If a visible change cannot be captured, stop and report; do not
+open without them.
 
 ## 4. Deviations
 

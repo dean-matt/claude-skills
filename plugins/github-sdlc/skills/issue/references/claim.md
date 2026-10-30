@@ -12,7 +12,9 @@ The assignee names a login, and two sessions can share one. Take the session loc
 node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/lock.mjs" acquire <n>
 ```
 
-`busy <pid>` means another live session on this machine holds the issue: stop and name it. A lock
+`busy <pid>` means another live session on this machine holds the issue: stop and name it. Exit 2
+means the script could not tell which session this is (`CLAUDE_PID` unset, no `claude` ancestor):
+stop and report it. A lock
 this session already holds, which includes its subagents, prints `held`. The lock is local to one
 clone: sessions on two machines at once are not kept apart, but stopping on one machine and
 resuming on another is safe, since the first session's lock lapses with it. Then check the assignee:

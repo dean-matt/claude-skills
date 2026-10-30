@@ -7,9 +7,10 @@
  *   node lock.mjs others        print each issue number another live session holds
  *   node lock.mjs release <n>   drop this session's lock; another session's stays
  *
- * A session is the Claude Code process (`CLAUDE_PID`, else the nearest `claude` ancestor), so a
- * subagent and its parent share a lock. With neither it exits 2 rather than lock on a shell that
- * dies with the call. Liveness reads `ps`, so it needs a POSIX system.
+ * A session is the Claude Code process (`CLAUDE_PID`, which Claude Code exports, else the nearest
+ * ancestor whose command is `claude`), so a subagent and its parent share a lock. With neither it
+ * exits 2 rather than lock on a shell that dies with the call. Liveness reads `ps`, so it needs a
+ * POSIX system.
  * A lock whose process has died, or whose pid a later process reused, is stale: `acquire` takes
  * it over and `status` and `others` ignore it. Locks live in the repository's common git
  * directory, so every worktree of one clone sees them. They do not span machines.
@@ -93,7 +94,7 @@ export function clear(path, me = self()) {
   try {
     renameSync(aside, path);
   } catch {
-    rmSync(aside, { recursive: true, force: true });
+    // A third session took `path` meanwhile. Leave the live lock in `aside` rather than delete it.
   }
   return false;
 }

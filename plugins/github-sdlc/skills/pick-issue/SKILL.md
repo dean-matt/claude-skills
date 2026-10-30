@@ -25,12 +25,14 @@ pass 2 of 2", and "part of the issue is deferred", not "Narrowing".
 
 Read the board once per run, in one query, into a file, and derive both lists below from it. A
 later pick reuses the file and the ranked list, dropping the issues the run has taken; it does not
-re-read the board, since `next.sh` and the *Held* checks read each candidate's live state. Shell
-variables do not carry between commands, so each block names the path. Delete the file when the
-run ends.
+re-read the board, since `next.sh` and the *Held* checks read each candidate's live state. A
+file made for this run keeps two runs from reading each other's board: print its path once and
+carry it, as `auto` carries its deadline, since shell variables do not carry between commands.
+An issue filed or re-ranked mid-run waits for the next run. A standalone pick reads the board
+afresh and deletes the file after.
 
 ```bash
-gh project item-list <n> --owner <owner> --limit 2000 --format json > "${TMPDIR:-/tmp}/sdlc-board.json"
+f=$(mktemp) && gh project item-list <n> --owner <owner> --limit 2000 --format json > "$f" && echo "$f"
 ```
 
 **Resume first.** An issue you claimed and left unfinished comes before new work: `In Design`,
@@ -41,7 +43,7 @@ claim moves the card out of `Todo`.
 me=$(gh api user --jq .login)
 jq -r "
   .items[] | select((.status | IN(\"In Design\", \"In Development\", \"In Progress\")) and .content.type == \"Issue\"
-                    and ((.assignees // []) | index(\"$me\"))) | .content.number" "${TMPDIR:-/tmp}/sdlc-board.json"
+                    and ((.assignees // []) | index(\"$me\"))) | .content.number" <board-file>
 ```
 
 Drop numbers an open pull request closes (`closedByPullRequestsReferences`, in the *Held* command
@@ -59,7 +61,7 @@ Then use the first source that exists for new work:
      [.items[] | select(.status == "Todo" and .content.type == "Issue"
                         and .milestone != null and .rank != null)
       | {number: .content.number, milestone: .milestone.title, due: (.milestone.dueOn // ""), rank}]
-     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number' "${TMPDIR:-/tmp}/sdlc-board.json"
+     | sort_by([(.due == ""), .due, .milestone, .rank]) | .[].number' <board-file>
    ```
 
    A board with no `Rank` field returns nothing here; use the next source.

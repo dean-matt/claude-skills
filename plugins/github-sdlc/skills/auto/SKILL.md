@@ -96,8 +96,8 @@ of a gate judging its own work. Its prompt is exactly this, with the number subs
 
 Add nothing: no review commentary, no earlier denial. `merge-pr` runs the gate; nothing here runs
 it first. On `gate passed at <sha>`, run `merge-pr`'s *Merge, then clean up* yourself with that
-`<sha>`, one block at a time: the merge belongs to the session whose user ran `auto`, never to a
-subagent.
+`<sha>`: the merge belongs to the session whose user ran `auto`, never to a subagent. Wait five
+seconds (`sleep 5`) between the merge, the card move and the next pick.
 
 Where the report names a protected path, a blocking decline, an unconfirmed deviation or
 the label, add `needs-user` to the issue while you ask, and remove it once the user answers
@@ -118,7 +118,7 @@ node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/tokens.mjs" <n> [<pr>]
 
 ## Cleanup
 
-When the run ends for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in this
+Delete the board file `pick-issue` made. When the run ends for any reason but a rate limit, invoke [`cleanup`](../cleanup/SKILL.md) in this
 conversation, never in a subagent, since it asks before deleting. Run it before the report. A
 stopped issue's branch, pull request and worktree show as keep or ask items and stay unless the
 user says otherwise.
@@ -145,8 +145,7 @@ Name a worktree in particular: the next run's `git worktree add` fails on it unt
 A subagent's report of "API rate limit exceeded" ends the run. Wait for the reset before the next
 run; never retry in a loop. `gh api rate_limit` does not show the secondary limit that expensive
 bursts trip, so plenty left there proves nothing. Keep the burst small: one board read
-per run, the merge, the card move and the next pick each in their own command, and few concurrent
-calls.
+per run, a pause between the merge, the card move and the next pick, and few concurrent calls.
 
 ## Will not do
 

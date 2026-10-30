@@ -98,20 +98,16 @@ repairs it from the pull request's Development box).
 ## Merge, then clean up
 
 Close the issue's worktree first, or `gh` cannot delete the branch it holds. It refuses to
-discard uncommitted work; stop on that refusal and never force it. Run each block below as its own
-command, then the card move after them: chained, they make one burst of GitHub calls.
+discard uncommitted work; stop on that refusal and never force it.
 
 ```bash
 git worktree remove .claude/worktrees/<issue> && git worktree prune
-```
-
-```bash
 gh pr merge "$n" --squash --delete-branch --match-head-commit <sha>
-```
-
-```bash
 git checkout <default-branch> && git pull --ff-only
 ```
+
+Wait five seconds (`sleep 5`) before the card move, so the merge and the move are not one burst
+of GitHub calls.
 
 Closing a blocker clears the block; edit nothing on blocked issues. Move the issue's card to
 **Done** ([`../setup/references/board.md`](../setup/references/board.md)). A failure there does

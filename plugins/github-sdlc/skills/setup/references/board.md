@@ -5,7 +5,7 @@ each time; nothing is hard-coded.
 
 | Status | Set by |
 |---|---|
-| Triage | `triage`, on a new issue |
+| Triage | `issue`, on creation; `triage`, on an issue filed elsewhere |
 | Todo | `triage`, when the issue is ready to pick |
 | In Development | `auto`, `build` or `issue`, on claim |
 | In Review | `open-pr` |

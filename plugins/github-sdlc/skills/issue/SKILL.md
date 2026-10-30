@@ -32,16 +32,20 @@ what the issue must do, never how to build it; `build` plans from the criteria a
    gh issue create --title "<title>" --body-file <body.md> --label "type:<type>"
    ```
 
-   Set native relationships the user named, as
-   [`references/relationships.md`](references/relationships.md) describes.
-9. **Report** the issue number. It is ready to build once no Open question is unticked.
+   Add it to the board in Triage: "Find the project" and "Move a card" in
+   [`board.md`](../setup/references/board.md), with status `Triage`. With no project, no `Triage`
+   option or a failed move, skip the move and report it; the issue stays created. Set native
+   relationships the user named, as [`references/relationships.md`](references/relationships.md)
+   describes.
+9. **Report** the issue number and whether the card is in Triage or not moved, and why. It is
+   ready to build once no Open question is unticked.
 
 ## Options
 
 Pass `--autonomous`.
 
 - **Interactive** (default): show the draft before creating it.
-- **Autonomous**: create without asking, and sort each gap:
+- **Autonomous**: create without asking, add the card to Triage as in step 8, and sort each gap:
   - **Low stakes** (naming, wording, a default for an edge the criteria leave open): decide it
     from the issue, the code and Out of scope, taking the narrower answer where they leave it
     open. Write `- [x] <question> — Decided (auto): <answer>, because <reason>`.

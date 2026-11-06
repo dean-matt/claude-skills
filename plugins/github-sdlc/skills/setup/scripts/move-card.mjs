@@ -5,7 +5,7 @@
  *
  * The project id, Status field id and option ids do not change between moves, so they are read
  * once and kept in a file under the temp directory for an hour. A move is then `item-add` and
- * `item-edit`, two calls instead of four. A cached id the board no longer accepts is read again
+ * `item-edit`, two calls instead of four, and the read is one cheap query. A cached id the board no longer accepts is read again
  * once before the move fails. Exits 3 when the board has no such status, 2 on any other failure.
  */
 import { readFileSync, writeFileSync } from "node:fs";
@@ -18,21 +18,25 @@ export const TTL_MS = 60 * 60 * 1000;
 /** @param {string} owner @param {string} project */
 export const cachePath = (owner, project) => join(tmpdir(), `sdlc-board-${owner}-${project}.json`);
 
+const STATUS = `query($o:String!,$n:Int!){repositoryOwner(login:$o){... on ProjectV2Owner{projectV2(number:$n){
+  id field(name:"Status"){... on ProjectV2SingleSelectField{id options{id name}}}}}}}`;
+
 /**
- * Reads the project id, the Status field id and its options.
+ * Reads the project id, the Status field id and its options in one query; `gh project
+ * field-list` costs 30-40 points for the same answer.
  *
  * @param {typeof capture} run
  * @returns {{ projectId: string, fieldId: string, options: Record<string, string> }}
  */
 export function resolve(project, owner, run = capture) {
-  const gh = (args) => JSON.parse(run("gh", [...args, "--owner", owner, "--format", "json"]));
-  const { id: projectId } = gh(["project", "view", project]);
-  const field = gh(["project", "field-list", project]).fields.find((f) => f.name === "Status");
-  if (!field) throw new Error("the board has no Status field");
+  const out = run("gh", ["api", "graphql", "-f", `query=${STATUS}`, "-f", `o=${owner}`, "-F", `n=${project}`]);
+  const board = JSON.parse(out).data.repositoryOwner?.projectV2;
+  if (!board) throw new Error(`no project ${project} for ${owner}`);
+  if (!board.field?.id) throw new Error("the board has no Status field");
   return {
-    projectId,
-    fieldId: field.id,
-    options: Object.fromEntries(field.options.map((o) => [o.name, o.id])),
+    projectId: board.id,
+    fieldId: board.field.id,
+    options: Object.fromEntries(board.field.options.map((o) => [o.name, o.id])),
   };
 }
 

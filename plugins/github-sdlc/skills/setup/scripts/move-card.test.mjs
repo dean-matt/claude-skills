@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { moveCard } from "./move-card.mjs";
 
-const FIELD = { fields: [{ name: "Status", id: "F", options: [{ name: "Done", id: "D" }, { name: "Todo", id: "T" }] }] };
+const BOARD = { data: { repositoryOwner: { projectV2: { id: "P", field: { id: "F", options: [{ name: "Done", id: "D" }, { name: "Todo", id: "T" }] } } } } };
 
 /** A fake `gh` that records its calls and answers like the real one. */
 function gh({ failEditOnce = false } = {}) {
@@ -10,8 +10,7 @@ function gh({ failEditOnce = false } = {}) {
   let failed = false;
   const run = (_file, args) => {
     calls.push(args.slice(0, 2).join(" "));
-    if (args[1] === "view") return JSON.stringify({ id: "P" });
-    if (args[1] === "field-list") return JSON.stringify(FIELD);
+    if (args[0] === "api") return JSON.stringify(BOARD);
     if (args[1] === "item-add") return JSON.stringify({ id: "I" });
     if (args[1] === "item-edit" && failEditOnce && !failed) {
       failed = true;
@@ -31,7 +30,7 @@ test("the first move reads the board, the next two calls only", () => {
   const f = gh();
   const s = store();
   moveCard(args, { run: f.run, ...s, now: () => 0 });
-  assert.deepEqual(f.calls, ["project view", "project field-list", "project item-add", "project item-edit"]);
+  assert.deepEqual(f.calls, ["api graphql", "project item-add", "project item-edit"]);
   const g = gh();
   moveCard({ ...args, status: "Todo" }, { run: g.run, ...s, now: () => 1000 });
   assert.deepEqual(g.calls, ["project item-add", "project item-edit"]);
@@ -42,7 +41,7 @@ test("a cache older than an hour is read again", () => {
   moveCard(args, { run: gh().run, ...s, now: () => 0 });
   const f = gh();
   moveCard(args, { run: f.run, ...s, now: () => 61 * 60 * 1000 });
-  assert.equal(f.calls[0], "project view");
+  assert.equal(f.calls[0], "api graphql");
 });
 
 test("a rejected cached id is read again once", () => {
@@ -50,7 +49,7 @@ test("a rejected cached id is read again once", () => {
   moveCard(args, { run: gh().run, ...s, now: () => 0 });
   const f = gh({ failEditOnce: true });
   assert.equal(moveCard(args, { run: f.run, ...s, now: () => 1 }), "card moved to Done");
-  assert.ok(f.calls.includes("project view"));
+  assert.ok(f.calls.includes("api graphql"));
 });
 
 test("a status the board lacks throws NO_STATUS", () => {

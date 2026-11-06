@@ -32,13 +32,13 @@ An issue filed or re-ranked mid-run waits for the next run. A standalone pick re
 afresh and runs `rm <board-file>` after.
 
 ```bash
-f=$(mktemp); q='is:issue -status:Done -status:Triage'
-{ gh project item-list <n> --owner <owner> --limit 2000 --format json --query "$q" ||
+f=$(mktemp)
+{ node "${CLAUDE_PLUGIN_ROOT}/skills/pick-issue/scripts/board.mjs" <n> <owner> ||
   gh project item-list <n> --owner <owner> --limit 2000 --format json; } > "$f" && echo "$f" || rm -f "$f"
 ```
 
-The `--query` filter runs on GitHub's side and costs about a third of the full read; it keeps every
-status *Resume* and the board source read. An older `gh` or host that rejects it falls back to the full read.
+`board.mjs` asks only for the fields this skill reads and leaves out Done and Triage cards: 1 point per 100
+cards, against 300 for `item-list` on 600 cards. If it fails, the full read runs.
 
 It prints `<board-file>` below; on a failed read it prints nothing, so stop and report.
 

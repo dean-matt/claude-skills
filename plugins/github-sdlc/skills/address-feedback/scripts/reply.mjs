@@ -11,6 +11,7 @@
 import { readFileSync } from "node:fs";
 import { capture } from "../../merge-pr/scripts/capture.mjs";
 
+const REPLY_GAP_MS = 1000;
 const THREADS =
   "query($o:String!,$r:String!,$n:Int!){repository(owner:$o,name:$r){pullRequest(number:$n){id reviewThreads(first:100){nodes{id comments(first:1){nodes{databaseId}}}}}}}";
 const OPEN = "mutation($p:ID!){addPullRequestReview(input:{pullRequestId:$p}){pullRequestReview{id}}}";
@@ -38,9 +39,15 @@ export function plan(replies, threads) {
  * @param {string[]} argv
  * @param {typeof capture} [run]
  * @param {(path: string) => string} [read]
+ * @param {() => void} [pause] runs before each reply, so a long pass is not one burst of mutations
  * @returns {string} a one-line summary
  */
-export function reply(argv, run = capture, read = (p) => readFileSync(p, "utf8")) {
+export function reply(
+  argv,
+  run = capture,
+  read = (p) => readFileSync(p, "utf8"),
+  pause = () => Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, REPLY_GAP_MS),
+) {
   const [n, file] = argv;
   if (!n || !file) throw new Error("usage: reply.mjs <pr> <replies.json>");
   const replies = JSON.parse(read(file));
@@ -53,8 +60,10 @@ export function reply(argv, run = capture, read = (p) => readFileSync(p, "utf8")
   const planned = plan(replies, pr.reviewThreads.nodes);
   if (planned.length === 0) return `pr #${n}: no replies`;
   const review = call(["-f", `query=${OPEN}`, "-f", `p=${pr.id}`]).data.addPullRequestReview.pullRequestReview.id;
-  for (const { threadId, body } of planned)
+  for (const { threadId, body } of planned) {
+    pause();
     call(["-f", `query=${REPLY}`, "-f", `rv=${review}`, "-f", `t=${threadId}`, "-f", `b=${body}`]);
+  }
   call(["-f", `query=${SUBMIT}`, "-f", `rv=${review}`]);
   return `pr #${n}: ${planned.length} repl${planned.length === 1 ? "y" : "ies"} in one review`;
 }

@@ -12,9 +12,10 @@ Run every command from the main checkout (a worktree holds the branch the merge 
 
 ```bash
 n=<pr>
-gh pr view "$n" --json state,isDraft,url
-b=$(gh pr view "$n" --json headRefName --jq .headRefName)
-issue=$(gh pr view "$n" --json closingIssuesReferences --jq '.closingIssuesReferences[0].number')
+pr=$(gh pr view "$n" --json state,isDraft,url,headRefName,closingIssuesReferences)
+b=$(jq -r .headRefName <<<"$pr")
+issue=$(jq -r '.closingIssuesReferences[0].number' <<<"$pr")
+jq -c '{state, isDraft, url}' <<<"$pr"
 ```
 
 The input is an open, non-draft pull request. Anything else stops.

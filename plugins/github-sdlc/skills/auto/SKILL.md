@@ -113,7 +113,9 @@ of merges, not attempts. Release the lock on `<n>` whether it merged or stopped:
 node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/lock.mjs" release <n>
 ```
 
-Time the issue, merged or stopped, and keep the output for the report:
+Time the issue, merged or stopped, and keep the output for the report. Also keep the GraphQL
+budget left (`gh api rate_limit --jq '.resources.graphql.remaining'`) from before the pick and
+from here; the difference is what the issue spent:
 
 ```bash
 node "${CLAUDE_PLUGIN_ROOT}/skills/auto/scripts/timing.mjs" <n> [<pr>]

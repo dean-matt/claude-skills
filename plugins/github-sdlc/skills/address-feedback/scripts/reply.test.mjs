@@ -28,7 +28,7 @@ test("reply opens one review, adds every reply, and submits once", () => {
     return "{}";
   };
   const read = () => JSON.stringify([{ id: 11, body: "**Applied** — a" }, { id: 12, body: "**Declined** — b" }]);
-  assert.equal(reply(["5", "r.json"], run, read), "pr #5: 2 replies in one review");
+  assert.equal(reply(["5", "r.json"], run, read, () => {}), "pr #5: 2 replies in one review");
   assert.equal(calls.filter((c) => c.includes("addPullRequestReviewThreadReply")).length, 2);
   assert.equal(calls.filter((c) => c.includes("submitPullRequestReview")).length, 1);
   assert.equal(calls.filter((c) => c.includes("addPullRequestReview(")).length, 1);
@@ -41,6 +41,6 @@ test("reply with a missing thread posts no review", () => {
     if (args[0] === "repo") return JSON.stringify({ owner: "o", name: "r" });
     return JSON.stringify({ data: { repository: { pullRequest: { id: "PR", reviewThreads: { nodes: [] } } } } });
   };
-  assert.throws(() => reply(["5", "r.json"], run, () => JSON.stringify([{ id: 1, body: "x" }])), /no thread/);
+  assert.throws(() => reply(["5", "r.json"], run, () => JSON.stringify([{ id: 1, body: "x" }]), () => {}), /no thread/);
   assert.equal(calls.some((c) => c.includes("addPullRequestReview(")), false);
 });

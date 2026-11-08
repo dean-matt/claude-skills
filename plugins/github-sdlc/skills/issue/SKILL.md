@@ -32,20 +32,21 @@ what the issue must do, never how to build it; `build` plans from the criteria a
    gh issue create --title "<title>" --body-file <body.md> --label "type:<type>"
    ```
 
-   Add it to the board in Triage: "Find the project" and "Move a card" in
-   [`board.md`](../setup/references/board.md), with status `Triage`. With no project, no `Triage`
-   option or a failed move, skip the move and report it; the issue stays created. Set native
+   Add it to the board: "Find the project" and "Move a card" in
+   [`board.md`](../setup/references/board.md), with status `Todo` when no Open question is
+   unticked and `Triage` when one is. With no project, no such status option or a failed move,
+   skip the move and report it; the issue stays created. Set native
    relationships the user named, as [`references/relationships.md`](references/relationships.md)
    describes.
-9. **Report** the issue number and whether the card is in Triage or not moved, and why. It is
-   ready to build once no Open question is unticked.
+9. **Report** the issue number and whether the card is in Todo, in Triage or not moved, and
+   why. It is ready to build once no Open question is unticked.
 
 ## Options
 
 Pass `--autonomous`.
 
 - **Interactive** (default): show the draft before creating it.
-- **Autonomous**: create without asking, add the card to Triage as in step 8, and sort each gap:
+- **Autonomous**: create without asking, add the card as in step 8, and sort each gap:
   - **Low stakes** (naming, wording, a default for an edge the criteria leave open): decide it
     from the issue, the code and Out of scope, taking the narrower answer where they leave it
     open. Write `- [x] <question> — Decided (auto): <answer>, because <reason>`.
@@ -58,7 +59,8 @@ Pass `--autonomous`.
   criterion in the same step. When the last question is ticked and its answer is in the sections
   that carry it, post one comment through [`technical-writing`](../technical-writing/SKILL.md)
   listing each question and answer tagged `Decided (auto)` or `Answered`, then delete the
-  Open questions section, wrapper included. Report every decision.
+  Open questions section, wrapper included, and move the card from Triage to Todo. Report every
+  decision.
 - **Reshape**: restructure an existing issue into this shape, keeping the reporter's words
   in Summary and Reproduction. Used from `triage`. Claim the issue first, per
   [`claim`](references/claim.md); a new issue has no one else to hold it.

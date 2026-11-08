@@ -5,8 +5,8 @@ nothing is hard-coded.
 
 | Status | Set by |
 |---|---|
-| Triage | `issue`, on creation; `triage`, on an issue filed elsewhere |
-| Todo | `triage`, when the issue is ready to pick |
+| Triage | `issue`, on creation with an Open question unticked; `triage`, on an issue filed elsewhere |
+| Todo | `issue`, on creation with no Open question unticked; `triage`, when the issue is ready to pick |
 | In Development | `auto`, `build` or `issue`, on claim |
 | In Review | `open-pr` |
 | Done | `merge-pr` |

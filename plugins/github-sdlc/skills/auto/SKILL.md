@@ -166,7 +166,7 @@ second pull request. Step 3's `signoff` is not skipping past it: the user weighe
 the run goes on only on their word.
 
 **Rerank the backlog.** Rank and milestone belong to the repository's collaborators. A split's
-new issues take the parent's milestone and a rank just after it, as `issue` says; nothing else moves.
+new issues take the split issue's milestone and a rank just after it, as `issue` says; nothing else moves.
 
 **Build from an issue without criteria.** It gets its criteria from `issue` first, never an
 approach written and approved by the run itself.

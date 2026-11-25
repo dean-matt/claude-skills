@@ -33,14 +33,14 @@ Shape and types: [`../issue/references/shape.md`](../issue/references/shape.md).
 
 ## Clusters
 
-When several issues share a goal, offer a bounded parent: an issue stating the goal, the others
-as sub-issues, no milestone, closing when its children do. Offer it; never create one for a single
-issue or as a standing bucket.
+When several issues share a goal, give them one milestone and *blocked by* links where an order
+matters. Never create a parent or sub-issues: a parent sits open beside its children and skews
+the milestone's progress.
 
 ## Across the backlog
 
 Report: issues waiting in Triage, any open `severity:critical` bug (even if not picked), and
-clusters worth a parent.
+clusters worth a shared milestone.
 
 ## Options
 

@@ -78,11 +78,11 @@ with the new issue numbers in ship order, run
 node "${CLAUDE_PLUGIN_ROOT}/skills/issue/scripts/place-split.mjs" <project> <owner> <this-issue> <new>...
 ```
 
-It gives each the parent's milestone and a board rank just after the parent's, in that order, and
-moves no other issue. A parent with no milestone or rank leaves the new issues without one; say
+It gives each this issue's milestone and a board rank just after this issue's, in that order, and
+moves no other issue. An issue with no milestone or rank leaves the new issues without one; say
 so. Then remove the moved criteria here and renumber from `AC1`.
 
 ## Will not do
 
-Write how to build it, set severity, or milestone or rank beyond a split's copy of its parent's
+Write how to build it, set severity, or milestone or rank beyond a split's copy of this issue's
 (those are `triage`'s and the user's), or restate a relationship in the body.

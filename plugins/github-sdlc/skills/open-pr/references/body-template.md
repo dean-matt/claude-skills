@@ -32,7 +32,7 @@ results. The body holds only what neither can know, and links instead of restati
 
 - **`> Closes #<issue>`** is the first line, in a blockquote. GitHub reads the keyword there
   and links the issue natively. Several issues each take their own keyword:
-  `> Closes #1, closes #2`. Never close a parent issue; it closes when its sub-issues do.
+  `> Closes #1, closes #2`.
   With no issue, omit the line and let Why carry the reason.
 - **What** says what this pull request delivers; for a slice of an issue, which slice. It never
   restates the issue's goal, lists files, or describes the diff.

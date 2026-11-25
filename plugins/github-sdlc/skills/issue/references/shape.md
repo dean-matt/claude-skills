@@ -1,7 +1,6 @@
 # The shape of an issue
 
-Facts live in one place. Relationships live in GitHub's native fields (dependencies and
-sub-issues) and are never repeated in the body. Pull request links belong to the pull request.
+Facts live in one place. Relationships live in GitHub's native fields (dependencies) and are never repeated in the body. Pull request links belong to the pull request.
 
 ## Sections, in order
 
@@ -76,8 +75,8 @@ A bug also carries one `severity:` label, set at triage.
 
 Only inside Reproduction (the defect). A screenshot of progress belongs in the pull request. Use [`screenshots`](../../screenshots/SKILL.md).
 
-## Parents
+## No parents
 
-A parent is any issue with sub-issues. It states a goal, has no milestone, is never picked,
-and closes when its children do. Create it only for a cluster of related issues; it is not a
-permanent bucket.
+Never create a parent or sub-issue. Every issue stands alone in its milestone, so the
+milestone's count is the progress. Order work with *blocked by*, and group it with a label or
+milestone. An older parent with open sub-issues is skipped by `pick-issue`; its children are the work.
